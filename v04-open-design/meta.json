@@ -1,0 +1,11 @@
+{
+  "id": "v04",
+  "slug": "open-design",
+  "tool": "open-design",
+  "repo": "https://github.com/nexu-io/open-design",
+  "title": "纸灯：蛇腹折纸光雕",
+  "concept": "首屏是实时 three.js 的「紙灯」：一整张手漉和纸以蛇腹折叠围成灯笼，内有灯，褶子加深时整圈收拢、展平时舒展成开口的弧，光从中段透出、上下沉入焦茶，随指针轻倾；SHŌ 是同材质的小折纸花苞，静止时直立含苞，悬停某个问题就转向那一行并绽开。用折纸与透光取代金属圆环与金色球体，安静、温暖、像夜里的行灯。",
+  "fromTool": "按 open-design 的流程做：design-brief 定 8 个维度 → 选用 design-systems/kami（紙）并按其 token 规范改成 XIUYI 咖啡色单一强调色（仅 400/500 字重、无斜体、只用暖灰、ring+whisper 阴影、用章节编号代替眉标、tabular-nums）→ kami-landing 的版式骨架（封面翻深色、编号章节、页脚大字 kicker）+ webgl-experience 的实时 GPU 首屏规范（DPR≤2、着色器报错、降级）→ craft 的 CJK 行高、动效纪律（减弱动效、>5 秒环境动画提供暂停键）与 anti-ai-slop（用「蛇腹折页」作为非模板化板块）。",
+  "tech": "three.js r170 (ES modules via jsDelivr) + custom GLSL ShaderMaterial (procedural washi texture, spectral transmission falloff) + UnrealBloomPass",
+  "is3d": true
+}

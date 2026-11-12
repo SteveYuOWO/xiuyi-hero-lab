@@ -1,0 +1,11 @@
+{
+  "id": "v09",
+  "slug": "logo-design",
+  "tool": "logo design skill",
+  "repo": "https://github.com/kaankiziltug/logo-design-skill",
+  "title": "以徽为主角的品牌系统",
+  "concept": "首屏把 XIUYI 环形标志忠实描摹成矢量，做成可实时转动的香槟金印章：X 浮雕凸起、双环车削、背面刻字，光源随鼠标移动；SHŌ 区用同一圆环作 Ō，长音符是一笔书法“一”，待机时如水平线呼吸，思考时绕环运行并在环内竖排显示问题要点。",
+  "fromTool": "采用该技能的 brief → 标志 → 品牌系统方法：标志不重画只做“派生”，按其“非预期解读”测试否决了像加密货币的亮金币方案；SHŌ 作为共享母环的子品牌并定义了入场/定格/循环动效，小尺寸用简化版（环＋横）作头像，以应用场景（页眉、立体印章、信笺压印、深色底浅色圆盘）代替规范页。",
+  "tech": "three.js r170（ExtrudeGeometry + Lathe + 自建 PMREM 环境 + 各向异性/凹凸贴图）+ Canvas 2D 书法笔触",
+  "is3d": true
+}

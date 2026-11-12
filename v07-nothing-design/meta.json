@@ -1,0 +1,11 @@
+{
+  "id": "v07",
+  "slug": "nothing-design",
+  "tool": "nothing design",
+  "repo": "https://github.com/dominikmartn/nothing-design-skill",
+  "title": "点阵光环与电光屏",
+  "concept": "首屏是一枚实时旋转的莫比乌斯光环点云（约 4 万点），被量化到固定的点阵网格上，以点的大小表现浓淡与立体；香槟色扫描线像 CT 一样扫过光环，鼠标会形成放大镜并推开点，点击发出声呐波纹。SHŌ 是一块 16 点阵的“电光掲示板”：悬停或点击问题，上方滚动问题，下方以 DotGothic16 点阵字逐字打出回答，左上的圆形点阵灯显示待机、思考、输出状态。",
+  "fromTool": "采用 Nothing 设计系统的三层层级（展示 / 正文 / Space Mono 全大写标签）、Doto 点阵数字、点阵母题作为唯一插画、分段进度条与括号标签、左侧 2px 选中条；浅色“印刷技术手册”与深色“暗室仪表盘”两种模式各用一次；无阴影、无渐变、无模糊，只用 ease-out 透明度与逐格（打击式）动效；红色信号色换成 XIUYI 香槟金。",
+  "tech": "WebGL2 GLSL 点阵着色 + CPU 点云投影与双线性泼溅；Canvas 2D 点阵 LED 屏（DotGothic16 栅格化）",
+  "is3d": true
+}

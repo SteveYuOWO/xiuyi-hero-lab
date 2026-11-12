@@ -1,0 +1,11 @@
+{
+  "id": "v06",
+  "slug": "stitch-skills",
+  "tool": "Google Stitch skills",
+  "repo": "https://github.com/google-labs-code/stitch-skills",
+  "title": "石膏地形・产品化便当格",
+  "concept": "首屏是实时 three.js 的日本列岛石膏浮雕模型：香槟金细线从北京、首尔、上海、台北、香港划向东京，珍珠沿线飞行，东京立着几根安静的诊所针，海面的海岸回纹像枯山水耙纹般缓缓外扩。SHŌ 区直接展示产品本身——聊天窗口实时打字回答三个示例问题，左侧一个小型 3D 浑天仪随“思考/回答”状态加速与平息。",
+  "fromTool": "按 Stitch 的方法先写 DESIGN.md（YAML 设计令牌 + “描述名 (#hex) — 用途”的语义章节，design-md 技能），用 taste-design 的四个刻度与禁用清单（不做三等分卡片、不居中 hero、不编造数据、软件界面不用衬线 → 聊天产品用黑体），采用其“每个便当格都有一个持续微动效”的 bento 结构，并用 enhance-prompt 的编号 PAGE STRUCTURE 决定页面顺序。",
+  "tech": "three.js r170 (WebGL2, onBeforeCompile 着色器, PCF 软阴影, RoomEnvironment) + Natural Earth 1:10m 海岸线内联 + 运行时 EDT 距离场",
+  "is3d": true
+}

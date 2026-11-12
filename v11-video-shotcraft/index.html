@@ -1,0 +1,1575 @@
+<!doctype html>
+<!-- v11 · video-shotcraft · https://github.com/Vincentwei1021/video-shotcraft · Decisions taken from the tool: the hero is a product film cut on the promo-energy-arc (low "push-the-switch" light-on → one hero object with a full action arc → accelerating cuts 3.0 / 2.2 / 1.8 s → one long continuous crane into a held resting shot, R1/R3); motion tokens from its brand→motion table for "calm care × premium" (≈45-frame moves, bezier(.4,0,.6,1), no overshoot); Q5 one subject only; Q7 macro grammar (oblique angle, height, orbit, dark material ground); shot-transitions + transition-hidden-cut for every seam (match cut on the sphere, shutter-settle hard cut, a deep-brown out-of-focus foreground wipe that hides a cut, a one-take crane, never a bare cut); light-play / Q4 (exactly one sheen per film, nothing glints in groups); Polish grain + vignette; deterministic mulberry32 randomness; SHŌ is one continuous take whose follow-focus is pulled by the visitor's hover (focus relay). -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜美・健康・暮らしを、日本で再定義する。</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<meta name="theme-color" content="#e6e2db">
+<link rel="icon" href="../assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#e6e2db; --paper:#f3f0ea; --white:#ffffff;
+  --coffee:#5b4938; --ink:#44352a; --muted:#6b5946; --champagne:#b9a17b; --logo:#7a6a56;
+  --night:#17110d; --bar:#100b08; --night-ink:#efe6d6;
+  --line:rgba(68,53,42,.16); --line-2:rgba(68,53,42,.3);
+  --jp:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --lat:"Cormorant Garamond","Shippori Mincho",serif;
+  --mono:"DM Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --gutter:clamp(18px,4.4vw,72px);
+  --header-h:76px;
+  --ease:cubic-bezier(.4,0,.6,1);
+  --ease-out:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:var(--header-h)}
+body{background:var(--page);color:var(--ink);font-family:var(--jp);font-size:16px;line-height:1.9;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid var(--coffee);outline-offset:4px;border-radius:4px}
+.jp{word-break:auto-phrase;text-wrap:pretty;line-break:strict}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.arrow{width:22px;height:10px;flex:none;transition:transform .3s var(--ease)}
+
+/* ───────── header ───────── */
+.site-header{position:sticky;top:0;z-index:60;height:var(--header-h);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 var(--gutter);background:rgba(230,226,219,.9);-webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);border-bottom:1px solid transparent;transition:border-color .4s}
+.site-header.scrolled{border-bottom-color:var(--line)}
+.brand{display:flex;align-items:center;gap:14px;justify-self:start}
+.brand img{width:44px;height:44px}
+.wordmark{font-family:var(--lat);font-size:22px;letter-spacing:.34em;font-weight:500;color:var(--coffee);line-height:1}
+.nav-main{display:flex;gap:clamp(24px,3.2vw,48px);font-size:15px;letter-spacing:.18em}
+.nav-main a,.nav-right a,.nav-right button{position:relative;padding:6px 0}
+.nav-main a::after{content:"";position:absolute;left:0;right:.18em;bottom:0;height:1px;background:var(--champagne);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.nav-main a:hover::after{transform:scaleX(1)}
+.latin{font-family:var(--lat);font-weight:500;letter-spacing:.14em;font-size:1.08em}
+.nav-right{justify-self:end;display:flex;align-items:center;gap:clamp(18px,2.2vw,30px);font-size:14px;letter-spacing:.14em}
+.lang{display:flex;align-items:center;gap:6px}
+.lang svg{width:9px;height:6px}
+.lang-pop{position:absolute;top:calc(100% + 10px);right:-12px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px;min-width:132px;display:none;box-shadow:0 18px 40px -24px rgba(40,28,18,.4)}
+.lang-wrap{position:relative}
+.lang-wrap.open .lang-pop{display:block}
+.lang-pop a{display:block;padding:6px 12px;border-radius:6px;font-size:14px;letter-spacing:.08em}
+.lang-pop a:hover{background:rgba(91,73,56,.07)}
+.lang-pop a[aria-current]{color:var(--coffee);font-weight:600}
+.menu-btn{display:flex;align-items:center;gap:12px}
+.burger{width:22px;height:10px;position:relative;display:inline-block}
+.burger::before,.burger::after{content:"";position:absolute;left:0;right:0;height:1px;background:currentColor;transition:transform .3s var(--ease)}
+.burger::before{top:0}.burger::after{bottom:0}
+.login{color:var(--muted)}
+
+/* mobile menu sheet */
+.sheet{position:fixed;inset:0;z-index:80;background:var(--paper);display:flex;flex-direction:column;padding:0 var(--gutter) 40px;visibility:hidden;opacity:0;transition:opacity .35s var(--ease),visibility 0s .35s}
+.sheet.open{visibility:visible;opacity:1;transition:opacity .35s var(--ease)}
+.sheet-top{height:var(--header-h);display:flex;align-items:center;justify-content:space-between}
+.sheet nav{display:flex;flex-direction:column;margin-top:4vh;border-top:1px solid var(--line)}
+.sheet nav a{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font-size:22px;letter-spacing:.14em}
+.sheet nav a small{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted)}
+.sheet-foot{margin-top:auto;display:flex;gap:18px;flex-wrap:wrap;font-size:14px;letter-spacing:.1em;color:var(--muted)}
+.close-x{width:44px;height:44px;display:grid;place-items:center;margin-right:-10px}
+.close-x span{width:22px;height:1px;background:var(--ink);position:absolute}
+.close-x span:first-child{transform:rotate(45deg)}.close-x span:last-child{transform:rotate(-45deg)}
+
+/* ───────── hero: the film ───────── */
+.hero{position:relative}
+.film{position:relative;height:clamp(380px,calc(100svh - var(--header-h) - 252px),700px);background:var(--night);overflow:hidden;isolation:isolate}
+.film canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
+.film .fallback{position:absolute;inset:0;background:url(../assets/photos/hero-zen.webp) 70% 50%/cover;display:none}
+.film.no-gl .fallback{display:block}
+.film.no-gl canvas,.film.no-gl .lb{display:none}
+.lb{position:absolute;left:0;right:0;height:10%;min-height:30px;background:var(--bar);display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 var(--gutter);font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(232,219,196,.62);text-transform:uppercase;z-index:3;pointer-events:none}
+.lb > *{opacity:var(--lbt,1)}
+.film .lb.top{top:0;transform:translateY(calc((var(--lb,1) - 1) * 101%))}
+.film .lb.bottom{bottom:0;transform:translateY(calc((1 - var(--lb,1)) * 101%))}
+.lb .tc{font-variant-numeric:tabular-nums;color:rgba(232,219,196,.8)}
+.lb .rec{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--champagne);margin-right:10px;vertical-align:1px}
+.strip{list-style:none;display:flex;gap:6px;pointer-events:auto}
+.strip li{position:relative;width:clamp(54px,7vw,104px);padding-top:8px;cursor:pointer;color:rgba(232,219,196,.42);transition:color .3s}
+.strip li.on{color:rgba(240,228,206,.95)}
+.strip li::before,.strip li i{content:"";position:absolute;top:0;left:0;height:1px;width:100%;background:rgba(232,219,196,.22)}
+.strip li i{background:var(--champagne);transform-origin:left;transform:scaleX(0)}
+.strip li span{white-space:nowrap}
+.occluder{position:absolute;top:-4%;bottom:-4%;left:0;width:200%;z-index:2;pointer-events:none;transform:translateX(100%);will-change:transform;
+  background:linear-gradient(90deg,rgba(26,18,12,0) 0%,rgba(26,18,12,.55) 6%,rgba(26,18,12,.94) 11%,#1a120c 15%,#1a120c 85%,rgba(26,18,12,.94) 89%,rgba(26,18,12,.55) 94%,rgba(26,18,12,0) 100%)}
+.occluder::before{content:"";position:absolute;top:0;bottom:0;left:7%;width:7%;background:linear-gradient(90deg,rgba(214,186,140,0),rgba(214,186,140,.16) 60%,rgba(214,186,140,0));filter:blur(6px)}
+.film-ctl{position:absolute;right:var(--gutter);bottom:18px;z-index:4;display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted);opacity:0;visibility:hidden;transition:opacity .8s var(--ease),visibility 0s .8s}
+.film.at-rest .film-ctl{opacity:1;visibility:visible;transition:opacity .8s var(--ease) .4s}
+.film-ctl button{display:flex;align-items:center;gap:10px;padding:8px 0;letter-spacing:.2em;text-transform:uppercase}
+.film-ctl button:hover{color:var(--coffee)}
+.film-ctl svg{width:9px;height:10px}
+.film-ctl .sep{width:24px;height:1px;background:var(--line-2)}
+.film-ctl .jpn{font-family:var(--jp);letter-spacing:.14em;text-transform:none;font-size:12.5px}
+
+.hero-copy{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(24px,5vw,96px);align-items:end;padding:26px var(--gutter) 34px}
+.eyebrow{display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:.32em;color:var(--muted)}
+.eyebrow::before{content:"";width:40px;height:1px;background:var(--champagne)}
+.hero h1{margin-top:10px;font-size:clamp(30px,4vw,60px);line-height:1.3;letter-spacing:.07em;font-weight:500;color:var(--ink);font-feature-settings:"palt" 1}
+.hero h1 .w{transition:opacity 1.1s var(--ease),color 1.1s var(--ease)}
+.hero.filming h1 .w{opacity:.26}
+.hero.filming h1 .w.on{opacity:1}
+.hero-sub{font-size:15.5px;line-height:1.95;color:var(--muted);letter-spacing:.04em;max-width:30em}
+.ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:16px;height:52px;padding:0 26px;border-radius:8px;font-size:14px;letter-spacing:.2em;white-space:nowrap;transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.btn:hover .arrow{transform:translateX(4px)}
+.btn-primary{background:var(--coffee);color:#fff}
+.btn-primary:hover{background:var(--ink)}
+.btn-ghost{border:1px solid rgba(91,73,56,.42);color:var(--coffee)}
+.btn-ghost:hover{border-color:var(--coffee);background:rgba(91,73,56,.05)}
+.btn-light{background:var(--paper);color:var(--ink)}
+.btn-light:hover{background:#fff}
+
+/* ───────── shared section bits ───────── */
+.label{display:flex;align-items:center;gap:14px;font-size:12.5px;letter-spacing:.3em;color:var(--muted)}
+.label::before{content:"";width:32px;height:1px;background:var(--champagne)}
+.label .latin{font-size:13px;letter-spacing:.26em}
+h2{font-size:clamp(26px,2.9vw,40px);line-height:1.45;letter-spacing:.08em;font-weight:500;margin-top:14px;font-feature-settings:"palt" 1}
+.wrap{max-width:1296px;margin:0 auto}
+
+/* ───────── SHŌ ───────── */
+.sho{background:var(--paper);padding:clamp(76px,10vw,140px) var(--gutter)}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,6vw,100px);align-items:center}
+.plate{position:relative;aspect-ratio:1.16/1;border-radius:12px;overflow:hidden;background:var(--night);isolation:isolate}
+.plate canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.plate .lb{height:8.5%;padding:0 22px;font-size:10px}
+.plate .lb.top{top:0}
+.plate .lb.bottom{bottom:0;justify-content:center}
+.plate .sub{font-family:var(--jp);font-size:14px;letter-spacing:.14em;text-transform:none;color:rgba(242,233,216,.9);white-space:nowrap;transition:opacity .35s var(--ease)}
+.plate.no-gl canvas{display:none}
+.plate.no-gl{background:url(../assets/photos/support-consult.jpg) center/cover}
+.ff{margin-top:18px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.ff-head{display:flex;justify-content:space-between}
+.ff-read{font-variant-numeric:tabular-nums;color:var(--coffee)}
+.ff-scale{position:relative;height:46px;margin-top:10px;border-top:1px solid var(--line-2)}
+.ff-ticks{position:absolute;left:0;right:0;top:0;height:7px;background:repeating-linear-gradient(90deg,var(--line-2) 0 1px,transparent 1px 2.5%)}
+.ff-mark{position:absolute;top:14px;transform:translateX(-50%);font-family:var(--jp);font-size:12px;letter-spacing:.12em;text-transform:none;color:var(--muted);white-space:nowrap;transition:color .3s}
+.ff-mark::before{content:"";position:absolute;left:50%;top:-14px;width:1px;height:10px;background:var(--muted)}
+.ff-mark.on{color:var(--coffee)}
+.ff-needle{position:absolute;top:-6px;left:0;width:11px;height:11px;margin-left:-5.5px;will-change:transform}
+.ff-needle::before{content:"";position:absolute;left:5px;top:0;width:1px;height:20px;background:var(--coffee)}
+.ff-needle::after{content:"";position:absolute;left:2px;top:-6px;border:3.5px solid transparent;border-top:5px solid var(--coffee)}
+.sho-copy .lead{margin-top:20px;font-size:15.5px;line-height:2;color:var(--muted);letter-spacing:.03em}
+.questions{list-style:none;margin:34px 0 38px;border-top:1px solid var(--line)}
+.questions a{position:relative;display:grid;grid-template-columns:42px minmax(0,1fr) 24px;gap:12px;align-items:center;padding:21px 2px;border-bottom:1px solid var(--line);font-size:16px;line-height:1.75;letter-spacing:.03em;transition:color .3s}
+.questions .qn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);transition:color .3s}
+.questions a::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--coffee);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
+.questions a.on::after{transform:scaleX(1)}
+.questions a.on .qn{color:var(--coffee)}
+.questions a.on .arrow{transform:translateX(4px)}
+
+/* ───────── services ───────── */
+.services{padding:clamp(76px,10vw,140px) var(--gutter)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:clamp(36px,4.5vw,64px)}
+.sec-head .aside{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;padding-bottom:8px}
+.svc{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:clamp(32px,6vw,100px);align-items:start}
+.svc-list{list-style:none;border-top:1px solid var(--line)}
+.svc-list a{display:grid;grid-template-columns:56px minmax(0,1fr) auto 24px;gap:14px;align-items:center;padding:20px 2px;border-bottom:1px solid var(--line);transition:color .3s}
+.svc-list .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted)}
+.svc-list .ja{font-size:clamp(19px,1.9vw,26px);letter-spacing:.12em;font-weight:500;line-height:1.5}
+.svc-list .en{font-family:var(--lat);font-style:italic;font-size:17px;color:var(--muted);letter-spacing:.02em}
+.svc-list .arrow{color:var(--muted);opacity:0;transform:translateX(-6px);transition:opacity .3s,transform .3s var(--ease)}
+.svc-list a.on .arrow,.svc-list a:hover .arrow{opacity:1;transform:none;color:var(--coffee)}
+.svc-list a.on .n{color:var(--coffee)}
+.cut{position:sticky;top:calc(var(--header-h) + 28px)}
+.cut-frame{position:relative;aspect-ratio:4/4.6;border-radius:12px;overflow:hidden;background:#d6cfc4}
+.cut-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;visibility:hidden}
+.cut-frame img.on{visibility:visible;animation:settle .6s var(--ease-out)}
+@keyframes settle{from{transform:scale(1.04)}to{transform:scale(1)}}
+.cut figcaption{display:flex;justify-content:space-between;margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.cut figcaption b{font-family:var(--jp);font-weight:500;letter-spacing:.14em;color:var(--ink);text-transform:none;font-size:13px}
+
+/* ───────── why ───────── */
+.why{background:var(--white);padding:clamp(76px,10vw,140px) var(--gutter)}
+.why-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,3vw,44px)}
+.why-card figure{aspect-ratio:5/4;border-radius:12px;overflow:hidden;background:#ddd6cb}
+.why-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.6s var(--ease)}
+.why-card:hover img{transform:scale(1.04)}
+.why-card .num{display:block;margin-top:24px;font-family:var(--lat);font-size:15px;letter-spacing:.24em;color:var(--champagne)}
+.why-card h3{margin-top:8px;font-size:clamp(19px,1.6vw,22px);font-weight:500;letter-spacing:.08em;line-height:1.6}
+.why-card p{margin-top:12px;font-size:15px;line-height:1.95;color:var(--muted)}
+
+/* ───────── support ───────── */
+.support{padding:clamp(76px,10vw,140px) var(--gutter)}
+.sup{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:clamp(32px,6vw,100px);align-items:start}
+.sup figure{position:sticky;top:calc(var(--header-h) + 28px);aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#d6cfc4}
+.sup figure img{width:100%;height:100%;object-fit:cover;object-position:62% 40%}
+.sup-list{list-style:none;margin-top:36px;border-top:1px solid var(--line)}
+.sup-list li{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;padding:26px 0;border-bottom:1px solid var(--line)}
+.sup-list .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);padding-top:7px}
+.sup-list h3,.why-card h3{word-break:auto-phrase;text-wrap:balance}
+.sup-list h3{font-size:clamp(18px,1.5vw,21px);font-weight:500;letter-spacing:.08em;line-height:1.6}
+.sup-list p{margin-top:8px;font-size:15px;line-height:1.95;color:var(--muted)}
+.note{margin-top:22px;font-size:13px;line-height:1.9;color:var(--muted);letter-spacing:.03em}
+
+/* ───────── closing: end card ───────── */
+.closing{position:relative;color:var(--night-ink);text-align:center;overflow:hidden;background:#241a14;padding:clamp(120px,14vw,200px) var(--gutter)}
+.closing > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
+.closing::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 50%,rgba(28,20,14,.35),rgba(20,14,10,.82))}
+.closing .lb{position:absolute;height:clamp(28px,6%,60px);z-index:2}
+.closing .lb.top{top:0}.closing .lb.bottom{bottom:0}
+.closing-in{position:relative;z-index:1;max-width:760px;margin:0 auto}
+.closing .label{justify-content:center;color:rgba(239,230,214,.72)}
+.closing .label::after{content:"";width:32px;height:1px;background:var(--champagne)}
+.closing h2{color:#f6efe3}
+.closing p{margin:22px auto 0;max-width:36em;font-size:15.5px;line-height:2;color:rgba(239,230,214,.82)}
+.closing .btn{margin-top:36px}
+
+/* ───────── footer ───────── */
+footer{background:var(--bar);color:rgba(239,230,214,.78);padding:64px var(--gutter) 34px}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end}
+.foot-brand{display:flex;align-items:center;gap:16px}
+.disc{width:52px;height:52px;border-radius:50%;background:var(--paper);display:grid;place-items:center}
+.disc img{width:44px;height:44px}
+.foot-brand .wordmark{color:#efe5d3}
+.foot-co{margin-top:18px;font-size:14px;letter-spacing:.1em;line-height:1.9}
+.foot-links{display:flex;flex-wrap:wrap;gap:10px 28px;font-size:13.5px;letter-spacing:.14em}
+.foot-links a:hover{color:#fff}
+.foot-bottom{display:flex;justify-content:space-between;gap:20px;margin-top:48px;padding-top:22px;border-top:1px solid rgba(239,230,214,.12);font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(239,230,214,.5);text-transform:uppercase}
+
+.fab{position:fixed;right:22px;bottom:22px;z-index:55;display:flex;align-items:center;gap:10px;height:48px;padding:0 18px;border-radius:8px;background:var(--coffee);color:#fff;font-size:13.5px;letter-spacing:.14em;box-shadow:0 14px 34px -16px rgba(40,26,16,.6);transition:background .3s,transform .3s var(--ease)}
+.fab:hover{background:var(--ink)}
+/* lab review: keep the floating contact off the hero CTAs; it appears once the hero scrolls away */
+.fab{opacity:0;pointer-events:none;transform:translateY(12px)}
+.fab.on{opacity:1;pointer-events:auto;transform:none}
+.fab svg{width:16px;height:16px}
+
+/* ───────── responsive ───────── */
+@media (max-width:1080px){
+  .nav-main{display:none}
+  .site-header{grid-template-columns:1fr auto}
+  .login,.lang-wrap{display:none}
+}
+@media (max-width:860px){
+  :root{--header-h:62px}
+  .brand img{width:38px;height:38px}
+  .wordmark{font-size:19px}
+  .film{height:min(116vw,56svh)}
+  .lb{font-size:9px;letter-spacing:.16em;height:12%;padding:0 16px}
+  .lb .hide-s{display:none}
+  .strip li{width:auto;min-width:40px}
+  .hero-copy{grid-template-columns:1fr;gap:20px;padding:22px var(--gutter) 30px}
+  .eyebrow{font-size:12px;letter-spacing:.26em}
+  .hero h1{font-size:clamp(27px,7.6vw,40px);letter-spacing:.05em}
+  .hero-sub{font-size:14.5px}
+  .ctas{margin-top:18px}
+  .ctas .btn{flex:1 1 0;padding:0 14px;gap:10px;letter-spacing:.14em}
+  .film-ctl{bottom:10px}
+  .sho-grid,.svc,.sup{grid-template-columns:1fr}
+  .plate{aspect-ratio:1/1.02}
+  .sho-grid{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .sho-copy{display:contents}
+  .sho-copy .label{order:1}.sho-copy h2{order:2}.sho-copy .lead{order:3}
+  .sho-stage{order:4;margin-top:30px}
+  .questions{order:5;margin:26px 0 32px}
+  .sho-copy > .btn{order:6;align-self:flex-start}
+  .questions a{grid-template-columns:34px minmax(0,1fr) 22px;font-size:15px;padding:18px 0}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .cut{position:relative;top:auto;order:-1}
+  .cut-frame{aspect-ratio:3/2}
+  .svc-list a{grid-template-columns:40px minmax(0,1fr);row-gap:0;padding:16px 0}
+  .svc-list .arrow{display:none}
+  .svc-list .en{grid-column:2;font-size:14.5px;line-height:1.4}
+  .plate .lb{padding:0 14px}
+  .plate .sub{font-size:12px;letter-spacing:.08em}
+  .closing::before{background:linear-gradient(180deg,rgba(20,14,10,.55),rgba(20,14,10,.86) 40%,rgba(20,14,10,.86) 70%,rgba(20,14,10,.6))}
+  .foot-bottom span:last-child{display:none}
+  .why-grid{grid-template-columns:1fr;gap:44px}
+  .sup figure{position:relative;top:auto;aspect-ratio:4/3}
+  .sup-list li{grid-template-columns:40px minmax(0,1fr)}
+  .foot{grid-template-columns:1fr}
+  .foot-bottom{flex-direction:column}
+  .fab{right:14px;bottom:14px;height:44px;padding:0 14px}
+  .fab span{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <a class="brand" href="#top" aria-label="XIUYI ホーム">
+    <img src="../assets/logo-mark.png" alt="" width="44" height="44">
+    <span class="wordmark">XIUYI</span>
+  </a>
+  <nav class="nav-main" aria-label="メイン">
+    <a href="#services">サービス</a>
+    <a href="#why">コラム</a>
+    <a href="#support">会社案内</a>
+    <a href="#sho"><span class="latin">SHŌ AI</span></a>
+  </nav>
+  <div class="nav-right">
+    <div class="lang-wrap" id="langWrap">
+      <button class="lang" id="langBtn" aria-haspopup="true" aria-expanded="false">日本語<svg viewBox="0 0 9 6" aria-hidden="true"><path d="M.5 .8 4.5 4.8 8.5 .8" fill="none" stroke="currentColor"/></svg></button>
+      <div class="lang-pop" role="menu">
+        <a href="#top" aria-current="true" role="menuitem">日本語</a>
+        <a href="#top" role="menuitem">English</a>
+        <a href="#top" role="menuitem">中文</a>
+      </div>
+    </div>
+    <a class="login" href="#consult">ログイン</a>
+    <button class="menu-btn" id="menuBtn" aria-controls="sheet" aria-expanded="false">メニュー<span class="burger" aria-hidden="true"></span></button>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="sheet-top">
+    <a class="brand" href="#top" data-close><img src="../assets/logo-mark.png" alt="" width="38" height="38"><span class="wordmark">XIUYI</span></a>
+    <button class="close-x" id="closeBtn" aria-label="メニューを閉じる"><span></span><span></span></button>
+  </div>
+  <nav aria-label="メニュー">
+    <a href="#services" data-close>サービス<small>01</small></a>
+    <a href="#why" data-close>コラム<small>02</small></a>
+    <a href="#support" data-close>会社案内<small>03</small></a>
+    <a href="#sho" data-close><span class="latin">SHŌ AI</span><small>04</small></a>
+    <a href="#consult" data-close>相談を予約<small>05</small></a>
+  </nav>
+  <div class="sheet-foot"><a href="#top">日本語</a><a href="#top">English</a><a href="#top">中文</a><a href="#consult" data-close>ログイン</a></div>
+</div>
+
+<main id="top">
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="hero" aria-label="XIUYI">
+  <div class="film" id="film" aria-hidden="true">
+    <div class="fallback"></div>
+    <canvas id="heroCanvas"></canvas>
+    <div class="occluder" id="occluder"></div>
+    <div class="lb top"><span><span class="rec"></span>XIUYI<span class="hide-s"> — 美・健康・暮らし</span></span><span class="tc" id="tc">SC 01 / 04 · 00:00:00:00</span></div>
+    <div class="lb bottom"><span id="lbMeta" class="hide-s">Macro · 100 mm · T1.4</span>
+      <ol class="strip" id="strip">
+        <li data-i="0"><i></i><span>01 美</span></li>
+        <li data-i="1"><i></i><span>02 健康</span></li>
+        <li data-i="2"><i></i><span>03 暮らし</span></li>
+        <li data-i="3"><i></i><span>04 日本</span></li>
+      </ol>
+    </div>
+    <div class="film-ctl" id="filmCtl">
+      <span class="jpn">静止ショット</span><span class="sep"></span>
+      <button id="replay" type="button" aria-label="映像をもう一度再生"><svg viewBox="0 0 9 10" aria-hidden="true"><path d="M0 0v10l9-5z" fill="currentColor"/></svg>Replay · 0:11</button>
+    </div>
+  </div>
+  <div class="hero-copy">
+    <div>
+      <p class="eyebrow">東京・美と健康のライフスタイル</p>
+      <h1 id="h1"><span class="w" data-w="0">美</span><span class="w" data-w="0">・</span><span class="w" data-w="1">健康</span><span class="w" data-w="1">・</span><span class="w" data-w="2">暮らしを、</span><br><span class="w" data-w="3">日本で再定義する。</span></h1>
+    </div>
+    <div>
+      <p class="hero-sub jp">XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#services">サービスを見る<svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+        <a class="btn btn-ghost" href="#consult">相談を予約<svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SHŌ ═══════════ -->
+<section class="sho" id="sho">
+  <div class="wrap sho-grid">
+    <figure class="sho-stage">
+      <div class="plate" id="plate">
+        <canvas id="shoCanvas" aria-hidden="true"></canvas>
+        <div class="lb top" aria-hidden="true"><span>SC 05 — One take</span><span>SHŌ · 85 mm · T1.4</span></div>
+        <div class="lb bottom"><span class="sub" id="shoSub" aria-live="polite">SHŌ ─ 気になる質問に、焦点を合わせます</span></div>
+      </div>
+      <div class="ff" aria-hidden="true">
+        <div class="ff-head"><span>Follow focus</span><span class="ff-read" id="ffRead">— m</span></div>
+        <div class="ff-scale" id="ffScale">
+          <div class="ff-ticks"></div>
+          <span class="ff-mark" data-m="0">準備</span>
+          <span class="ff-mark" data-m="1">日程</span>
+          <span class="ff-mark" data-m="2">付き添い</span>
+          <span class="ff-needle" id="ffNeedle"></span>
+        </div>
+      </div>
+    </figure>
+    <div class="sho-copy">
+      <p class="label">AI アシスタント</p>
+      <h2><span class="latin" style="font-size:1.04em;letter-spacing:.06em">SHŌ</span>でサービス情報を確認</h2>
+      <p class="lead jp">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+      <ol class="questions" id="questions">
+        <li><a href="#consult" data-q="0"><span class="qn">01</span><span class="jp">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-q="1"><span class="qn">02</span><span class="jp">滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-q="2"><span class="qn">03</span><span class="jp">母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+      </ol>
+      <a class="btn btn-primary" href="#consult"><span><span class="latin" style="letter-spacing:.1em">SHŌ</span>に相談</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SERVICES ═══════════ -->
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label"><span class="latin">Services</span></p><h2>医療サービス</h2></div>
+      <p class="aside">07 services · Tokyo</p>
+    </div>
+    <div class="svc">
+      <ol class="svc-list" id="svcList">
+        <li><a href="#consult" data-cut="0" class="on"><span class="n">01</span><span class="ja">精密健診</span><span class="en">Health check-ups</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-cut="1"><span class="n">02</span><span class="ja">医療受診</span><span class="en">Specialist visits</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-cut="2"><span class="n">03</span><span class="ja">再生医療</span><span class="en">Regenerative medicine</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-cut="3"><span class="n">04</span><span class="ja">美容医療</span><span class="en">Aesthetic care</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-cut="4"><span class="n">05</span><span class="ja">同行・医療通訳</span><span class="en">Escort &amp; interpreting</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-cut="5"><span class="n">06</span><span class="ja">生殖補助医療</span><span class="en">Assisted reproduction</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#consult" data-cut="6"><span class="n">07</span><span class="ja">移動・宿泊サポート</span><span class="en">Transfers &amp; stays</span><svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+      </ol>
+      <figure class="cut" aria-hidden="true">
+        <div class="cut-frame" id="cutFrame">
+          <img class="on" src="../assets/photos/checkup-equipment.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/support-consult.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/regenerative-waiting-area.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/aesthetic-light.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/support-attend.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/ivf-companionship.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/support-transfer.jpg" alt="" loading="lazy">
+        </div>
+        <figcaption><span id="cutNo">Cut 01 / 07</span><b id="cutName">精密健診</b></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ WHY ═══════════ -->
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label"><span class="latin">Why XIUYI</span></p><h2>XIUYI が選ばれる理由</h2></div>
+    </div>
+    <div class="why-grid">
+      <article class="why-card">
+        <figure><img src="../assets/photos/why-network.jpg" alt="提携医療機関のエントランス" loading="lazy"></figure>
+        <span class="num">01</span>
+        <h3>日本の正規医療機関と連携</h3>
+        <p class="jp">健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+      </article>
+      <article class="why-card">
+        <figure><img src="../assets/photos/why-concierge.jpg" alt="受付カウンターに置かれた資料" loading="lazy"></figure>
+        <span class="num">02</span>
+        <h3>専任担当者による一貫した調整</h3>
+        <p class="jp">初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+      </article>
+      <article class="why-card">
+        <figure><img src="../assets/photos/support-stay-ryokan.jpg" alt="庭に面した宿泊施設の客室" loading="lazy"></figure>
+        <span class="num">03</span>
+        <h3>移動・宿泊のサポート</h3>
+        <p class="jp">医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SUPPORT ═══════════ -->
+<section class="support" id="support">
+  <div class="wrap sup">
+    <figure><img src="../assets/photos/support-attend.jpg" alt="来院者に説明する担当者" loading="lazy"></figure>
+    <div>
+      <p class="label"><span class="latin">Support</span></p>
+      <h2>サポート内容</h2>
+      <ol class="sup-list">
+        <li><span class="n">01</span><div><h3>医療ニーズの確認と予約調整</h3><p class="jp">既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p></div></li>
+        <li><span class="n">02</span><div><h3>中国語・英語・日本語での同行サポート</h3><p class="jp">来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p></div></li>
+        <li><span class="n">03</span><div><h3>医療機関・医師とのマッチング</h3><p class="jp">検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p></div></li>
+        <li><span class="n">04</span><div><h3>空港送迎と医療機関間の移動</h3><p class="jp">フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p></div></li>
+        <li><span class="n">05</span><div><h3>宿泊・滞在日程の調整</h3><p class="jp">受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></div></li>
+      </ol>
+      <p class="note jp">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CLOSING ═══════════ -->
+<section class="closing" id="consult">
+  <img src="../assets/photos/home-closing.jpg" alt="" loading="lazy">
+  <div class="lb top" aria-hidden="true"><span>XIUYI</span><span>End card</span></div>
+  <div class="closing-in">
+    <p class="label"><span class="latin">Consultation</span></p>
+    <h2>医療相談を予約する</h2>
+    <p class="jp">これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+    <a class="btn btn-light" href="#consult">相談を予約<svg class="arrow" viewBox="0 0 24 10" aria-hidden="true"><path d="M0 5h22M18 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+  </div>
+  <div class="lb bottom" aria-hidden="true"><span>秀一株式会社</span><span>Tokyo · Daikanyama</span></div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="foot-brand"><span class="disc"><img src="../assets/logo-mark.png" alt="" width="44" height="44"></span><span class="wordmark">XIUYI</span></div>
+        <p class="foot-co">秀一株式会社<br>東京都渋谷区（代官山）</p>
+      </div>
+      <nav class="foot-links" aria-label="フッター">
+        <a href="#services">サービス</a><a href="#why">コラム</a><a href="#why">事例</a><a href="#support">医師</a><a href="#support">会社案内</a><a href="#top">プライバシー</a>
+      </nav>
+    </div>
+    <div class="foot-bottom"><span>© XIUYI CO., LTD.</span><span>Interpreting in Chinese · English · Japanese</span></div>
+  </div>
+</footer>
+
+<a class="fab" href="#consult" aria-label="お問い合わせ"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h12v7.5H6.5L3.5 13.5V11H2z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg><span>お問い合わせ</span></a>
+
+<script>
+// ───────── page chrome (plain script: works even if WebGL / the CDN is unavailable) ─────────
+(() => {
+  const header = document.getElementById('header');
+  const onScroll = () => header.classList.toggle('scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  const sheet = document.getElementById('sheet'), menuBtn = document.getElementById('menuBtn');
+  const setMenu = (open) => {
+    sheet.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) document.getElementById('closeBtn').focus(); else menuBtn.focus({ preventScroll: true });
+  };
+  menuBtn.addEventListener('click', () => setMenu(true));
+  document.getElementById('closeBtn').addEventListener('click', () => setMenu(false));
+  sheet.querySelectorAll('[data-close]').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('open')) setMenu(false); });
+
+  const lw = document.getElementById('langWrap'), lb = document.getElementById('langBtn');
+  lb.addEventListener('click', (e) => { e.stopPropagation(); const o = !lw.classList.contains('open'); lw.classList.toggle('open', o); lb.setAttribute('aria-expanded', o); });
+  addEventListener('click', () => { lw.classList.remove('open'); lb.setAttribute('aria-expanded', false); });
+
+  // Services: hovering a line hard-cuts the frame (no dissolve) with a short shutter settle.
+  const names = ['精密健診', '医療受診', '再生医療', '美容医療', '同行・医療通訳', '生殖補助医療', '移動・宿泊サポート'];
+  const imgs = [...document.querySelectorAll('#cutFrame img')], links = [...document.querySelectorAll('#svcList a')];
+  let cur = 0;
+  const cut = (i) => {
+    if (i === cur) return; cur = i;
+    imgs.forEach((im, k) => { im.classList.remove('on'); if (k === i) { void im.offsetWidth; im.classList.add('on'); } });
+    links.forEach((a, k) => a.classList.toggle('on', k === i));
+    document.getElementById('cutNo').textContent = `Cut ${String(i + 1).padStart(2, '0')} / 07`;
+    document.getElementById('cutName').textContent = names[i];
+  };
+  links.forEach((a, i) => {
+    a.addEventListener('pointerenter', () => cut(i));
+    a.addEventListener('focus', () => cut(i));
+    a.addEventListener('click', (e) => { if (cur !== i) { e.preventDefault(); cut(i); } });
+  });
+})();
+</script>
+
+<script type="module">
+// three.js r170 is one self-contained module; try a second CDN if the first is unreachable
+const THREE_URLS = ['https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js', 'https://unpkg.com/three@0.170.0/build/three.module.min.js'];
+let THREE = null;
+for (const u of THREE_URLS) { try { THREE = await import(u); break; } catch (e) { /* next mirror */ } }
+if (!THREE) {
+  document.getElementById('film').classList.add('no-gl');
+  document.getElementById('plate').classList.add('no-gl');
+  throw new Error('three.js unavailable');
+}
+
+const V3 = THREE.Vector3;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const params = new URLSearchParams(location.search);
+
+// ───────── timing primitives (ported from video-shotcraft demos/_fixtures/Polish.tsx) ─────────
+const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const lerp = (a, b, t) => a + (b - a) * t;
+function bezier(x1, y1, x2, y2) {
+  const ax = 1 - 3 * x2 + 3 * x1, bx = 3 * x2 - 6 * x1, cx = 3 * x1;
+  const ay = 1 - 3 * y2 + 3 * y1, by = 3 * y2 - 6 * y1, cy = 3 * y1;
+  const sx = (u) => ((ax * u + bx) * u + cx) * u, sy = (u) => ((ay * u + by) * u + cy) * u;
+  const dx = (u) => (3 * ax * u + 2 * bx) * u + cx;
+  return (t) => {
+    if (t <= 0) return 0; if (t >= 1) return 1;
+    let u = t;
+    for (let i = 0; i < 8; i++) { const e = sx(u) - t; if (Math.abs(e) < 1e-6) break; const d = dx(u); if (Math.abs(d) < 1e-6) break; u -= e / d; }
+    return sy(u);
+  };
+}
+const EASE = {
+  calm: bezier(0.4, 0, 0.6, 1),     // brand token: "premium" preset, no overshoot
+  smooth: bezier(0.65, 0, 0.35, 1), // camera moves
+  swift: bezier(0.4, 0, 0.2, 1),
+  out: bezier(0.22, 1, 0.36, 1),
+  wipe: bezier(0.3, 0, 0.7, 1),     // transition-hidden-cut A occluder
+};
+const seg = (t, a, b, e = EASE.calm) => e(clamp01((t - a) / (b - a)));
+const damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
+// seeded 3D gradient noise (replaces the SimplexNoise addon)
+function makeNoise(rand) {
+  const p = new Uint8Array(512), perm = [...Array(256).keys()];
+  for (let i = 255; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [perm[i], perm[j]] = [perm[j], perm[i]]; }
+  for (let i = 0; i < 512; i++) p[i] = perm[i & 255];
+  const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+  const grad = (h, x, y, z) => { const u = h < 8 ? x : y, v = h < 4 ? y : h === 12 || h === 14 ? x : z; return ((h & 1) ? -u : u) + ((h & 2) ? -v : v); };
+  const n3 = (x, y, z) => {
+    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255;
+    x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z);
+    const u = fade(x), v = fade(y), w = fade(z);
+    const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z, B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
+    const l = (a, b, t) => a + t * (b - a);
+    return l(l(l(grad(p[AA] & 15, x, y, z), grad(p[BA] & 15, x - 1, y, z), u), l(grad(p[AB] & 15, x, y - 1, z), grad(p[BB] & 15, x - 1, y - 1, z), u), v),
+      l(l(grad(p[AA + 1] & 15, x, y, z - 1), grad(p[BA + 1] & 15, x - 1, y, z - 1), u), l(grad(p[AB + 1] & 15, x, y - 1, z - 1), grad(p[BB + 1] & 15, x - 1, y - 1, z - 1), u), v), w);
+  };
+  return { noise3d: n3, noise: (x, y) => n3(x, y, 0.5) };
+}
+// average normals across coincident vertices (sphere seams) after displacement
+function weldNormals(g) {
+  const pos = g.attributes.position, nor = g.attributes.normal, map = new Map();
+  for (let i = 0; i < pos.count; i++) {
+    const k = `${pos.getX(i).toFixed(4)},${pos.getY(i).toFixed(4)},${pos.getZ(i).toFixed(4)}`;
+    (map.get(k) || map.set(k, []).get(k)).push(i);
+  }
+  const n = new THREE.Vector3();
+  for (const ids of map.values()) {
+    if (ids.length < 2) continue;
+    n.set(0, 0, 0); for (const i of ids) n.x += nor.getX(i), n.y += nor.getY(i), n.z += nor.getZ(i);
+    n.normalize(); for (const i of ids) nor.setXYZ(i, n.x, n.y, n.z);
+  }
+  nor.needsUpdate = true;
+}
+// rounded box: a rounded-rectangle profile extruded with a bevel (replaces the RoundedBoxGeometry addon)
+function roundedBox(w, h, d, r) {
+  const s = new THREE.Shape(), x = -w / 2 + r, y = -h / 2 + r, ww = w - 2 * r, hh = h - 2 * r;
+  s.moveTo(-w / 2, y); s.absarc(x, y, r, Math.PI, 1.5 * Math.PI); s.absarc(x + ww, y, r, 1.5 * Math.PI, 2 * Math.PI);
+  s.absarc(x + ww, y + hh, r, 0, 0.5 * Math.PI); s.absarc(x, y + hh, r, 0.5 * Math.PI, Math.PI);
+  const b = Math.min(r, d / 2) * 0.9;
+  const g = new THREE.ExtrudeGeometry(s, { depth: Math.max(0.0001, d - 2 * b), bevelEnabled: true, bevelThickness: b, bevelSize: b * 0.6, bevelSegments: 4, curveSegments: 10 });
+  g.translate(0, 0, -(d - 2 * b) / 2);
+  g.computeVertexNormals();
+  return g;
+}
+function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+// ───────── shaders ─────────
+const FS_VERT = /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
+const DEPTH_CHUNK = /* glsl */`
+uniform float uNear, uFar, uFocus, uK, uMaxCoc;
+float linZ(float d){ float z = d * 2.0 - 1.0; return 2.0 * uNear * uFar / (uFar + uNear - z * (uFar - uNear)); }
+float cocOf(float z){ return min(uK * abs(z - uFocus) / max(z, 1e-3), uMaxCoc); }
+`;
+// 1/8-res tile: largest circle of confusion among pixels nearer than the focal plane
+const TILE_FRAG = /* glsl */`
+uniform sampler2D tDepth; uniform vec2 uFullTexel; varying vec2 vUv;
+${DEPTH_CHUNK}
+void main(){
+  float m = 0.0;
+  for (int y = 0; y < 4; y++) for (int x = 0; x < 4; x++) {
+    vec2 o = (vec2(float(x), float(y)) - 1.5) * 2.0 * uFullTexel;
+    float z = linZ(texture2D(tDepth, vUv + o).r);
+    if (z < uFocus) m = max(m, cocOf(z));
+  }
+  gl_FragColor = vec4(m, 0.0, 0.0, 1.0);
+}`;
+const DILATE_FRAG = /* glsl */`
+uniform sampler2D tTile; uniform vec2 uTileTexel; uniform float uTilePx; varying vec2 vUv;
+void main(){
+  float m = 0.0;
+  for (int y = -4; y <= 4; y++) for (int x = -4; x <= 4; x++) {
+    vec2 o = vec2(float(x), float(y));
+    float c = texture2D(tTile, vUv + o * uTileTexel).r;
+    float d = max(0.0, length(o) - 1.0) * uTilePx;
+    if (c >= d) m = max(m, c);
+  }
+  gl_FragColor = vec4(m, 0.0, 0.0, 1.0);
+}`;
+// half-res scatter-as-gather bokeh, anamorphic (vertical oval) aperture
+const DOF_FRAG = /* glsl */`
+uniform sampler2D tColor, tDepth, tNear; uniform vec2 uFullTexel; uniform float uAna; varying vec2 vUv;
+${DEPTH_CHUNK}
+#define N 52
+void main(){
+  vec3 c0 = texture2D(tColor, vUv).rgb;
+  float zc = linZ(texture2D(tDepth, vUv).r);
+  float cc = cocOf(zc);
+  float R = max(cc, texture2D(tNear, vUv).r);
+  if (R < 0.8) { gl_FragColor = vec4(c0, 0.0); return; }
+  float ign = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+  float rot = ign * 6.2831853;
+  vec3 acc = c0; float tot = 1.0; float fg = 0.0;
+  for (int i = 0; i < N; i++) {
+    float fi = float(i);
+    float r = R * sqrt((fi + 0.5) / float(N));
+    float a = fi * 2.39996323 + rot;
+    vec2 uv = vUv + vec2(cos(a) * uAna, sin(a)) * r * uFullTexel;
+    vec3 sc = texture2D(tColor, uv).rgb;
+    float zs = linZ(texture2D(tDepth, uv).r);
+    float cs = cocOf(zs);
+    if (zs > zc) cs = min(cs, cc * 2.0);
+    float m = smoothstep(r - 1.0, r + 1.0, cs);
+    acc += mix(acc / tot, sc, m);
+    tot += 1.0;
+    if (zs < zc - 0.02) fg += m;
+  }
+  gl_FragColor = vec4(acc / tot, fg / float(N));
+}`;
+const BRIGHT_FRAG = /* glsl */`
+uniform sampler2D tColor; uniform vec2 uFullTexel; uniform float uThr; varying vec2 vUv;
+void main(){
+  vec3 c = texture2D(tColor, vUv + vec2(-1.0, -1.0) * uFullTexel).rgb + texture2D(tColor, vUv + vec2(1.0, -1.0) * uFullTexel).rgb
+         + texture2D(tColor, vUv + vec2(-1.0, 1.0) * uFullTexel).rgb + texture2D(tColor, vUv + vec2(1.0, 1.0) * uFullTexel).rgb;
+  c *= 0.25;
+  float l = max(c.r, max(c.g, c.b));
+  gl_FragColor = vec4(c * smoothstep(uThr, uThr * 1.9, l), 1.0);
+}`;
+const BLUR_FRAG = /* glsl */`
+uniform sampler2D tSrc; uniform vec2 uDir; varying vec2 vUv;
+void main(){
+  vec3 c = texture2D(tSrc, vUv).rgb * 0.2270270;
+  c += (texture2D(tSrc, vUv + uDir * 1.3846154).rgb + texture2D(tSrc, vUv - uDir * 1.3846154).rgb) * 0.3162162;
+  c += (texture2D(tSrc, vUv + uDir * 3.2307692).rgb + texture2D(tSrc, vUv - uDir * 3.2307692).rgb) * 0.0702703;
+  gl_FragColor = vec4(c, 1.0);
+}`;
+const STREAK_FRAG = /* glsl */`
+uniform sampler2D tSrc; uniform vec2 uStep; uniform float uThr, uGain; varying vec2 vUv;
+void main(){
+  vec3 acc = vec3(0.0); float wsum = 0.0;
+  for (int i = -12; i <= 12; i++) {
+    float fi = float(i);
+    float w = exp(-abs(fi) * 0.2);
+    vec3 s = texture2D(tSrc, vUv + uStep * fi).rgb;
+    float l = max(s.r, max(s.g, s.b));
+    acc += s * w * smoothstep(uThr, uThr * 1.6, l);
+    wsum += w;
+  }
+  gl_FragColor = vec4(acc / wsum * uGain, 1.0);
+}`;
+const COMPOSITE_FRAG = /* glsl */`
+uniform sampler2D tColor, tDepth, tDof, tBloom, tStreak;
+uniform float uBloom, uStreak, uExposure, uVignette, uGrain, uCA, uAspect, uEdge, uEdgeW, uSeed, uLift, uSat, uFog, uFogR0, uFogR1;
+uniform mat4 uInvProj, uCamWorld; uniform vec3 uCenter;
+uniform vec3 uStreakTint, uPage;
+varying vec2 vUv;
+${DEPTH_CHUNK}
+vec3 neutralTone(vec3 color){
+  const float sc = 0.76; const float desat = 0.15;
+  float x = min(color.r, min(color.g, color.b));
+  float off = x < 0.08 ? x - 6.25 * x * x : 0.04;
+  color -= off;
+  float peak = max(color.r, max(color.g, color.b));
+  if (peak < sc) return color;
+  const float d = 1.0 - sc;
+  float np = 1.0 - d * d / (peak + d - sc);
+  color *= np / peak;
+  float g = 1.0 - 1.0 / (desat * (peak - np) + 1.0);
+  return mix(color, vec3(np), g);
+}
+vec3 toSRGB(vec3 c){ c = clamp(c, 0.0, 1.0); return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c)); }
+float hash(vec2 p){ p = fract(p * vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y) * p.x); }
+void main(){
+  vec2 uv = vUv;
+  vec2 dc = uv - 0.5;
+  float ca = uCA * dot(dc, dc);
+  vec3 sharp = vec3(texture2D(tColor, uv - dc * ca).r, texture2D(tColor, uv).g, texture2D(tColor, uv + dc * ca).b);
+  float dRaw = texture2D(tDepth, uv).r;
+  float cc = cocOf(linZ(dRaw));
+  vec4 d = texture2D(tDof, uv);
+  float f = max(smoothstep(0.6, 2.4, cc), clamp(d.a * 2.6, 0.0, 1.0));
+  vec3 col = mix(sharp, d.rgb, f);
+  col += texture2D(tBloom, uv).rgb * uBloom;
+  col += texture2D(tStreak, uv).rgb * uStreak * uStreakTint;
+  col *= uExposure;
+  col = neutralTone(col);
+  col = mix(vec3(dot(col, vec3(0.2126, 0.7152, 0.0722))), col, uSat);
+  col = toSRGB(col);
+  // warm split-tone: lift the blacks toward coffee rather than grey
+  col = mix(col, col + vec3(0.034, 0.022, 0.012), uLift * (1.0 - smoothstep(0.0, 0.45, dot(col, vec3(0.333)))));
+  // page fog in world space: everything beyond a radius around the subject resolves to the exact paper colour
+  vec4 vp = uInvProj * vec4(uv * 2.0 - 1.0, dRaw * 2.0 - 1.0, 1.0); vp /= vp.w;
+  vec3 wp = (uCamWorld * vec4(vp.xyz, 1.0)).xyz;
+  float fogAmt = max(smoothstep(uFogR0, uFogR1, length(wp.xz - uCenter.xz)), smoothstep(3.7, 6.0, wp.y));
+  col = mix(col, uPage, uFog * fogAmt);
+  float vig = 1.0 - smoothstep(0.2, 0.95, length(dc * vec2(1.0, 1.15)));
+  col *= mix(1.0, vig, uVignette);
+  float ex = min(uv.x, 1.0 - uv.x) * uAspect, ey = min(uv.y, 1.0 - uv.y);
+  float em = 1.0 - smoothstep(0.0, uEdgeW, min(ex, ey));
+  col = mix(col, uPage, em * uEdge);
+  float g = hash(floor(gl_FragCoord.xy) + uSeed) - 0.5;
+  col += g * uGrain * (1.0 - 0.55 * dot(col, vec3(0.333)));
+  gl_FragColor = vec4(col, 1.0);
+}`;
+// sprite bokeh for floating dust: each mote draws its own circle of confusion as a vertical oval
+const DUST_VERT = /* glsl */`
+attribute float aSeed;
+uniform float uTime, uK, uFocus, uMaxCoc, uPx, uCone, uRise;
+uniform vec3 uLightPos, uLightDir, uBoxMin, uBoxSize;
+varying float vAlpha; varying float vBlur; varying float vZ;
+void main(){
+  vec3 p = position;
+  p.y = uBoxMin.y + mod(p.y - uBoxMin.y + uTime * uRise * (0.4 + aSeed), uBoxSize.y);
+  p.x += sin(uTime * 0.21 + aSeed * 23.0) * 0.16;
+  p.z += cos(uTime * 0.17 + aSeed * 13.0) * 0.16;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  float z = -mv.z; vZ = z;
+  float coc = min(uK * abs(z - uFocus) / max(z, 0.05), uMaxCoc * 2.2);
+  float base = uPx * (1.1 + 1.4 * fract(aSeed * 7.13));
+  float size = base + coc * 2.0;
+  gl_PointSize = size;
+  vBlur = clamp(coc / (5.0 * uPx), 0.0, 1.0);
+  float beam = smoothstep(uCone, 1.0, dot(normalize(p - uLightPos), uLightDir));
+  float edge = smoothstep(0.0, 0.25, (p.y - uBoxMin.y) / uBoxSize.y) * (1.0 - smoothstep(0.75, 1.0, (p.y - uBoxMin.y) / uBoxSize.y));
+  vAlpha = (0.18 + 0.82 * beam) * pow(base / size, 1.35) * (0.55 + 0.45 * sin(uTime * 0.6 + aSeed * 40.0)) * edge;
+  gl_Position = projectionMatrix * mv;
+}`;
+const DUST_FRAG = /* glsl */`
+uniform sampler2D tDepth; uniform vec2 uRes; uniform float uNear, uFar, uOpacity, uAna; uniform vec3 uColor;
+varying float vAlpha; varying float vBlur; varying float vZ;
+float linZ(float d){ float z = d * 2.0 - 1.0; return 2.0 * uNear * uFar / (uFar + uNear - z * (uFar - uNear)); }
+void main(){
+  vec2 p = gl_PointCoord * 2.0 - 1.0;
+  float d = length(vec2(p.x / uAna, p.y));
+  if (d > 1.0) discard;
+  float soft = exp(-d * d * 5.0);
+  float disc = (1.0 - smoothstep(0.84, 1.0, d)) * (0.62 + 0.5 * smoothstep(0.5, 0.95, d));
+  float a = mix(soft, disc, vBlur);
+  float sz = linZ(texture2D(tDepth, gl_FragCoord.xy / uRes).r);
+  float occ = 1.0 - smoothstep(sz - 0.02, sz + 0.35, vZ);
+  gl_FragColor = vec4(uColor * a * vAlpha * uOpacity * occ, 1.0);
+}`;
+
+// ───────── Cinema: one renderer + the lens/film pipeline (DOF → bloom/streak → grade → grain) ─────────
+class Cinema {
+  constructor(canvas, opt = {}) {
+    this.canvas = canvas; this.opt = opt;
+    const r = this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, stencil: false, powerPreference: 'high-performance' });
+    r.toneMapping = THREE.NoToneMapping;
+    r.shadowMap.enabled = true; r.shadowMap.type = THREE.VSMShadowMap;
+    r.autoClear = false;
+    r.setClearColor(0x120d0a, 1);
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(30, 1, 0.05, 60);
+    this.dustScene = new THREE.Scene();
+    this.P = { focus: 6, K: 10, maxCoc: 20, bloom: 0.25, streak: 0, exposure: 1, vignette: 0.35, grain: 0.05, ca: 0.0, edge: 0, edgeW: 0.12, lift: 1, sat: 1, fog: 0, fogNear: 14, fogFar: 24, bloomThr: 1.15, streakThr: 3.0, ana: 0.7 };
+    this.page = new THREE.Color(0xe6e2db);
+    this.pixelRatio = Math.min(devicePixelRatio || 1, opt.maxDpr || 2);
+    this.w = 1; this.h = 1; this.visible = false;
+    const tri = new THREE.BufferGeometry();
+    tri.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3));
+    tri.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 2, 0, 0, 2], 2));
+    this.fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    this.fsMesh = new THREE.Mesh(tri); this.fsMesh.frustumCulled = false;
+    const depthU = () => ({ uNear: { value: 0.05 }, uFar: { value: 60 }, uFocus: { value: 6 }, uK: { value: 10 }, uMaxCoc: { value: 20 } });
+    const mk = (frag, uniforms) => new THREE.ShaderMaterial({ vertexShader: FS_VERT, fragmentShader: frag, uniforms, depthTest: false, depthWrite: false });
+    this.mTile = mk(TILE_FRAG, { tDepth: { value: null }, uFullTexel: { value: new THREE.Vector2() }, ...depthU() });
+    this.mDil = mk(DILATE_FRAG, { tTile: { value: null }, uTileTexel: { value: new THREE.Vector2() }, uTilePx: { value: 8 } });
+    this.mDof = mk(DOF_FRAG, { tColor: { value: null }, tDepth: { value: null }, tNear: { value: null }, uFullTexel: { value: new THREE.Vector2() }, uAna: { value: 0.7 }, ...depthU() });
+    this.mBright = mk(BRIGHT_FRAG, { tColor: { value: null }, uFullTexel: { value: new THREE.Vector2() }, uThr: { value: 1.2 } });
+    this.mBlur = mk(BLUR_FRAG, { tSrc: { value: null }, uDir: { value: new THREE.Vector2() } });
+    this.mStreak = mk(STREAK_FRAG, { tSrc: { value: null }, uStep: { value: new THREE.Vector2() }, uThr: { value: 3 }, uGain: { value: 1.0 } });
+    this.mComp = mk(COMPOSITE_FRAG, {
+      tColor: { value: null }, tDepth: { value: null }, tDof: { value: null }, tBloom: { value: null }, tStreak: { value: null },
+      uBloom: { value: 0.25 }, uStreak: { value: 0 }, uExposure: { value: 1 }, uVignette: { value: 0.35 }, uGrain: { value: 0.05 }, uCA: { value: 0 },
+      uAspect: { value: 1 }, uEdge: { value: 0 }, uEdgeW: { value: 0.12 }, uSeed: { value: 0 }, uLift: { value: 1 }, uSat: { value: 1 }, uFog: { value: 0 }, uFogR0: { value: 2 }, uFogR1: { value: 4 }, uInvProj: { value: new THREE.Matrix4() }, uCamWorld: { value: new THREE.Matrix4() }, uCenter: { value: new THREE.Vector3() },
+      uStreakTint: { value: new THREE.Color(1.0, 0.86, 0.66) }, uPage: { value: new THREE.Vector3(0.902, 0.886, 0.859) }, ...depthU(),
+    });
+    this.depthMats = [this.mTile, this.mDof, this.mComp];
+    this.time = 0; this.frameMs = 16; this.slowFrames = 0;
+  }
+  makeTargets() {
+    const W = this.w, H = this.h;
+    const opts = { type: THREE.HalfFloatType, depthBuffer: false };
+    const dispose = (k) => this[k] && this[k].dispose();
+    ['rtScene', 'rtTile', 'rtDil', 'rtDof', 'rtBright', 'rtA', 'rtB', 'rtS1', 'rtS2'].forEach(dispose);
+    this.rtScene = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: 4, depthTexture: new THREE.DepthTexture(W, H) });
+    const tw = Math.ceil(W / 8), th = Math.ceil(H / 8);
+    const nearest = { ...opts, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter };
+    this.rtTile = new THREE.WebGLRenderTarget(tw, th, nearest);
+    this.rtDil = new THREE.WebGLRenderTarget(tw, th, { ...opts });
+    this.rtDof = new THREE.WebGLRenderTarget(Math.ceil(W / 2), Math.ceil(H / 2), opts);
+    const qw = Math.max(1, Math.ceil(W / 4)), qh = Math.max(1, Math.ceil(H / 4));
+    ['rtBright', 'rtA', 'rtB', 'rtS1', 'rtS2'].forEach((k) => (this[k] = new THREE.WebGLRenderTarget(qw, qh, opts)));
+    this.q = new THREE.Vector2(1 / qw, 1 / qh);
+    this.tileTexel = new THREE.Vector2(1 / tw, 1 / th);
+  }
+  resize() {
+    const rect = this.canvas.getBoundingClientRect();
+    const cw = Math.max(2, Math.round(rect.width)), ch = Math.max(2, Math.round(rect.height));
+    const W = Math.round(cw * this.pixelRatio), H = Math.round(ch * this.pixelRatio);
+    if (W === this.w && H === this.h) return false;
+    this.cssW = cw; this.cssH = ch; this.w = W; this.h = H;
+    this.renderer.setPixelRatio(this.pixelRatio);
+    this.renderer.setSize(cw, ch, false);
+    this.camera.aspect = cw / ch; this.camera.updateProjectionMatrix();
+    this.makeTargets();
+    return true;
+  }
+  pass(mat, target) { this.fsMesh.material = mat; this.renderer.setRenderTarget(target); this.renderer.render(this.fsMesh, this.fsCam); }
+  render() {
+    const r = this.renderer, P = this.P, cam = this.camera;
+    r.setRenderTarget(this.rtScene); r.clear(); r.render(this.scene, cam);
+    const full = new THREE.Vector2(1 / this.w, 1 / this.h);
+    const ref = this.h / 1080;
+    const K = P.K * ref * 1.0, maxCoc = Math.min(P.maxCoc * ref, 36);
+    for (const m of this.depthMats) { const u = m.uniforms; u.uNear.value = cam.near; u.uFar.value = cam.far; u.uFocus.value = P.focus; u.uK.value = K; u.uMaxCoc.value = maxCoc; }
+    this.mTile.uniforms.tDepth.value = this.rtScene.depthTexture; this.mTile.uniforms.uFullTexel.value.copy(full);
+    this.pass(this.mTile, this.rtTile);
+    this.mDil.uniforms.tTile.value = this.rtTile.texture; this.mDil.uniforms.uTileTexel.value.copy(this.tileTexel);
+    this.pass(this.mDil, this.rtDil);
+    const d = this.mDof.uniforms;
+    d.tColor.value = this.rtScene.texture; d.tDepth.value = this.rtScene.depthTexture; d.tNear.value = this.rtDil.texture; d.uFullTexel.value.copy(full); d.uAna.value = P.ana;
+    this.pass(this.mDof, this.rtDof);
+    this.mBright.uniforms.tColor.value = this.rtScene.texture; this.mBright.uniforms.uFullTexel.value.copy(full); this.mBright.uniforms.uThr.value = P.bloomThr;
+    this.pass(this.mBright, this.rtBright);
+    const b = this.mBlur.uniforms;
+    b.tSrc.value = this.rtBright.texture; b.uDir.value.set(this.q.x, 0); this.pass(this.mBlur, this.rtA);
+    b.tSrc.value = this.rtA.texture; b.uDir.value.set(0, this.q.y); this.pass(this.mBlur, this.rtB);
+    b.tSrc.value = this.rtB.texture; b.uDir.value.set(this.q.x * 2.5, 0); this.pass(this.mBlur, this.rtA);
+    b.tSrc.value = this.rtA.texture; b.uDir.value.set(0, this.q.y * 2.5); this.pass(this.mBlur, this.rtB);
+    if (P.streak > 0.002) {
+      const s = this.mStreak.uniforms;
+      s.tSrc.value = this.rtBright.texture; s.uThr.value = P.streakThr; s.uStep.value.set(this.q.x, 0); this.pass(this.mStreak, this.rtS1);
+      s.tSrc.value = this.rtS1.texture; s.uThr.value = 0.0; s.uStep.value.set(this.q.x * 3.0, 0); this.pass(this.mStreak, this.rtS2);
+      s.tSrc.value = this.rtS2.texture; s.uStep.value.set(this.q.x * 9.0, 0); this.pass(this.mStreak, this.rtS1);
+    }
+    const c = this.mComp.uniforms;
+    c.tColor.value = this.rtScene.texture; c.tDepth.value = this.rtScene.depthTexture; c.tDof.value = this.rtDof.texture;
+    c.tBloom.value = this.rtB.texture; c.tStreak.value = this.rtS1.texture;
+    c.uBloom.value = P.bloom; c.uStreak.value = P.streak > 0.002 ? P.streak : 0; c.uExposure.value = P.exposure;
+    c.uVignette.value = P.vignette; c.uGrain.value = P.grain; c.uCA.value = P.ca; c.uAspect.value = this.w / this.h;
+    c.uEdge.value = P.edge; c.uEdgeW.value = P.edgeW; c.uLift.value = P.lift; c.uSat.value = P.sat; c.uFog.value = P.fog; c.uFogR0.value = P.fogNear; c.uFogR1.value = P.fogFar; c.uInvProj.value.copy(cam.projectionMatrixInverse); c.uCamWorld.value.copy(cam.matrixWorld);
+    c.uSeed.value = REDUCED ? 0 : Math.floor(this.time * 24) * 17.0 % 997;
+    r.setRenderTarget(null); r.clear();
+    this.pass(this.mComp, null);
+    if (this.dust) {
+      const u = this.dust.material.uniforms;
+      u.tDepth.value = this.rtScene.depthTexture; u.uRes.value.set(this.w, this.h); u.uNear.value = cam.near; u.uFar.value = cam.far;
+      u.uFocus.value = P.focus; u.uK.value = K; u.uMaxCoc.value = maxCoc; u.uPx.value = this.pixelRatio * Math.max(0.8, ref * 1.6);
+      r.render(this.dustScene, cam);
+    }
+  }
+}
+
+// ───────── procedural studio: an HDR softbox environment (no texture files: works on file://) ─────────
+function makeEnvironment(renderer, { warm = 1 } = {}) {
+  const s = new THREE.Scene();
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(40, 48, 24), new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false,
+    vertexShader: `varying vec3 vW; void main(){ vW = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `varying vec3 vW; void main(){ float y = vW.y; vec3 top = vec3(0.42, 0.36, 0.29); vec3 hor = vec3(0.16, 0.125, 0.095); vec3 bot = vec3(0.035, 0.028, 0.022);
+      vec3 c = y > 0.0 ? mix(hor, top, pow(y, 0.8)) : mix(hor, bot, pow(-y, 0.45)); gl_FragColor = vec4(c, 1.0); }`,
+  }));
+  s.add(sky);
+  const box = (w, h, pos, intensity, hex) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(intensity), side: THREE.DoubleSide }));
+    m.position.set(...pos); m.lookAt(0, 1.2, 0); s.add(m);
+  };
+  box(5, 12, [-11, 5, 4], 6.5 * warm, 0xfff0da);   // key strip, camera left
+  box(12, 7, [0, 15, 1], 2.4, 0xfff6ea);           // overhead
+  box(1.6, 12, [9, 4, -7], 9, 0xfff2e0);           // rim strip, back right
+  box(4, 2, [7, 1.2, 10], 1.8, 0xffe4c0);          // low kicker, front right
+  box(2.2, 9, [-5, 4, -11], 3.2, 0xffeedd);        // back left edge light
+  const pm = new THREE.PMREMGenerator(renderer);
+  const rt = pm.fromScene(s, 0.03, 0.1, 100);
+  pm.dispose();
+  return rt.texture;
+}
+function makeCyc() {
+  const width = 96, front = 34, back = -7, R = 5.5, wallH = 26;
+  const floorLen = front - back, arc = (Math.PI / 2) * R, L = floorLen + arc + wallH;
+  const g = new THREE.PlaneGeometry(width, 1, 4, 160);
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), v = p.getY(i) + 0.5, s = v * L;
+    let y, z;
+    if (s < floorLen) { z = front - s; y = 0; }
+    else if (s < floorLen + arc) { const a = (s - floorLen) / R; z = back - Math.sin(a) * R; y = R - Math.cos(a) * R; }
+    else { z = back - R; y = R + (s - floorLen - arc); }
+    p.setXYZ(i, x, y, z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+function canvasTex(w, h, draw, srgb = true) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+function makeDust(cinema, count, seed, box) {
+  const rnd = mulberry32(seed);
+  const pos = new Float32Array(count * 3), sd = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    pos[i * 3] = box.min.x + rnd() * (box.max.x - box.min.x);
+    pos[i * 3 + 1] = box.min.y + rnd() * (box.max.y - box.min.y);
+    pos[i * 3 + 2] = box.min.z + rnd() * (box.max.z - box.min.z);
+    sd[i] = rnd();
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aSeed', new THREE.BufferAttribute(sd, 1));
+  const size = new V3().subVectors(box.max, box.min);
+  const m = new THREE.ShaderMaterial({
+    vertexShader: DUST_VERT, fragmentShader: DUST_FRAG, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: {
+      uTime: { value: 0 }, uK: { value: 10 }, uFocus: { value: 6 }, uMaxCoc: { value: 20 }, uPx: { value: 1 }, uCone: { value: 0.9 }, uRise: { value: 0.035 },
+      uLightPos: { value: new V3() }, uLightDir: { value: new V3(0, -1, 0) }, uBoxMin: { value: box.min.clone() }, uBoxSize: { value: size },
+      tDepth: { value: null }, uRes: { value: new THREE.Vector2(1, 1) }, uNear: { value: 0.05 }, uFar: { value: 60 }, uOpacity: { value: 1 }, uAna: { value: 0.7 },
+      uColor: { value: new V3(1.0, 0.9, 0.74) },
+    },
+  });
+  const pts = new THREE.Points(g, m); pts.frustumCulled = false;
+  cinema.dustScene.add(pts); cinema.dust = pts;
+  return pts;
+}
+
+// liquid light: an opaque emissive volume (so the glass transmission pass refracts it)
+const LIQUID_COMMON = /* glsl */`
+uniform float uTime, uLevel;
+float surfH(vec2 xz){ return uLevel + 0.011 * sin(xz.x * 9.0 + uTime * 1.3) + 0.008 * sin(xz.y * 11.0 - uTime * 1.7) + 0.005 * sin((xz.x + xz.y) * 15.0 + uTime * 2.3); }
+float h3(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float vnoise(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z); }
+float fbm(vec3 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 4; i++) { s += a * vnoise(p); p = p * 2.03 + 1.7; a *= 0.5; } return s; }
+// suspended gold-leaf flakes that catch the light as they drift
+float flakes(vec3 p){
+  vec3 cp = p * 30.0 + vec3(0.0, -uTime * 0.22, uTime * 0.05);
+  vec3 ci = floor(cp), cf = fract(cp);
+  float r = h3(ci);
+  vec3 o = 0.2 + 0.6 * vec3(h3(ci + 1.3), h3(ci + 2.7), h3(ci + 4.1));
+  float f = step(0.8, r) * (1.0 - smoothstep(0.02, 0.14, length(cf - o)));
+  return f * (0.4 + 2.2 * pow(0.5 + 0.5 * sin(uTime * 1.9 + r * 60.0), 8.0));
+}
+`;
+function makeLiquid(radius) {
+  const uniforms = {
+    uTime: { value: 0 }, uLevel: { value: -0.045 }, uGlow: { value: 1 },
+    uHot: { value: new V3(1.0, 0.68, 0.32) }, uMid: { value: new V3(0.34, 0.12, 0.025) }, uDeep: { value: new V3(0.05, 0.016, 0.004) },
+  };
+  const body = new THREE.ShaderMaterial({
+    uniforms, side: THREE.DoubleSide,
+    vertexShader: `varying vec3 vP; varying vec3 vN; varying vec3 vV; void main(){ vP = position; vec4 wp = modelMatrix * vec4(position, 1.0);
+      vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - wp.xyz); gl_Position = projectionMatrix * viewMatrix * wp; }`,
+    fragmentShader: `${LIQUID_COMMON}
+      uniform float uGlow; uniform vec3 uHot, uMid, uDeep; varying vec3 vP; varying vec3 vN; varying vec3 vV;
+      void main(){
+        float s = surfH(vP.xz); if (vP.y > s) discard;
+        float depth = clamp((s - vP.y) / ${(radius * 0.8).toFixed(3)}, 0.0, 1.0);
+        vec3 q = vP * 4.2 + vec3(0.0, -uTime * 0.12, uTime * 0.05);
+        float cloud = fbm(q + fbm(q * 0.8 + uTime * 0.03) * 1.2);
+        float fr = pow(1.0 - abs(dot(normalize(vN), vV)), 1.8);
+        // a luminous core: closest approach of the view ray (entering here) to a point of light inside
+        vec3 C = vec3(0.0, ${(-radius * 0.28).toFixed(3)}, 0.0);
+        vec3 rd = -normalize(vV);
+        float tc = max(dot(C - vP, rd), 0.0);
+        float dc = length(vP + rd * tc - C) / ${radius.toFixed(3)};
+        float core = exp(-dc * dc * 22.0);
+        vec3 col = mix(uMid, uDeep, smoothstep(0.1, 0.95, depth));
+        col *= 0.6 + 0.75 * cloud;
+        col += uHot * core * 1.7;
+        col += uHot * exp(-depth * 18.0) * 0.45;
+        col += uMid * fr * 0.8;
+        col += flakes(vP) * vec3(1.0, 0.85, 0.58) * (0.6 + core);
+        gl_FragColor = vec4(col * uGlow, 1.0);
+      }`,
+  });
+  const cap = new THREE.ShaderMaterial({
+    uniforms, side: THREE.DoubleSide,
+    vertexShader: `${LIQUID_COMMON} varying vec3 vP; void main(){ vec3 p = position; p.y = surfH(p.xz); vP = p; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
+    fragmentShader: `${LIQUID_COMMON}
+      uniform float uGlow; uniform vec3 uHot, uMid, uDeep; varying vec3 vP;
+      void main(){
+        float r = length(vP.xz) / ${radius.toFixed(3)};
+        float soft = fbm(vec3(vP.xz * 4.0, uTime * 0.12));
+        float ripple = 0.5 + 0.5 * sin(r * 46.0 - uTime * 1.4);
+        vec3 col = uHot * 1.45 * exp(-r * r * 4.5) + mix(uMid * 1.4, uDeep * 2.0, smoothstep(0.3, 1.0, r));
+        col *= 0.8 + 0.4 * soft + 0.08 * ripple;
+        col += uHot * smoothstep(0.92, 1.0, r) * 0.55;
+        col += flakes(vP + vec3(0.0, 0.011, 0.0)) * vec3(1.0, 0.85, 0.58);
+        gl_FragColor = vec4(col * uGlow, 1.0);
+      }`,
+  });
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.SphereGeometry(radius, 96, 64), body));
+  const capMesh = new THREE.Mesh(new THREE.RingGeometry(0.0001, Math.sqrt(radius * radius - 0.002) * 0.995, 96, 18).rotateX(-Math.PI / 2), cap);
+  g.add(capMesh);
+  g.userData.uniforms = uniforms;
+  return g;
+}
+
+// ═══════════════════════════════════════════ HERO FILM ═══════════════════════════════════════════
+const SHOTS = [
+  { t0: 0.0, t1: 3.0, sc: '01', meta: 'Macro · 100 mm · T1.4' },
+  { t0: 3.0, t1: 5.2, sc: '02', meta: 'Liquid light · 85 mm · T1.8' },
+  { t0: 5.2, t1: 7.0, sc: '03', meta: 'Through the halo · 50 mm · T2' },
+  { t0: 7.0, t1: 11.0, sc: '04', meta: 'Orbit → crane · 35 mm' },
+];
+const T_REST = 11.0;
+const WORD_ON = [0.45, 3.35, 5.55, 8.9];
+
+function buildHero(canvas) {
+  const cinema = new Cinema(canvas, { maxDpr: 2 });
+  const { scene, renderer } = cinema;
+  scene.environment = makeEnvironment(renderer);
+  const rnd = mulberry32(1107);
+
+  // studio cyclorama
+  const cycMat = new THREE.MeshStandardMaterial({ color: 0x2c2119, roughness: 0.96, metalness: 0, envMapIntensity: 0.35 });
+  const clearFilm = new THREE.Color(0x120d0a), clearRest = new THREE.Color(0xd9d2c6), clearCol = new THREE.Color();
+  const cyc = new THREE.Mesh(makeCyc(), cycMat); cyc.receiveShadow = true; scene.add(cyc);
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(44, 48, 24), cycMat); dome.material.side = THREE.DoubleSide; scene.add(dome);
+
+  // sculpture: porcelain stone + champagne band + glass sphere holding liquid light
+  const sculpt = new THREE.Group(); scene.add(sculpt);
+  const noise = makeNoise(mulberry32(42));
+  const sg = new THREE.SphereGeometry(1, 200, 132);
+  { const p = sg.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+      const n = noise.noise3d(x * 0.8 + 3, y * 0.8, z * 0.8) * 0.05 + noise.noise3d(x * 2.1 + 5, y * 2.1, z * 2.1) * 0.008 + noise.noise3d(x * 6.5 + 1, y * 6.5, z * 6.5) * 0.0015;
+      const r = 1 + n;
+      let px = x * r * 1.3 * (1 + 0.06 * x), py = y * r * 0.62 * (1 - 0.08 * x), pz = z * r * 0.98;
+      const fy = -0.5; if (py < fy) py = fy + (py - fy) * 0.14;
+      p.setXYZ(i, px, py + 0.53, pz);
+    }
+    sg.computeVertexNormals(); weldNormals(sg);
+    const uv = new Float32Array(p.count * 2);
+    for (let i = 0; i < p.count; i++) { uv[i * 2] = p.getX(i) / 3.2 + 0.5; uv[i * 2 + 1] = p.getZ(i) / 3.2 + 0.5 + p.getY(i) * 0.12; }
+    sg.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  }
+  const stoneColor = canvasTex(1024, 1024, (ctx, w, h) => {
+    const img = ctx.createImageData(w, h), d = img.data;
+    const nz = makeNoise(mulberry32(9));
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const m = nz.noise(x / 180, y / 180) * 0.5 + nz.noise(x / 60, y / 60) * 0.25 + nz.noise(x / 14, y / 14) * 0.08;
+      const k = (y * w + x) * 4;
+      d[k] = 74 + m * 10; d[k + 1] = 58 + m * 8; d[k + 2] = 46 + m * 7; d[k + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    const r2 = mulberry32(77);
+    for (let i = 0; i < 3400; i++) { const a = 0.18 + r2() * 0.45; const v = 150 + r2() * 60; ctx.fillStyle = `rgba(${v},${v * 0.88},${v * 0.72},${a})`; ctx.beginPath(); ctx.arc(r2() * w, r2() * h, 0.35 + Math.pow(r2(), 4) * 1.5, 0, 7); ctx.fill(); }
+    for (let i = 0; i < 260; i++) { ctx.fillStyle = `rgba(28,18,12,${0.25 + r2() * 0.35})`; ctx.beginPath(); ctx.arc(r2() * w, r2() * h, 0.6 + r2() * 1.8, 0, 7); ctx.fill(); }
+  });
+  const stoneBump = canvasTex(1024, 1024, (ctx, w, h) => {
+    ctx.fillStyle = '#808080'; ctx.fillRect(0, 0, w, h);
+    const r2 = mulberry32(5);
+    for (let i = 0; i < 9000; i++) { const v = r2() < 0.7 ? 60 + r2() * 40 : 150 + r2() * 50; ctx.fillStyle = `rgba(${v},${v},${v},${0.35 + r2() * 0.4})`; ctx.beginPath(); ctx.arc(r2() * w, r2() * h, 0.5 + r2() * 1.6, 0, 7); ctx.fill(); }
+  }, false);
+  const stoneMat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, map: stoneColor, roughness: 0.6, bumpMap: stoneBump, bumpScale: 1.3,
+    clearcoat: 0.16, clearcoatRoughness: 0.38, sheen: 0.5, sheenColor: new THREE.Color(0xc9ab84), sheenRoughness: 0.6, envMapIntensity: 1.0,
+  });
+  const stone = new THREE.Mesh(sg, stoneMat); stone.castShadow = true; stone.receiveShadow = true; sculpt.add(stone);
+
+  // champagne band: rounded-rectangle section turned on a lathe, brushed (anisotropic) along its circumference
+  const prof = []; { const Ri = 0.985, Ro = 1.04, w = 0.078, cr = 0.017;
+    const corners = [[Ro - cr, -w + cr, -Math.PI / 2, 0], [Ro - cr, w - cr, 0, Math.PI / 2], [Ri + cr, w - cr, Math.PI / 2, Math.PI], [Ri + cr, -w + cr, Math.PI, 1.5 * Math.PI]];
+    for (const [cx, cy, a0, a1] of corners) for (let k = 0; k <= 8; k++) { const a = a0 + (a1 - a0) * k / 8; prof.push(new THREE.Vector2(cx + Math.cos(a) * cr, cy + Math.sin(a) * cr)); }
+    prof.push(prof[0].clone()); }
+  const ringGeo = new THREE.LatheGeometry(prof, 360);
+  ringGeo.rotateX(Math.PI / 2);
+  ringGeo.computeTangents();
+  const ringMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#e3cba2'), metalness: 1, roughness: 0.2, anisotropy: 0.7, envMapIntensity: 1.25 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  stone.updateMatrixWorld(true);
+  const stoneTop = (x, z) => { const rc = new THREE.Raycaster(new V3(x, 5, z), new V3(0, -1, 0)); const h = rc.intersectObject(stone)[0]; return h ? h.point.y : 1.1; };
+  ring.position.set(0.1, stoneTop(0.1, -0.12) + 1.04 - 0.26, -0.12); ring.rotation.set(-0.09, 0.22, 0.035);
+  ring.castShadow = true; ring.receiveShadow = true; sculpt.add(ring);
+
+  // glass sphere
+  const SR = 0.43;
+  const glass = new THREE.Mesh(new THREE.SphereGeometry(SR, 128, 96), new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, metalness: 0, roughness: 0.035, transmission: 1, thickness: 0.05, ior: 1.42,
+    attenuationColor: new THREE.Color('#f0dcb8'), attenuationDistance: 2.2, specularIntensity: 1, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1.35, dispersion: 0.18,
+  }));
+  glass.position.set(-0.06, stoneTop(-0.06, 0.36) + SR - 0.03, 0.36);
+  sculpt.add(glass);
+  const liquid = makeLiquid(SR - 0.012); liquid.position.copy(glass.position); sculpt.add(liquid);
+  const liquidLight = new THREE.PointLight(0xffb469, 2.5, 3.6, 2); liquidLight.position.copy(glass.position).add(new V3(0, -0.05, 0)); sculpt.add(liquidLight);
+
+  // soft contact shadow (ambient occlusion decal)
+  const ao = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 3.2), new THREE.MeshBasicMaterial({
+    map: canvasTex(256, 256, (ctx, w, h) => { const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); g.addColorStop(0, 'rgba(0,0,0,.7)'); g.addColorStop(0.45, 'rgba(0,0,0,.42)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); }),
+    color: 0x20140c, transparent: true, depthWrite: false, opacity: 0.75,
+  }));
+  ao.rotation.x = -Math.PI / 2; ao.position.y = 0.004; scene.add(ao);
+
+  // lights
+  const key = new THREE.SpotLight(0xfff4e6, 260, 0, 0.38, 1, 2);
+  key.position.set(-4.6, 7.4, 4.4); key.target.position.set(0.1, 1.1, 0); scene.add(key, key.target);
+  key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.radius = 9; key.shadow.blurSamples = 16; key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+  key.shadow.camera.near = 4; key.shadow.camera.far = 20;
+  const rim = new THREE.SpotLight(0xffeedd, 120, 0, 0.3, 1, 2);
+  rim.position.set(4.2, 4.6, -4.8); rim.target.position.set(0, 1.3, 0); scene.add(rim, rim.target);
+  const hemi = new THREE.HemisphereLight(0xfbf8f3, 0xd8d1c6, 0); scene.add(hemi);
+  const fill = new THREE.DirectionalLight(0xfffaf4, 0); fill.position.set(3, 3, 6); scene.add(fill);
+
+  const dust = makeDust(cinema, 170, 31, new THREE.Box3(new V3(-3.8, 0.15, -2.6), new V3(3.8, 4.4, 3.2)));
+  dust.material.uniforms.uLightPos.value.copy(key.position);
+  dust.material.uniforms.uLightDir.value.subVectors(key.target.position, key.position).normalize();
+  dust.material.uniforms.uCone.value = Math.cos(0.42);
+
+  // anchors for camera grammar
+  sculpt.updateMatrixWorld(true);
+  const ringPt = (deg, z = 0.078) => ring.localToWorld(new V3(Math.cos(deg * Math.PI / 180) * 1.04, Math.sin(deg * Math.PI / 180) * 1.04, z));
+  const S = glass.position.clone();
+
+  const FILM = { cyc: new THREE.Color(0x221912), key: 260, rim: 130, hemi: 0, fill: 0, env: 0.32, liquid: 2.6, glow: 1.0, ao: 0.85 };
+  const REST = { cyc: new THREE.Color(0xdcd8d1), key: 150, rim: 55, hemi: 1.2, fill: 1.4, env: 0.9, liquid: 1.8, glow: 1.8, ao: 0.6 };
+
+  const tmp = new V3(), fwd = new V3();
+  const st = { pos: new V3(), target: new V3(), fov: 30, focusPt: new V3(), focusDist: null, K: 10, look: 0, envRot: 0, streak: 0, exposure: 1, offset: 0, settle: 0, vignette: 0.4, lb: 1 };
+  const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
+
+  const RL = (x, y, z, out = new V3()) => ring.localToWorld(out.set(x, y, z));
+  const rot2 = (x, y, a) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
+  function shot1(u, t) { // MACRO 美: opens in soft bokeh, focus lands on the brushed band, one sheen travels along it
+    const e = EASE.calm(u), a = lerp(0.16, -0.2, e);
+    const [px, py] = rot2(0.55, 1.33, a), [tx, ty] = rot2(-0.5, 0.88, a * 0.6);
+    RL(px, py, lerp(0.8, 0.56, e), st.pos); RL(tx, ty, -0.1, st.target);
+    st.fov = 20;
+    const [fx, fy] = rot2(0.18, 1.035, a * 0.8);
+    const far = RL(-2.6, -0.6, -2.4), near = RL(fx, fy, 0.0);
+    st.focusPt.lerpVectors(far, near, seg(u, 0.12, 0.46, EASE.smooth));
+    st.K = 46; st.envRot = lerp(-1.0, 0.6, seg(u, 0.32, 0.86, EASE.calm));
+    st.streak = 0.06 + 0.42 * Math.sin(Math.PI * seg(u, 0.36, 0.84, EASE.calm));
+    st.exposure = t < 0.08 ? 0 : t < 0.2 ? 1.08 * seg(t, 0.08, 0.2, EASE.out) : t < 0.3 ? lerp(1.08, 0.62, seg(t, 0.2, 0.3)) : lerp(0.62, 1, seg(t, 0.3, 0.75, EASE.out));
+    st.look = 0; st.offset = 0; st.vignette = 0.5;
+  }
+  function shot2(u) { // LIQUID LIGHT 健康: push-in at the liquid line, band behind as halo bokeh
+    const e = EASE.calm(u);
+    st.pos.copy(S).add(tmp.set(lerp(0.4, 0.27, e), lerp(0.1, 0.06, e), lerp(1.5, 1.1, e)));
+    st.target.copy(S).add(tmp.set(0.0, -0.07, 0));
+    st.fov = 22 * (1 - 0.03 * (1 - seg(u, 0, 0.12, EASE.out)));
+    st.focusPt.copy(S).add(tmp.set(0.06, -0.05, 0.3));
+    st.K = 46; st.envRot = lerp(0.3, 0.6, u); st.streak = 0.12; st.exposure = 1; st.look = 0; st.offset = 0; st.vignette = 0.5;
+  }
+  function shot3(u) { // THROUGH THE HALO 暮らし: from behind, the band frames the orb; focus passes from metal to light
+    const e = EASE.calm(u);
+    RL(lerp(0.42, 0.3, e), lerp(-0.02, -0.08, e), lerp(-3.0, -2.45, e), st.pos); RL(-0.1, -0.4, 0.4, st.target);
+    st.fov = 26 * (1 - 0.025 * (1 - seg(u, 0, 0.14, EASE.out)));
+    st.focusPt.lerpVectors(RL(0.78, 0.42, 0.0), S, seg(u, 0.38, 0.78, EASE.smooth));
+    st.K = 36; st.envRot = 0.2; st.streak = 0.05; st.exposure = 1; st.look = 0; st.offset = 0; st.vignette = 0.55;
+  }
+  function restPose(t, out) {
+    const az = (27 + 2.6 * Math.sin(t * 2 * Math.PI / 30) + pointer.sx * 2.4) * Math.PI / 180;
+    const R = 11.2, h = 2.5 + 0.06 * Math.sin(t * 2 * Math.PI / 37) + pointer.sy * 0.14;
+    out.pos.set(Math.sin(az) * R, h, Math.cos(az) * R);
+    out.target.set(0.02, 1.52, 0);
+    out.fov = 21;
+  }
+  const restTmp = { pos: new V3(), target: new V3(), fov: 21 };
+  function shot4(u, t) { // ORBIT → one-take CRANE into the resting shot (lights up, letterbox opens)
+    const e = EASE.smooth(u);
+    const az = lerp(64, 27, e) * Math.PI / 180;
+    const pull = seg(u, 0.22, 1, EASE.smooth);
+    const R = lerp(4.7, 11.2, pull), h = lerp(1.15, 2.5, seg(u, 0.25, 1, EASE.smooth));
+    st.pos.set(Math.sin(az) * R, h, Math.cos(az) * R);
+    st.target.set(0.02, lerp(1.45, 1.52, pull), 0);
+    restPose(0, restTmp);
+    st.fov = lerp(31, restTmp.fov, pull);
+    st.focusPt.copy(S);
+    st.K = lerp(30, 10, pull); st.envRot = lerp(0.6, 0.0, e);
+    st.streak = 0.05 * (1 - pull); st.exposure = 1;
+    st.look = seg(u, 0.35, 0.92, EASE.smooth);
+    st.offset = seg(u, 0.3, 1, EASE.smooth);
+    st.vignette = lerp(0.5, 0.0, st.look);
+  }
+  function rest(t) {
+    restPose(t, restTmp);
+    st.pos.copy(restTmp.pos); st.target.copy(restTmp.target); st.fov = restTmp.fov;
+    st.focusPt.copy(S); st.K = 10; st.envRot = 0.22 * Math.sin(t * 2 * Math.PI / 44); st.streak = 0; st.exposure = 1;
+    st.look = 1; st.offset = 1; st.vignette = 0;
+  }
+  function evaluate(t) {
+    if (t < SHOTS[1].t0) shot1(t / SHOTS[0].t1, t);
+    else if (t < SHOTS[2].t0) shot2((t - SHOTS[1].t0) / (SHOTS[1].t1 - SHOTS[1].t0));
+    else if (t < SHOTS[3].t0) shot3((t - SHOTS[2].t0) / (SHOTS[2].t1 - SHOTS[2].t0));
+    else if (t < T_REST) shot4((t - SHOTS[3].t0) / (T_REST - SHOTS[3].t0), t);
+    else rest(t - T_REST);
+    st.lb = t < 0.55 ? EASE.out(clamp01(t / 0.55)) : t < 8.4 ? 1 : 1 - seg(t, 8.4, 10.3, EASE.smooth);
+  }
+
+  // DOM
+  const film = document.getElementById('film'), hero = document.getElementById('hero');
+  const tcEl = document.getElementById('tc'), metaEl = document.getElementById('lbMeta'), occ = document.getElementById('occluder');
+  const stripLis = [...document.querySelectorAll('#strip li')], words = [...document.querySelectorAll('#h1 .w')];
+  let lastShot = -1, lastWords = -1;
+  const pad = (n) => String(n).padStart(2, '0');
+  function syncDom(t) {
+    film.style.setProperty('--lb', st.lb.toFixed(4));
+    film.style.setProperty('--lbt', clamp01(st.lb * 1.6 - 0.4).toFixed(3));
+    const si = t < SHOTS[1].t0 ? 0 : t < SHOTS[2].t0 ? 1 : t < SHOTS[3].t0 ? 2 : 3;
+    if (si !== lastShot) { lastShot = si; metaEl.textContent = SHOTS[si].meta; stripLis.forEach((li, i) => li.classList.toggle('on', i === si)); }
+    stripLis.forEach((li, i) => { const s = SHOTS[i]; li.firstElementChild.style.transform = `scaleX(${clamp01((t - s.t0) / ((i === 3 ? T_REST : s.t1) - s.t0)).toFixed(3)})`; });
+    const tt = Math.min(t, T_REST), fr = Math.floor((tt % 1) * 24);
+    tcEl.textContent = `SC ${SHOTS[si].sc} / 04 · 00:00:${pad(Math.floor(tt))}:${pad(fr)}`;
+    let wn = 0; WORD_ON.forEach((w, i) => { if (t >= w) wn = i + 1; });
+    if (wn !== lastWords) { lastWords = wn; words.forEach((el) => el.classList.toggle('on', +el.dataset.w < wn)); }
+    hero.classList.toggle('filming', t < WORD_ON[3] + 0.6);
+    film.classList.toggle('at-rest', t >= T_REST - 0.6);
+    // transition-hidden-cut A: deep-brown out-of-focus foreground sweeps right→left, the cut 03→04 hides inside its solid core
+    const w = seg(t, 6.6, 7.4, EASE.wipe);
+    occ.style.transform = `translateX(${lerp(100, -200, w).toFixed(2)}%)`;
+  }
+
+  let t = 0, playing = !REDUCED;
+  const startAt = parseFloat(params.get('t'));
+  if (!Number.isNaN(startAt)) t = startAt;
+  if (REDUCED) t = T_REST + 4;
+  const freeze = params.has('freeze');
+  cinema.time = 0;
+
+  function update(dt) {
+    if (playing && !freeze) t += dt;
+    cinema.time += REDUCED ? 0 : dt;
+    pointer.sx = damp(pointer.sx, pointer.x, 2.2, dt); pointer.sy = damp(pointer.sy, pointer.y, 2.2, dt);
+    evaluate(t);
+    const cam = cinema.camera, a = cam.aspect;
+    cam.position.copy(st.pos); cam.lookAt(st.target);
+    // keep composition on narrow frames: widen the lens partially as the frame becomes taller
+    const fovAdj = (f) => (a < 1.7 ? 2 * Math.atan(Math.tan((f * Math.PI) / 360) * Math.pow(1.7 / a, 0.62)) * 180 / Math.PI : f);
+    cam.fov = fovAdj(st.fov);
+    const off = a > 1.3 ? -0.2 * st.offset : 0;
+    if (off !== 0) cam.setViewOffset(cinema.cssW, cinema.cssH, off * cinema.cssW, 0, cinema.cssW, cinema.cssH); else cam.clearViewOffset();
+    cam.updateProjectionMatrix();
+    cam.getWorldDirection(fwd);
+    const P = cinema.P;
+    P.focus = Math.max(0.1, tmp.subVectors(st.focusPt, cam.position).dot(fwd));
+    P.K = st.K; P.maxCoc = st.look > 0.5 ? 22 : 34; P.streak = st.streak; P.exposure = st.exposure;
+    const L = st.look;
+    P.vignette = st.vignette; P.grain = lerp(0.06, 0.03, L); P.bloom = lerp(0.32, 0.16, L); P.ca = lerp(0.0035, 0.0015, L); P.sat = lerp(1.0, 0.9, L);
+    P.edge = L; P.edgeW = 0.16; P.lift = 1 - L; P.fog = clamp01(L * 1.5); P.fogNear = lerp(16, 1.75, L); P.fogFar = P.fogNear + lerp(12, 2.5, L);
+    cinema.mComp.uniforms.uCenter.value.set(0.45, 0, -0.35);
+    cycMat.color.copy(FILM.cyc).lerp(REST.cyc, L);
+    renderer.setClearColor(clearCol.copy(clearFilm).lerp(clearRest, L), 1);
+    key.intensity = lerp(FILM.key, REST.key, L); rim.intensity = lerp(FILM.rim, REST.rim, L);
+    hemi.intensity = lerp(FILM.hemi, REST.hemi, L); fill.intensity = lerp(FILM.fill, REST.fill, L);
+    scene.environmentIntensity = lerp(FILM.env, REST.env, L);
+    scene.environmentRotation.y = st.envRot;
+    liquidLight.intensity = lerp(FILM.liquid, REST.liquid, L);
+    liquid.userData.uniforms.uTime.value = cinema.time;
+    liquid.userData.uniforms.uGlow.value = lerp(FILM.glow, REST.glow, L);
+    ao.material.opacity = lerp(FILM.ao, REST.ao, L);
+    const du = dust.material.uniforms; du.uTime.value = cinema.time; du.uOpacity.value = lerp(1.0, 0.35, L);
+    du.uColor.value.set(lerp(1.0, 0.55, L), lerp(0.9, 0.47, L), lerp(0.74, 0.36, L));
+    syncDom(t);
+  }
+  const seek = (s) => { t = s; playing = !REDUCED; };
+  if (REDUCED) document.getElementById('filmCtl').hidden = true;
+  document.getElementById('replay').addEventListener('click', () => seek(0));
+  if (!REDUCED) stripLis.forEach((li, i) => li.addEventListener('click', () => seek(SHOTS[i].t0)));
+  film.addEventListener('pointermove', (e) => { const r = film.getBoundingClientRect(); pointer.x = ((e.clientX - r.left) / r.width - 0.5) * 2; pointer.y = ((e.clientY - r.top) / r.height - 0.5) * -2; });
+  film.addEventListener('pointerleave', () => { pointer.x = 0; pointer.y = 0; });
+  return { cinema, update, el: film, scene, get t() { return t; }, seek, still: REDUCED };
+}
+
+// ═══════════════════════════════════════════ SHŌ: one continuous take, focus pulled by the visitor ═══════════════════════════════════════════
+const SHO_SUBS = ['準備 ─ 初めての人間ドック', '日程 ─ 4 日間で、検査と美容医療', '付き添い ─ 68 歳のお母さまと'];
+function etching(kind) {
+  return canvasTex(512, 704, (ctx, w, h) => {
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(255,240,214,1)'; ctx.fillStyle = 'rgba(255,240,214,1)'; ctx.lineWidth = 3.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.globalAlpha = 0.5; ctx.lineWidth = 1.6; ctx.strokeRect(28, 28, w - 56, h - 56); ctx.globalAlpha = 1; ctx.lineWidth = 3.2;
+    ctx.font = '500 20px "DM Mono", monospace'; ctx.globalAlpha = 0.85; ctx.fillText(`0${kind + 1}`, 56, 82); ctx.globalAlpha = 1;
+    if (kind === 0) { // checklist
+      for (let i = 0; i < 5; i++) {
+        const y = 190 + i * 92;
+        ctx.beginPath(); ctx.arc(110, y, 17, 0, Math.PI * 2); ctx.stroke();
+        if (i < 2) { ctx.beginPath(); ctx.moveTo(101, y + 1); ctx.lineTo(108, y + 8); ctx.lineTo(121, y - 8); ctx.stroke(); }
+        ctx.globalAlpha = i < 2 ? 1 : 0.6; ctx.beginPath(); ctx.moveTo(152, y); ctx.lineTo(152 + [250, 200, 270, 180, 230][i], y); ctx.stroke(); ctx.globalAlpha = 1;
+      }
+    } else if (kind === 1) { // four days
+      for (let i = 0; i < 4; i++) {
+        const x = 76 + i * 92, y0 = 150, hh = 420;
+        ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.roundRect(x, y0, 72, hh, 10); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.font = '400 22px "DM Mono", monospace'; ctx.fillText(`${i + 1}`, x + 29, y0 - 22);
+      }
+      ctx.beginPath(); ctx.arc(112, 250, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(296, 400, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.setLineDash([6, 10]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(112, 250); ctx.bezierCurveTo(190, 250, 220, 400, 296, 400); ctx.stroke(); ctx.setLineDash([]);
+    } else { // two figures walking together
+      // two standing figures, the taller one holding the other's hand
+      const base = 560;
+      const fig = (x, s) => {
+        const hr = 30 * s, bodyTop = base - 330 * s, bodyW = 66 * s;
+        ctx.beginPath(); ctx.arc(x, bodyTop - hr - 16 * s, hr, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(x - bodyW / 2, bodyTop, bodyW, base - bodyTop - 8, [bodyW / 2, bodyW / 2, 10, 10]); ctx.stroke();
+      };
+      fig(196, 1.0); ctx.globalAlpha = 0.85; fig(326, 0.8); ctx.globalAlpha = 1;
+      ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(229, 400); ctx.quadraticCurveTo(262, 430, 300, 408); ctx.stroke();
+      ctx.lineWidth = 2; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.moveTo(96, base + 6); ctx.lineTo(424, base + 6); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+  }, true);
+}
+function buildSho(canvas) {
+  const cinema = new Cinema(canvas, { maxDpr: 2 });
+  const { scene, renderer } = cinema;
+  scene.environment = makeEnvironment(renderer);
+  scene.environmentIntensity = 0.42;
+  const cyc = new THREE.Mesh(makeCyc(), new THREE.MeshStandardMaterial({ color: 0x2a2019, roughness: 0.95, envMapIntensity: 0.3 }));
+  cyc.receiveShadow = true; scene.add(cyc);
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(44, 48, 24), new THREE.MeshStandardMaterial({ color: 0x2a2019, roughness: 0.95, side: THREE.DoubleSide, envMapIntensity: 0.3 })));
+
+  // backlit paper sweep: a warm glow behind the row so the glass reads as silhouettes and edges
+  const wash = new THREE.Mesh(new THREE.PlaneGeometry(22, 12), new THREE.ShaderMaterial({
+    uniforms: { uHot: { value: new V3(0.42, 0.26, 0.13) }, uDark: { value: new V3(0.018, 0.012, 0.008) } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform vec3 uHot, uDark; varying vec2 vUv; void main(){ vec2 d = (vUv - vec2(0.55, 0.2)) * vec2(1.5, 1.0);
+      float g = exp(-dot(d, d) * 16.0); float floorFade = smoothstep(0.0, 0.18, vUv.y); gl_FragColor = vec4(mix(uDark, uHot, g * floorFade), 1.0); }`,
+  }));
+  wash.position.set(0.6, 5.6, -4.2); scene.add(wash);
+  const row = new THREE.Group(); row.rotation.y = 0.35; scene.add(row);
+  const plinth = new THREE.Mesh(roundedBox(4.6, 0.2, 0.92, 0.06), new THREE.MeshPhysicalMaterial({ color: 0x3b2e25, roughness: 0.42, clearcoat: 0.4, clearcoatRoughness: 0.25, envMapIntensity: 0.8 }));
+  plinth.position.y = 0.1; plinth.castShadow = true; plinth.receiveShadow = true; row.add(plinth);
+  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.04, transmission: 1, thickness: 0.05, ior: 1.5, attenuationColor: new THREE.Color('#f4e6cc'), attenuationDistance: 3, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.4, specularIntensity: 1 });
+  const panes = [], etchMats = [];
+  for (let i = 0; i < 3; i++) {
+    const g = new THREE.Group(); g.position.set((i - 1) * 1.42, 0.2, 0); g.rotation.y = -0.38; row.add(g);
+    const pane = new THREE.Mesh(roundedBox(1.02, 1.4, 0.04, 0.02), glassMat); pane.position.y = 0.66; g.add(pane);
+    const em = new THREE.MeshBasicMaterial({ map: etching(i), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: new THREE.Color(0.85, 0.72, 0.52) });
+    const et = new THREE.Mesh(new THREE.PlaneGeometry(0.86, 1.18), em); et.position.set(0, 0.66, 0.024); g.add(et);
+    const slot = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.025, 0.1), new THREE.MeshStandardMaterial({ color: 0x1a130e, roughness: 0.6 })); slot.position.y = 0.002; g.add(slot);
+    panes.push(g); etchMats.push(em);
+  }
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(0.055, 32, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(1, 0.86, 0.62).multiplyScalar(7) }));
+  const orbLight = new THREE.PointLight(0xffc98a, 3.2, 3.2, 2); orb.add(orbLight); scene.add(orb);
+  const key = new THREE.SpotLight(0xfff0dc, 170, 0, 0.5, 0.9, 2); key.position.set(-3.5, 6.5, -2.5); key.target.position.set(0.3, 0.6, 0); scene.add(key, key.target);
+  key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.radius = 8; key.shadow.blurSamples = 12; key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+  const front = new THREE.SpotLight(0xffe9d0, 40, 0, 0.6, 1, 2); front.position.set(-4, 2.4, 6); front.target.position.set(0, 0.7, 0); scene.add(front, front.target);
+  const dust = makeDust(cinema, 120, 77, new THREE.Box3(new V3(-3.5, 0.15, -2.2), new V3(3.5, 3.4, 3.0)));
+  dust.material.uniforms.uLightPos.value.copy(key.position);
+  dust.material.uniforms.uLightDir.value.subVectors(key.target.position, key.position).normalize();
+  dust.material.uniforms.uCone.value = Math.cos(0.55);
+  dust.material.uniforms.uRise.value = 0.025;
+  scene.updateMatrixWorld(true);
+
+  const center = (i, out = new V3()) => panes[i].localToWorld(out.set(0, 0.72, 0));
+  const camBase = new V3(-2.6, 1.42, 6.4), camTarget = new V3(0.05, 0.98, 0.0);
+  const cur = { focus: 6, look: camTarget.clone(), orb: new V3(), etch: [0.5, 0.5, 0.5], idleT: 0 };
+  center(0, cur.orb).add(new V3(0.25, 0.1, -0.5));
+  let active = -1, time = 0, settled = REDUCED;
+  const qParam = params.get('q'); if (qParam !== null) active = +qParam;
+  const subEl = document.getElementById('shoSub'), needle = document.getElementById('ffNeedle'), readEl = document.getElementById('ffRead');
+  const marks = [...document.querySelectorAll('.ff-mark')], qLinks = [...document.querySelectorAll('#questions a')];
+  const DMIN = 5.0, DMAX = 9.0;
+  const xOf = (d) => clamp01((d - DMIN) / (DMAX - DMIN)) * 100;
+  const tmp = new V3(), fwd = new V3(), ctr = new V3();
+  let lastSub = -2;
+
+  function setActive(i) {
+    active = i;
+    qLinks.forEach((a, k) => a.classList.toggle('on', k === i));
+    if (REDUCED) api.dirty = true;
+  }
+  function target() { return active >= 0 ? active : Math.floor(cur.idleT / 3.6) % 3; }
+  function update(dt) {
+    time += REDUCED ? 0 : dt;
+    if (active < 0 && !REDUCED) cur.idleT += dt;
+    const ti = target();
+    const cam = cinema.camera;
+    const drift = REDUCED ? 0 : Math.sin(time * 2 * Math.PI / 22);
+    cam.position.copy(camBase).add(tmp.set(drift * 0.22, Math.sin(time * 2 * Math.PI / 31) * 0.05, -drift * 0.12));
+    center(ti, ctr);
+    const k = REDUCED ? 1e3 : (active >= 0 ? 3.2 : 1.6);
+    tmp.lerpVectors(camTarget, ctr, active >= 0 ? 0.24 : 0.12);
+    cur.look.x = damp(cur.look.x, tmp.x, k * 0.6, dt); cur.look.y = damp(cur.look.y, tmp.y, k * 0.6, dt); cur.look.z = damp(cur.look.z, tmp.z, k * 0.6, dt);
+    cam.lookAt(cur.look);
+    const a = cam.aspect;
+    cam.fov = 23 * (a < 1.1 ? Math.pow(1.2 / a, 0.9) : 1);
+    cam.updateProjectionMatrix();
+    cam.getWorldDirection(fwd);
+    const fd = tmp.subVectors(ctr, cam.position).dot(fwd);
+    cur.focus = damp(cur.focus, fd, k, dt);
+    // SHŌ's light travels behind the question in focus
+    const orbT = panes[ti].localToWorld(tmp.set(0.3, 1.5 + (REDUCED ? 0 : Math.sin(time * 1.3) * 0.035), -0.22));
+    cur.orb.x = damp(cur.orb.x, orbT.x, k * 0.8, dt); cur.orb.y = damp(cur.orb.y, orbT.y, k * 0.8, dt); cur.orb.z = damp(cur.orb.z, orbT.z, k * 0.8, dt);
+    orb.position.copy(cur.orb);
+    for (let i = 0; i < 3; i++) {
+      const goal = i === ti ? (active >= 0 ? 2.6 : 1.4) : (active >= 0 ? 0.28 : 0.45);
+      cur.etch[i] = damp(cur.etch[i], goal, k, dt);
+      etchMats[i].color.setRGB(0.85 * cur.etch[i], 0.72 * cur.etch[i], 0.52 * cur.etch[i]);
+    }
+    const P = cinema.P;
+    P.focus = cur.focus; P.K = 44; P.maxCoc = 30; P.bloom = 0.42; P.bloomThr = 1.0; P.streak = 0.12; P.streakThr = 2.4; P.vignette = 0.55; P.grain = 0.055; P.ca = 0.01; P.edge = 0; P.lift = 1;
+    cinema.time = time;
+    dust.material.uniforms.uTime.value = time;
+    // DOM: follow-focus needle + subtitle
+    needle.style.transform = `translateX(${(xOf(cur.focus) / 100 * needle.parentElement.clientWidth).toFixed(1)}px)`;
+    readEl.textContent = `${cur.focus.toFixed(2)} m`;
+    const subI = active;
+    if (subI !== lastSub) {
+      lastSub = subI; subEl.style.opacity = 0;
+      setTimeout(() => { subEl.textContent = subI >= 0 ? SHO_SUBS[subI] : 'SHŌ ─ 気になる質問に、焦点を合わせます'; subEl.style.opacity = 1; }, REDUCED ? 0 : 180);
+    }
+    marks.forEach((m, i) => m.classList.toggle('on', i === ti));
+  }
+  // place the focus marks at each pane's distance from the resting camera
+  function placeMarks() {
+    const cam = cinema.camera; cam.position.copy(camBase); cam.lookAt(camTarget); cam.getWorldDirection(fwd);
+    marks.forEach((m, i) => { const d = center(i, tmp).sub(cam.position).dot(fwd); m.style.left = `${xOf(d)}%`; });
+  }
+  placeMarks();
+  qLinks.forEach((a, i) => {
+    a.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') setActive(i); });
+    a.addEventListener('focus', () => setActive(i));
+    // touch: the first tap pulls focus to this question, a second tap follows the link
+    let armed = true;
+    a.addEventListener('pointerdown', (e) => { armed = e.pointerType === 'mouse' || active === i; });
+    a.addEventListener('click', (e) => { if (!armed) { e.preventDefault(); setActive(i); } armed = true; });
+  });
+  document.getElementById('questions').addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') setActive(-1); });
+  document.getElementById('questions').addEventListener('focusout', (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setActive(-1); });
+  const api = { cinema, update, el: canvas.parentElement, still: REDUCED, dirty: true };
+  if (active >= 0) setActive(active);
+  return api;
+}
+
+// ═══════════════════════════════════════════ runtime: visibility, pausing, adaptive resolution ═══════════════════════════════════════════
+function hasWebGL2() { try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; } }
+const views = [];
+function watch(view) {
+  const io = new IntersectionObserver((es) => es.forEach((e) => { view.cinema.visible = e.isIntersecting; if (e.isIntersecting) view.dirty = true; }), { rootMargin: '80px' });
+  io.observe(view.el);
+  views.push(view);
+}
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(Math.max((now - last) / 1000, 0), 0.5); last = now;
+  if (!document.hidden) {
+    for (const v of views) {
+      const c = v.cinema;
+      if (!c.visible) continue;
+      const resized = c.resize();
+      if (v.still && !v.dirty && !resized) continue;
+      const t0 = performance.now();
+      v.update(v.still ? 1 : dt);
+      c.render();
+      v.dirty = false;
+      if (!v.first) { v.first = true; v.onFirst && v.onFirst(); }
+      // adaptive resolution: keep a real GPU smooth without touching the look
+      const ms = performance.now() - t0; c.frameMs = c.frameMs * 0.9 + ms * 0.1;
+      if (c.frameMs > 26 && c.pixelRatio > 1.01) { if (++c.slowFrames > 45) { c.pixelRatio = Math.max(1, c.pixelRatio - 0.25); c.slowFrames = 0; } } else c.slowFrames = 0;
+    }
+  }
+  requestAnimationFrame(loop);
+}
+document.addEventListener('visibilitychange', () => { last = performance.now(); });
+addEventListener('resize', () => views.forEach((v) => (v.dirty = true)));
+
+if (!hasWebGL2()) {
+  document.getElementById('film').classList.add('no-gl');
+  document.getElementById('plate').classList.add('no-gl');
+  document.getElementById('hero').classList.remove('filming');
+} else {
+  const hero = buildHero(document.getElementById('heroCanvas'));
+  hero.cinema.resize();
+  hero.update(0);
+  watch(hero);
+  let shoBuilt = false;
+  const buildShoOnce = () => {
+    if (shoBuilt) return; shoBuilt = true;
+    const sho = buildSho(document.getElementById('shoCanvas'));
+    sho.cinema.resize();
+    watch(sho);
+  };
+  hero.onFirst = () => setTimeout(buildShoOnce, 60);
+  setTimeout(buildShoOnce, 2500);
+  requestAnimationFrame(loop);
+}
+</script>
+<script>(()=>{const f=document.querySelector('.fab');if(!f)return;const u=()=>f.classList.toggle('on',scrollY>innerHeight*.6);addEventListener('scroll',u,{passive:true});u();})();</script>
+</body>
+</html>

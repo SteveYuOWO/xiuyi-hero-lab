@@ -1,0 +1,11 @@
+{
+  "id": "v10",
+  "slug": "hyperframes",
+  "tool": "HyperFrames (HeyGen)",
+  "repo": "https://github.com/heygen-com/hyperframes",
+  "title": "黎明东京·时间线开场",
+  "concept": "首屏是一段 10 秒的时间线影片：同一张东京塔客房照片从黎明前的暗调被一道柔和晨光自左向右扫亮，标题第一行经遮罩升起、第二行由光“写”出，一条香槟金细线画出就诊旅程（空港送迎→宿泊→受診同行・通訳→受診後のご連絡）；最后照片后退收进右侧画框、纸色涌入，文字在照片边缘处精确地由浅变墨，定格为静止首屏，可跳过、可重播。SHŌ 区块是一段对话短片：问题被键入后被“搬运”进气泡，SHŌ 的长音符号上抽出一条细线串起回答的三个要点；点右侧任一问题即重放对应回答。",
+  "fromTool": "照搬 HyperFrames 的合成契约：data-composition-id / data-duration 根节点、带 data-start/data-duration 的 .clip、每个合成一条暂停的 GSAP 时间线注册到 window.__timelines、只用 fromTo、无计时器与随机数，并内联一个小运行时按时钟 seek 时间线、按半开区间切换 clip 可见性；动效遵循其 motion.md / spec.md（先写 SPEC 与 BANNED 清单、到达用 expo.out、镜头用 inOut、“有因的转场”、标题落定后静止、载体跨镜头）。",
+  "tech": "GSAP 3.14.2 timelines + HyperFrames-style inline runtime (HTML/CSS/SVG masks, clip-path); hero-opening.mp4 rendered by frame-seek + ffmpeg",
+  "is3d": false
+}

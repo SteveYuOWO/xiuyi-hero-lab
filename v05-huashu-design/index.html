@@ -1,0 +1,829 @@
+<!doctype html>
+<!-- v05 · huashu design (花叔Design) · https://github.com/alchaincyf/huashu-design · Decisions taken from the tool: one-line brief → finished page through its 窄桥 — brand-asset protocol (real logo + own photography, never redrawn), six direction cards (長谷川等伯 mist / 原研哉 / two real sites / two roulette draws) with the lab brief standing in for the user's pick, form five questions, 素材先行 at tier T0 (procedural WebGL material rather than more stock images), 色彩推导 sample→converge→argue (the ink is the logo brown diluted in water: Beer–Lambert absorption, low-chroma printing-ink ramp, champagne kept to hairlines); its 中文与东亚 style library (馬一角 one-corner composition, 宋刻本 界栏 columns for the seven services, 吕敬人 side note); its typography rules (one mincho family in two cuts, weight not colour for hierarchy, palt / auto-phrase / balance / line-break strict, font-synthesis none — EB Garamond was rejected after its Ō rendered as Ơ); its anti-slop list (no caps eyebrows, no glyph arrows on buttons, no fake numbers, no card kit); its polish loop (four rounds of screenshot critique, three worst issues per round) and its design_lint rules, ported to the lab's Playwright: no red, no template chrome. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜美・健康・暮らしを、日本で再定義する。</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<meta name="theme-color" content="#f3efe8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Shippori+Mincho+B1:wght@500;600&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* System (huashu "create a system up front"):
+   ground  washi #f3efe8 / kinu #e7e2d9 bands / deep coffee #2b231d for closing + footer
+   ink     #44352a text · #5b4938 action · #6b5946 secondary · champagne #b9a17b only as hairline
+   type    Shippori Mincho B1 (letterpress ink-bleed cut) for display, Shippori Mincho for text and its own Latin (SHŌ, digits);
+           Cormorant Garamond only for the XIUYI wordmark (EB Garamond was tried: its Google build draws Ō as Ơ)
+   corners 8px controls, 12px photos; the paintings (canvases) are frameless */
+:root{
+  --washi:#f3efe8; --kinu:#e7e2d9; --paper-hi:#f8f5ef;
+  --ink:#44352a; --coffee:#5b4938; --muted:#6b5946; --logo:#7a6a56; --gold:#b9a17b;
+  --deep:#2b231d; --deep-2:#3a2f26; --on-deep:#f1ece3; --on-deep-2:rgba(241,236,227,.74);
+  --rule:rgba(91,73,56,.2); --rule-2:rgba(91,73,56,.36);
+  --f-text:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-disp:"Shippori Mincho B1","Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-mark:"Cormorant Garamond","Shippori Mincho",serif;
+  --gutter:clamp(20px,5vw,80px);
+  --maxw:1240px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --head-h:88px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+html.lock{overflow:hidden}
+body{margin:0;background:var(--washi);color:var(--ink);font-family:var(--f-text);font-size:16px;line-height:1.95;
+  font-variant-numeric:lining-nums;font-synthesis:none;line-break:strict;overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+/* washi grain over everything: two procedural SVG turbulences, no image files */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.55;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .29 0 0 0 0 .22 .11 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .11' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .32 0 0 0 0 .24 0 0 .16 0 -.055'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E")}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:var(--f-disp);font-weight:500;margin:0;color:var(--ink);font-feature-settings:"palt" 1;
+  word-break:auto-phrase;text-wrap:balance;letter-spacing:.06em}
+h2{font-size:clamp(27px,1rem + 1.45vw,40px);line-height:1.5}
+h3{font-size:clamp(18px,.95rem + .35vw,21px);line-height:1.6;letter-spacing:.05em}
+p{margin:0;text-wrap:pretty;word-break:auto-phrase}
+.lat{letter-spacing:.04em}
+.wrap{max-width:var(--maxw);margin:0 auto}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--coffee);color:var(--on-deep);padding:10px 16px;border-radius:8px;text-decoration:none}
+.skip:focus{top:12px}
+:focus-visible{outline:1px solid var(--coffee);outline-offset:4px;border-radius:4px}
+
+/* buttons: 8px, quiet, no trailing glyphs */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 30px;border-radius:8px;
+  font-family:var(--f-text);font-size:15px;letter-spacing:.18em;text-decoration:none;white-space:nowrap;
+  transition:background-color .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.btn-primary{background:var(--coffee);color:var(--paper-hi);border:1px solid var(--coffee)}
+.btn-primary:hover{background:var(--ink);border-color:var(--ink)}
+.btn-ghost{background:rgba(248,245,239,.5);color:var(--coffee);border:1px solid var(--rule-2)}
+.btn-ghost:hover{border-color:var(--coffee);background:rgba(248,245,239,.85)}
+.btn-light{background:var(--on-deep);color:var(--coffee);border:1px solid var(--on-deep)}
+.btn-light:hover{background:#fff}
+
+/* ---------- header ---------- */
+.site-head{position:fixed;inset:0 0 auto 0;z-index:50;height:var(--head-h);padding:0 var(--gutter);
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;transition:background-color .4s,box-shadow .4s}
+.site-head.scrolled{background:rgba(243,239,232,.95);box-shadow:0 1px 0 var(--rule)}
+.brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;color:var(--coffee);justify-self:start}
+.brand img{width:46px;height:46px}
+.brand span{font-family:var(--f-mark);font-weight:600;font-size:23px;letter-spacing:.34em;line-height:1}
+.nav{display:flex;gap:clamp(28px,3.2vw,52px)}
+.nav a,.head-actions a,.head-actions button{position:relative;font-size:15px;letter-spacing:.16em;text-decoration:none;color:var(--ink);padding:10px 0}
+.nav a::after{content:"";position:absolute;left:0;right:.16em;bottom:4px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.nav a:hover::after{transform:scaleX(1)}
+.head-actions{justify-self:end;display:flex;align-items:center;gap:clamp(18px,2.2vw,32px)}
+.head-actions button{background:none;border:0;font-family:var(--f-text);cursor:pointer;display:inline-flex;align-items:center;gap:10px;min-height:44px}
+.chev{width:9px;height:6px;stroke:currentColor;fill:none;stroke-width:1.2}
+.burger{width:26px;height:10px;display:inline-grid;align-content:space-between}
+.burger i{display:block;height:1px;background:currentColor}
+.burger i:last-child{width:70%;justify-self:end}
+
+/* ---------- menu overlay (mobile + desktop メニュー) ---------- */
+.menu{position:fixed;inset:0;z-index:70;background:var(--washi);display:flex;flex-direction:column;
+  padding:0 var(--gutter) 32px;opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility 0s linear .35s;overflow-y:auto}
+.menu.open{opacity:1;visibility:visible;transition:opacity .35s var(--ease)}
+.menu-top{height:var(--head-h);display:flex;align-items:center;justify-content:space-between;flex:none}
+.menu-close{background:none;border:0;font-family:var(--f-text);font-size:15px;letter-spacing:.16em;color:var(--ink);cursor:pointer;display:inline-flex;gap:12px;align-items:center;min-height:44px}
+.menu-close svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.1}
+.menu-body{max-width:var(--maxw);width:100%;margin:clamp(16px,6vh,72px) auto 0;display:grid;grid-template-columns:1fr;gap:40px}
+.menu nav a{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-disp);font-size:clamp(26px,1rem + 2vw,40px);
+  letter-spacing:.1em;text-decoration:none;padding:18px 0;border-bottom:1px solid var(--rule)}
+.menu nav a small{font-family:var(--f-mark);font-size:16px;letter-spacing:.2em;color:var(--muted)}
+.menu-meta{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;font-size:15px;color:var(--muted)}
+.menu-meta .langs{display:flex;gap:20px}
+.menu-meta .langs a{text-decoration:none;letter-spacing:.12em}
+.menu-meta .langs a[aria-current]{color:var(--ink);border-bottom:1px solid var(--ink)}
+
+/* ---------- hero: the painting ---------- */
+.hero{position:relative;height:100vh;height:100svh;min-height:660px;max-height:1080px;overflow:hidden;
+  background:linear-gradient(180deg,#ece6db 0%,#f3efe8 55%,#e9e3d8 100%)}
+.hero-gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-inner{position:relative;z-index:2;height:100%;max-width:1440px;margin:0 auto;padding:var(--head-h) var(--gutter) 0;
+  display:flex;flex-direction:column;justify-content:center}
+.hero-copy{max-width:780px;transform:translateY(-3vh)}
+.hero h1{font-size:clamp(32px,1.2rem + 3.1vw,62px);line-height:1.46;letter-spacing:.07em}
+.hero h1 span{display:block}
+.hero-sub{margin-top:30px;max-width:25em;font-size:17px;line-height:2.05;color:var(--muted)}
+.hero-cta{margin-top:42px;display:flex;flex-wrap:wrap;gap:14px}
+/* the inscription and seal, as on a hanging scroll */
+.inscription{position:absolute;z-index:2;top:calc(var(--head-h) + 4vh);right:calc(var(--gutter) + 1.5vw);margin:0;
+  display:flex;flex-direction:column;align-items:center;gap:20px}
+.inscription p{writing-mode:vertical-rl;font-size:15px;letter-spacing:.5em;line-height:1;color:var(--muted);font-feature-settings:normal}
+.inscription img{width:34px;height:34px;opacity:.92}
+.hero-fade{position:absolute;inset:auto 0 0 0;height:90px;z-index:1;background:linear-gradient(180deg,rgba(243,239,232,0),var(--washi));pointer-events:none}
+
+/* ---------- SHŌ ---------- */
+.sho{position:relative;padding:clamp(96px,11vw,168px) var(--gutter) clamp(96px,10vw,152px)}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(40px,6vw,104px);align-items:center}
+.sho-visual{position:relative;width:100%;max-width:620px;aspect-ratio:1/1;justify-self:center}
+.sho-gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sho-name{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center;
+  transition:opacity 1.6s var(--ease);opacity:1}
+.sho-name.wait{opacity:0;transition-duration:.5s}
+.sho-name span{display:block}
+.sho-name .lat{font-family:var(--f-disp);font-size:clamp(26px,1rem + 1.2vw,36px);letter-spacing:.3em;padding-left:.3em;color:var(--ink);font-weight:500;line-height:1.2}
+.sho-name small{display:block;margin-top:6px;font-size:13px;letter-spacing:.3em;padding-left:.3em;color:var(--muted)}
+.sho-text h2 .lat{letter-spacing:.08em}
+.sho-lead{margin-top:26px;font-size:17px;line-height:2.05;color:var(--muted);max-width:30em}
+.asks{list-style:none;margin:44px 0 0;padding:0;border-top:1px solid var(--rule)}
+.ask{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:28px;padding:22px 6px 22px 2px;
+  border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink);font-size:16.5px;line-height:1.8}
+.ask::before{content:"";position:absolute;inset:0 -14px;border-radius:8px;opacity:0;transition:opacity .45s var(--ease);
+  background:radial-gradient(120% 140% at 0% 50%,rgba(122,106,86,.12),rgba(122,106,86,0) 70%)}
+.ask:hover::before,.ask:focus-visible::before{opacity:1}
+.ask-text{position:relative;text-wrap:balance;word-break:auto-phrase}
+.ask-arrow{position:relative;width:44px;height:12px;color:var(--coffee);transition:transform .45s var(--ease)}
+.ask-arrow svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.1;overflow:visible}
+.ask:hover .ask-arrow,.ask:focus-visible .ask-arrow{transform:translateX(6px)}
+.sho-cta{margin-top:40px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.sho-cta p{font-size:14px;color:var(--muted)}
+
+/* ---------- services: seven columns, set like a woodblock leaf ---------- */
+.services{background:var(--kinu);padding:clamp(88px,10vw,150px) var(--gutter)}
+.svc-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(40px,6vw,96px);align-items:end}
+.svc-head p{margin-top:22px;color:var(--muted);font-size:16px;max-width:20em}
+.svc-head .btn{margin-top:36px}
+.leaf{position:relative;padding:7px;border:1.5px solid var(--rule-2);border-radius:2px}
+.svc-cols{list-style:none;margin:0;padding:0;display:flex;flex-direction:row-reverse;border:1px solid var(--rule)}
+.svc-cols li{flex:1 1 0;min-width:0}
+.svc-cols li+li{border-right:1px solid var(--rule)}
+.svc-cols a{position:relative;display:flex;justify-content:center;min-height:clamp(250px,23vw,330px);padding:clamp(22px,2.6vw,40px) 0;
+  text-decoration:none;color:var(--ink);isolation:isolate}
+.svc-cols a::before{content:"";position:absolute;left:50%;top:50%;width:150%;height:78%;transform:translate(-50%,-50%) scale(.82);z-index:-1;
+  background:radial-gradient(closest-side,rgba(91,73,56,.26),rgba(91,73,56,.1) 58%,rgba(91,73,56,0));filter:url(#bleed);opacity:0;
+  transition:opacity .5s var(--ease),transform .9s var(--ease)}
+.svc-cols a:hover::before,.svc-cols a:focus-visible::before{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.svc-name{writing-mode:vertical-rl;font-family:var(--f-disp);font-size:clamp(18px,.8rem + 1vw,26px);letter-spacing:.3em;line-height:1.2;white-space:nowrap}
+.svc-cols a:hover .svc-name{color:var(--coffee)}
+.svc-foot{display:flex;justify-content:space-between;gap:16px;margin-top:14px;font-size:13px;color:var(--muted);letter-spacing:.08em}
+
+/* ---------- why ---------- */
+.why{padding:clamp(96px,11vw,170px) var(--gutter) clamp(88px,10vw,150px)}
+.why-grid{--rise:clamp(64px,6.6vw,104px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(24px,3.6vw,60px);align-items:start}
+.why-head{grid-column:1;grid-row:1;min-height:calc(var(--rise) * 2);padding-bottom:40px}
+/* the three rise to the right, like the ranges toward Fuji */
+.why-item{grid-row:2}
+.why-item:nth-of-type(1){grid-column:1}
+.why-item:nth-of-type(2){grid-column:2;margin-top:calc(var(--rise) * -1)}
+.why-item:nth-of-type(3){grid-column:3;margin-top:calc(var(--rise) * -2)}
+.why-item figure{margin:0;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:var(--kinu)}
+.why-item img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
+.why-item:hover img{transform:scale(1.03)}
+.why-item h3{margin-top:30px}
+.why-item p{margin-top:12px;color:var(--muted);font-size:15.5px;line-height:2}
+
+/* ---------- support ---------- */
+.support{background:var(--kinu);padding:clamp(96px,10vw,160px) var(--gutter)}
+.sup-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,7vw,120px);align-items:start}
+.sup-aside{position:sticky;top:calc(var(--head-h) + 40px)}
+.sup-aside figure{margin:40px 0 0;aspect-ratio:3/2;border-radius:12px;overflow:hidden}
+.sup-aside img{width:100%;height:100%;object-fit:cover}
+.sup-aside .note{margin-top:22px;font-size:14px;line-height:1.9;color:var(--muted);padding-left:1em;text-indent:-1em}
+.sup-list{list-style:none;margin:0;padding:0;position:relative}
+.sup-list::before{content:"";position:absolute;left:6px;top:46px;bottom:56px;width:1px;background:linear-gradient(var(--rule-2),var(--rule))}
+.sup-list li{position:relative;display:grid;grid-template-columns:13px 1fr;gap:0 clamp(20px,2.4vw,36px);padding:34px 0 36px;border-bottom:1px solid var(--rule)}
+.sup-list li:first-child{padding-top:30px}
+.sup-list li::before{content:"";width:13px;height:13px;margin-top:11px;border-radius:50%;background:var(--coffee);
+  box-shadow:0 0 0 5px var(--kinu),0 0 10px 6px rgba(91,73,56,.1);transition:transform .4s var(--ease)}
+.sup-list li:hover::before{transform:scale(1.25)}
+.sup-list p{margin-top:10px;color:var(--muted);font-size:15.5px;line-height:2}
+
+/* ---------- closing ---------- */
+.closing{position:relative;overflow:hidden;background:var(--deep);color:var(--on-deep);padding:clamp(112px,12vw,190px) var(--gutter)}
+.closing>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%;opacity:.62}
+.closing::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(43,35,29,.94) 0%,rgba(43,35,29,.82) 38%,rgba(43,35,29,.22) 78%,rgba(43,35,29,.12))}
+.closing-inner{position:relative;z-index:2}
+.closing h2{color:var(--on-deep)}
+.closing p{margin-top:24px;max-width:27em;color:var(--on-deep-2);font-size:16.5px;line-height:2.05}
+.closing .btn{margin-top:40px}
+
+/* ---------- footer ---------- */
+.site-foot{background:var(--deep);color:var(--on-deep-2);padding:72px var(--gutter) 40px;border-top:1px solid rgba(241,236,227,.1)}
+.foot-grid{display:grid;grid-template-columns:auto 1fr;gap:40px 72px;align-items:start}
+.foot-brand{display:flex;gap:20px;align-items:center}
+.disc{width:60px;height:60px;border-radius:50%;background:var(--on-deep);display:grid;place-items:center;flex:none}
+.disc img{width:48px;height:48px}
+.foot-brand strong{display:block;font-family:var(--f-mark);font-weight:600;font-size:22px;letter-spacing:.32em;color:var(--on-deep)}
+.foot-brand span{display:block;font-size:14px;letter-spacing:.08em}
+.foot-links{justify-self:end;display:flex;flex-wrap:wrap;gap:8px 32px;list-style:none;margin:0;padding:0}
+.foot-links a{text-decoration:none;font-size:14px;letter-spacing:.14em;color:var(--on-deep-2);display:inline-block;padding:6px 0}
+.foot-links a:hover{color:var(--on-deep)}
+.foot-bottom{margin-top:56px;padding-top:24px;border-top:1px solid rgba(241,236,227,.12);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;letter-spacing:.08em}
+
+/* floating contact */
+.float-contact{position:fixed;right:20px;bottom:20px;z-index:40;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;border-radius:8px;
+  background:var(--coffee);color:var(--paper-hi);text-decoration:none;font-size:14px;letter-spacing:.14em;box-shadow:0 8px 28px rgba(43,35,29,.2);
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s var(--ease),transform .4s var(--ease),background-color .3s}
+.float-contact.show{opacity:1;transform:none;pointer-events:auto}
+.float-contact:hover{background:var(--ink)}
+.float-contact svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.2}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .nav{display:none}
+  .head-actions .lang,.head-actions .login{display:none}
+  .site-head{grid-template-columns:1fr auto}
+}
+@media (max-width:860px){
+  :root{--head-h:72px}
+  .brand img{width:40px;height:40px}
+  .brand span{font-size:18px}
+  .hero{min-height:640px;max-height:none}
+  .hero-inner{justify-content:flex-start;padding-top:calc(var(--head-h) + 7svh)}
+  .hero-copy{transform:none}
+  .hero-sub{margin-top:20px;font-size:16px;max-width:21em}
+  .hero-cta{margin-top:28px}
+  .hero-cta .btn{padding:0 22px}
+  .inscription{top:52%;right:calc(var(--gutter) + 2px);gap:10px}
+  .inscription p{font-size:12px;letter-spacing:.28em;color:var(--ink)}
+  .inscription img{width:26px;height:26px}
+  .inscription img{width:28px;height:28px}
+  .sho{padding-top:56px}
+  .sho-grid{grid-template-columns:1fr;gap:28px}
+  .ask{font-size:16px;gap:18px}
+  .ask-text{text-wrap:pretty}
+  .sho-visual{max-width:400px}
+  .svc-grid{grid-template-columns:1fr;align-items:start}
+  .leaf{padding:5px}
+  .svc-cols a{min-height:236px;padding:22px 0}
+  .svc-name{letter-spacing:.2em;font-size:18px}
+  .why-grid{grid-template-columns:1fr;gap:56px}
+  .why-head{padding-bottom:0;min-height:0}
+  .why-item,.why-item:nth-of-type(n){grid-column:1;grid-row:auto;margin-top:0}
+  .why-item figure{aspect-ratio:4/3}
+  .sup-grid{grid-template-columns:1fr}
+  .sup-aside{position:static}
+  .closing::after{background:linear-gradient(180deg,rgba(43,35,29,.42),rgba(43,35,29,.86) 64%)}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-links{justify-self:start;gap:4px 24px}
+  .float-contact{right:16px;bottom:16px;padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">本文へ</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="bleed" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7"/>
+    <feDisplacementMap in="SourceGraphic" scale="26"/>
+  </filter>
+</svg>
+
+<header class="site-head" id="head">
+  <a class="brand" href="#top" aria-label="XIUYI ホーム"><img src="../assets/logo-mark.png" alt="" width="46" height="46"><span>XIUYI</span></a>
+  <nav class="nav" aria-label="メイン">
+    <a href="#services">サービス</a>
+    <a href="#why">コラム</a>
+    <a href="#why">会社案内</a>
+    <a href="#sho" class="lat-mix">SHŌ AI</a>
+  </nav>
+  <div class="head-actions">
+    <button class="lang" type="button" aria-haspopup="true">日本語<svg class="chev" viewBox="0 0 9 6" aria-hidden="true"><path d="M.5.8 4.5 5l4-4.2"/></svg></button>
+    <a class="login" href="#contact">ログイン</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">メニュー<span class="burger" aria-hidden="true"><i></i><i></i></span></button>
+  </div>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true" role="dialog" aria-label="メニュー">
+  <div class="menu-top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" alt="" width="46" height="46"><span>XIUYI</span></a>
+    <button class="menu-close" type="button">閉じる<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 2l14 14M16 2 2 16"/></svg></button>
+  </div>
+  <div class="menu-body">
+    <nav aria-label="メニュー">
+      <a href="#services">サービス<small>Services</small></a>
+      <a href="#why">コラム<small>Column</small></a>
+      <a href="#why">会社案内<small>About</small></a>
+      <a href="#sho">SHŌ AI<small>Assistant</small></a>
+      <a href="#contact">相談を予約<small>Consultation</small></a>
+    </nav>
+    <div class="menu-meta">
+      <div class="langs"><a href="#top" aria-current="true">日本語</a><a href="#top">English</a><a href="#top">中文</a></div>
+      <a href="#contact">ログイン</a>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <canvas class="hero-gl" id="hero-gl" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <h1 id="hero-title"><span>美・健康・暮らしを、</span><span>日本で再定義する。</span></h1>
+      <p class="hero-sub"><span class="lat">XIUYI</span> は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#services">サービスを見る</a>
+        <a class="btn btn-ghost" href="#contact">相談を予約</a>
+      </div>
+    </div>
+  </div>
+  <div class="inscription">
+    <p>東京・美と健康のライフスタイル</p>
+    <img src="../assets/logo-mark.png" alt="" width="34" height="34">
+  </div>
+  <div class="hero-fade"></div>
+</section>
+
+<section class="sho" id="sho" aria-labelledby="sho-title">
+  <div class="wrap sho-grid">
+    <div class="sho-visual">
+      <canvas class="sho-gl" id="sho-gl" aria-hidden="true"></canvas>
+      <div class="sho-name" id="sho-name"><div><span class="lat">SHŌ</span><small>AI アシスタント</small></div></div>
+    </div>
+    <div class="sho-text">
+      <h2 id="sho-title"><span class="lat">SHŌ</span>でサービス情報を確認</h2>
+      <p class="sho-lead"><span class="lat">SHŌ</span>は <span class="lat">XIUYI</span> の <span class="lat">AI</span> アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+      <ul class="asks">
+        <li><a class="ask" href="#sho" data-q="0"><span class="ask-text">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span><span class="ask-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M0 6h42M36.5 1 42 6l-5.5 5"/></svg></span></a></li>
+        <li><a class="ask" href="#sho" data-q="1"><span class="ask-text">滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span><span class="ask-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M0 6h42M36.5 1 42 6l-5.5 5"/></svg></span></a></li>
+        <li><a class="ask" href="#sho" data-q="2"><span class="ask-text">母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span><span class="ask-arrow" aria-hidden="true"><svg viewBox="0 0 44 12"><path d="M0 6h42M36.5 1 42 6l-5.5 5"/></svg></span></a></li>
+      </ul>
+      <div class="sho-cta"><a class="btn btn-primary" href="#sho"><span class="lat">SHŌ</span>に相談</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services" aria-labelledby="svc-title">
+  <div class="wrap svc-grid">
+    <div class="svc-head">
+      <h2 id="svc-title">医療サービス</h2>
+      <p>健診から治療、滞在中の移動まで。ご希望に合わせて組み合わせます。</p>
+      <a class="btn btn-ghost" href="#services">サービス一覧</a>
+    </div>
+    <div>
+      <div class="leaf">
+        <ol class="svc-cols">
+          <li><a href="#services"><span class="svc-name">精密健診</span></a></li>
+          <li><a href="#services"><span class="svc-name">医療受診</span></a></li>
+          <li><a href="#services"><span class="svc-name">再生医療</span></a></li>
+          <li><a href="#services"><span class="svc-name">美容医療</span></a></li>
+          <li><a href="#services"><span class="svc-name">同行・医療通訳</span></a></li>
+          <li><a href="#services"><span class="svc-name">生殖補助医療</span></a></li>
+          <li><a href="#services"><span class="svc-name">移動・宿泊サポート</span></a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="why" id="why" aria-labelledby="why-title">
+  <div class="wrap why-grid">
+    <div class="why-head">
+      <h2 id="why-title"><span class="lat">XIUYI</span> が選ばれる理由</h2>
+    </div>
+    <article class="why-item">
+      <figure><img src="../assets/photos/why-network.jpg" alt="提携医療機関の落ち着いたエントランス" loading="lazy" width="900" height="900"></figure>
+      <h3>日本の正規医療機関と連携</h3>
+      <p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+    </article>
+    <article class="why-item">
+      <figure><img src="../assets/photos/why-concierge.jpg" alt="担当者のデスクに置かれた革のファイルと一輪挿し" loading="lazy" width="900" height="900"></figure>
+      <h3>専任担当者による一貫した調整</h3>
+      <p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+    </article>
+    <article class="why-item">
+      <figure><img src="../assets/photos/why-hospitality.jpg" alt="東京タワーを望む客室の窓辺" loading="lazy" width="900" height="900"></figure>
+      <h3>移動・宿泊のサポート</h3>
+      <p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+    </article>
+  </div>
+</section>
+
+<section class="support" id="support" aria-labelledby="sup-title">
+  <div class="wrap sup-grid">
+    <div class="sup-aside">
+      <h2 id="sup-title">サポート内容</h2>
+      <figure><img src="../assets/photos/about-plan.jpg" alt="地図と書類、お茶が置かれた打ち合わせの机" loading="lazy" width="900" height="600"></figure>
+      <p class="note">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+    </div>
+    <ol class="sup-list">
+      <li><div><h3>医療ニーズの確認と予約調整</h3><p>既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p></div></li>
+      <li><div><h3>医療機関・医師とのマッチング</h3><p>検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p></div></li>
+      <li><div><h3>空港送迎と医療機関間の移動</h3><p>フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p></div></li>
+      <li><div><h3>中国語・英語・日本語での同行サポート</h3><p>来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p></div></li>
+      <li><div><h3>宿泊・滞在日程の調整</h3><p>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="closing" id="contact" aria-labelledby="close-title">
+  <img src="../assets/photos/home-closing.jpg" alt="" loading="lazy" width="1800" height="1200">
+  <div class="wrap closing-inner">
+    <h2 id="close-title">医療相談を予約する</h2>
+    <p>これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+    <a class="btn btn-light" href="#contact">相談を予約</a>
+  </div>
+</section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <span class="disc"><img src="../assets/logo-mark.png" alt="" width="48" height="48"></span>
+        <div><strong>XIUYI</strong><span>秀一株式会社</span><span>東京都渋谷区（代官山）</span></div>
+      </div>
+      <ul class="foot-links">
+        <li><a href="#services">サービス</a></li>
+        <li><a href="#why">コラム</a></li>
+        <li><a href="#why">事例</a></li>
+        <li><a href="#why">医師</a></li>
+        <li><a href="#why">会社案内</a></li>
+        <li><a href="#top">プライバシー</a></li>
+      </ul>
+    </div>
+    <div class="foot-bottom"><span>© <span class="lat">XIUYI CO., LTD.</span></span><span>診断・治療は提携医療機関および医師が行います。</span></div>
+  </div>
+</footer>
+
+<a class="float-contact" href="#contact"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>お問い合わせ</a>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- header, floating contact ---------- */
+const head = $('#head'), floatBtn = $('.float-contact');
+const onScroll = () => {
+  const y = scrollY;
+  head.classList.toggle('scrolled', y > 24);
+  floatBtn.classList.toggle('show', y > innerHeight * .7);
+};
+addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+/* ---------- menu ---------- */
+const menu = $('#menu'), menuBtn = $('.menu-btn'), menuClose = $('.menu-close');
+const setMenu = (open) => {
+  menu.classList.toggle('open', open);
+  menu.setAttribute('aria-hidden', String(!open));
+  menuBtn.setAttribute('aria-expanded', String(open));
+  document.documentElement.classList.toggle('lock', open);
+  (open ? menuClose : menuBtn).focus({ preventScroll: true });
+};
+menuBtn.addEventListener('click', () => setMenu(true));
+menuClose.addEventListener('click', () => setMenu(false));
+$$('a', menu).forEach((a) => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false); });
+
+/* ---------- shared GLSL ---------- */
+const NOISE = `
+float h11(float p){p=fract(p*.1031);p*=p+33.33;p*=p+p;return fract(p);}
+float h21(vec2 p){vec3 p3=fract(vec3(p.xyx)*.1031);p3+=dot(p3,p3.yzx+33.33);return fract((p3.x+p3.y)*p3.z);}
+float n1(float x){float i=floor(x),f=fract(x);return mix(h11(i),h11(i+1.),f*f*(3.-2.*f));}
+float n2(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
+  return mix(mix(h21(i),h21(i+vec2(1.,0.)),u.x),mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),u.x),u.y);}
+float fbm(vec2 p){float a=.5,s=0.;for(int i=0;i<5;i++){s+=a*n2(p);p=mat2(1.6,1.2,-1.2,1.6)*p+3.1;a*=.5;}return s;}
+float fbm3(vec2 p){float a=.5,s=0.;for(int i=0;i<3;i++){s+=a*n2(p);p=mat2(1.6,1.2,-1.2,1.6)*p+3.1;a*=.5;}return s*1.143;}
+mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+float sat(float x){return clamp(x,0.,1.);}
+float ease(float x){x=sat(x);return x*x*(3.-2.*x);}
+float eout(float x){x=sat(x);return 1.-(1.-x)*(1.-x)*(1.-x);}
+`;
+const VERT = 'attribute vec2 a;varying vec2 vUv;void main(){vUv=a*.5+.5;gl_Position=vec4(a,0.,1.);}';
+
+/* Ink-wash landscape. World units: y up, Fuji's base centre at the origin.
+   Ink is Beer–Lambert absorption of the logo brown, so washes stay low-chroma like printed ink. */
+const HERO_FRAG = `precision highp float;
+varying vec2 vUv;
+uniform vec2 uRes; uniform float uTime; uniform float uIntro; uniform vec2 uPtr; uniform vec4 uLay;
+${NOISE}
+const vec3 ABS=vec3(1.56,1.81,2.04);
+const vec3 MIST=vec3(.958,.944,.918);
+float rid(float x){return 1.-abs(n1(x)*2.-1.);}
+float rfbm(float x){float a=.5,s=0.;for(int i=0;i<5;i++){s+=a*rid(x);x=x*2.07+9.7;a*=.5;}return s;}
+float trees(float x,float w,float ht,float sd){
+  float c=floor(x/w), f=fract(x/w)-.5;
+  float r1=h11(c*1.3+sd), r2=h11(c*3.1+sd), r3=h11(c*7.7+sd);
+  float on=smoothstep(.5,.72,n1(x*1.6+sd))*step(.22,r3);
+  float hg=ht*(.35+.65*r1)*on;
+  float s=max(0.,1.-abs(f-(r2-.5)*.35)*(2.1+2.2*r3));
+  return hg*pow(s,1.25);
+}
+float reveal(float t0,vec2 P,float sd){return ease((uIntro-t0)/1.1-(n2(P*4.5+sd)-.5)*.7);}
+// one range: a crisp wet contour, a wash that dissolves downward into mist, an inner sub-ridge, feathered bleed above
+void layer(inout vec3 col,vec2 P,float base,float slope,float amp,float freq,float sd,float tw,float th,float fall,float dens,float occ,float px,float rv){
+  float hg0=base+slope*P.x+amp*rfbm(P.x*freq+sd)+.002*(n1(P.x*240.+sd)-.5);
+  float tr=trees(P.x,tw,th,sd);
+  float hg=hg0+tr;
+  float tree=smoothstep(-px,px,hg-P.y)*(1.-smoothstep(-px,px,hg0-P.y));
+  float din=hg0-P.y;
+  float inside=max(smoothstep(-px,px,din),tree);
+  float bw=.0015+.009*pow(n2(vec2(P.x*90.,P.y*16.)+sd),3.);
+  float bleed=(1.-inside)*exp(min(din,0.)/bw)*.42;
+  float f=fall*(.65+.7*n1(P.x*2.6+sd));
+  float body=exp(-max(din,0.)/f);
+  float tex=mix(.7,1.2,fbm3(vec2(P.x*6.,P.y*10.)+sd));
+  float dryb=mix(1.,smoothstep(.2,.6,n2(vec2(P.x*9.,din*320.)+sd)),.45*exp(-max(din,0.)/.014));
+  float wet=exp(-max(din,0.)/.0038)*.34*dens;
+  float sub=base-.02+slope*P.x+amp*.85*rfbm(P.x*freq*1.8+sd+20.);
+  float ds=sub-P.y;
+  float subD=step(0.,din)*smoothstep(-px,px,ds)*(exp(-max(ds,0.)/(f*.55))*.55+exp(-max(ds,0.)/.004)*.18)*smoothstep(.0,.012,hg-sub);
+  float D=(smoothstep(-px,px,din)*((body*tex+wet)*dryb+subD*tex)+tree*(.62+.3*n2(vec2(P.x*60.,P.y*30.)))+bleed)*dens*rv;
+  col=mix(col,MIST,inside*occ*rv);
+  col*=exp(-D*ABS);
+}
+void mist(inout vec3 col,vec2 P,float y0,float w,float amt,float sp,float sd){
+  float m=fbm3(vec2(P.x*.95-uTime*sp,(P.y-y0)*4.4+sd))*.94+.03;
+  float band=exp(-pow((P.y-y0)/w,2.));
+  col=mix(col,MIST,smoothstep(.4,.64,m)*band*amt);
+}
+void main(){
+  vec2 uv=vUv;
+  float asp=uRes.x/uRes.y, sc=uLay.z;
+  vec2 P=vec2((uv.x-uLay.x)*asp,uv.y-uLay.y)/sc;
+  float px=1.3/(uRes.y*sc);
+  vec3 col=vec3(.953,.937,.91);
+  col=mix(col,vec3(.928,.909,.876),smoothstep(.15,1.,uv.y)*.6);
+  col+=vec3(.016,.011,.005)*exp(-abs(P.y-.03)*6.)*smoothstep(1.3,0.,abs(P.x));
+  float veil=mix(smoothstep(.34,.64,uv.x),smoothstep(.74,.56,uv.y),uLay.w);
+  // high cloud washes, kept out of the text's sky
+  float cl=fbm(vec2(P.x*.75+uTime*.004,P.y*2.8)+4.);
+  col*=exp(-smoothstep(.55,.86,cl)*smoothstep(.1,.5,P.y)*.11*veil*reveal(0.,P,1.)*ABS);
+  // Fuji: snow left as bare paper, the sky washed around it (sotoguma), a cloud belt across its waist
+  vec2 F=P-vec2(uPtr.x*.006,-uPtr.y*.003);
+  float dx=abs(F.x);
+  float fy=-.03+.35*exp(-max(dx-.05,0.)/.175);
+  fy+=.006*(n1(F.x*70.)-.5)*(1.-smoothstep(.04,.08,dx))+.004*(n1(F.x*23.+3.)-.5);
+  float inF=smoothstep(-px,px,fy-F.y);
+  float rvF=reveal(.15,P,2.);
+  float outD=max(F.y-fy,0.);
+  float soto=(1.-inF)*(exp(-outD/.12)*.06+exp(-outD/.02)*.04)*(1.-smoothstep(.1,.8,dx))*smoothstep(-.04,.1,F.y)*smoothstep(.44,.26,F.y)*(.5+fbm3(F*vec2(3.,9.)));
+  float sky=(1.-inF)*exp(-pow((F.y-.12)/.12,2.))*.045*smoothstep(1.1,.15,dx)*(.4+fbm3(vec2(F.x*2.,F.y*8.)+uTime*.003));
+  float flank=inF*smoothstep(.16,-.05,F.y)*.24*(.7+.6*fbm3(F*vec2(6.,14.)));
+  float ang=atan(F.x,.33-F.y);
+  float gtop=.2+.09*n1(ang*19.+4.);
+  float gul=(smoothstep(.55,.9,n1(ang*26.+2.))*.6+smoothstep(.62,.95,n1(ang*61.+9.))*.4)*inF*smoothstep(gtop+.02,gtop-.06,F.y)*smoothstep(-.01,.14,F.y)*.11*(.3+n2(vec2(ang*8.,F.y*20.)));
+  float contour=inF*exp(-max(fy-F.y,0.)/.0045)*.3*smoothstep(-.02,.12,F.y);
+  col*=exp(-(soto+sky+flank+gul+contour)*rvF*ABS);
+  col+=inF*smoothstep(.12,.3,F.y)*.014*rvF;
+  mist(col,P,.105,.03,.8,.006,8.);
+  mist(col,P,.0,.07,.62,.007,1.);
+  // ranges, far to near; nearer ones drift more with the pointer
+  layer(col,P-vec2(uPtr.x*.012,-uPtr.y*.005),-.06,.04,.08,2.5,11.,.011,.0,.03,.28,.86,px,reveal(.4,P,3.));
+  mist(col,P,-.09,.05,.62,.011,2.);
+  col=mix(col,MIST,smoothstep(-.32,-.9,P.x)*.8*(1.-uLay.w));
+  layer(col,P-vec2(uPtr.x*.022,-uPtr.y*.008),-.18,.07,.11,1.8,23.,.012,.008,.04,.38*(.5+.5*smoothstep(-.7,.1,P.x)),.92,px,reveal(.65,P,4.));
+  mist(col,P,-.22,.05,.66,.014,3.);
+  col=mix(col,MIST,smoothstep(-.4,-1.,P.x)*.7*(1.-uLay.w));
+  layer(col,P-vec2(uPtr.x*.036,-uPtr.y*.012),-.31,.12,.14,1.3,37.,.016,.02,.05,.55*(.45+.55*smoothstep(-.9,-.1,P.x)),.96,px,reveal(.9,P,5.));
+  mist(col,P,-.37,.08,.85,.018,4.);
+  layer(col,P-vec2(uPtr.x*.055,-uPtr.y*.018),-.52,.46,.17,1.05,51.,.02,.03,.055,1.,1.,px,reveal(1.15,P,6.));
+  // corner hill under the text (Ma Yuan's one corner), only on wide screens
+  vec2 C=P-vec2(uPtr.x*.07,-uPtr.y*.02);
+  float corner=1.-uLay.w;
+  layer(col,C,-.62,-.28,.1,1.4,71.,.03,.03*corner,.07,.86*corner,corner,px,reveal(1.3,P,7.));
+  mist(col,P,-.27,.045,.6,.02,6.);
+  mist(col,P,-.5,.07,.5,.022,5.);
+  // washi: fibres + mottling (fine grain comes from the page overlay)
+  vec2 fc=gl_FragCoord.xy/uRes.y*900.;
+  col-=smoothstep(.8,.97,n2(rot(.5)*fc*vec2(.012,.32)))*.016;
+  col+=smoothstep(.82,.98,n2(rot(-1.1)*fc*vec2(.02,.45)+7.))*.01;
+  col*=1.+(fbm3(uv*vec2(asp,1.)*3.)-.5)*.035;
+  gl_FragColor=vec4(col,1.);
+}`;
+
+/* SHŌ: a drop lands and blooms on wet paper; its pigment drifts to the rim (the coffee-ring effect)
+   and dries there as an ensō. Hovering a question drops ink again: it blooms and is drawn back into the ring. */
+const SHO_FRAG = `precision highp float;
+varying vec2 vUv;
+uniform vec2 uRes; uniform float uT; uniform float uH; uniform float uRot; uniform float uTime; uniform float uSeed;
+${NOISE}
+const float PI=3.14159265;
+float bloom(vec2 q,float bt,float set,float sd){
+  if(bt<=0.) return 0.;
+  float r=length(q);
+  vec2 cs=q/max(r,1e-4);
+  float R=.05+.93*eout(bt/1.9);
+  float fing=(fbm(cs*1.15+sd+bt*.04)-.5)*.34+(fbm3(cs*3.2+sd*2.)-.5)*.08;
+  float edge=R*(1.+fing*(1.-set));
+  float x=r-edge;
+  float thin=mix(.85,.24,ease(bt/1.7));
+  float inner=smoothstep(.02,-.07,x)*thin*(.45+.7*fbm(q*2.2+sd+bt*.05));
+  float rw=.05+.07*(1.-ease(bt/2.2));
+  float rim=exp(-pow(x/rw,2.))*mix(.3,.62,ease(bt/1.5))*(.75+.5*fbm3(cs*5.+sd));
+  float tend=smoothstep(.6,.85,fbm(cs*7.+vec2(r*1.8-bt*.3)+sd))*exp(-max(x,0.)/.07)*smoothstep(-.01,.02,x)*.3;
+  return (inner+rim+tend)*(1.-set);
+}
+void main(){
+  vec2 p=(vUv-.5)*3.2;
+  float t=uT, hT=uH;
+  float ag=hT<0.?0.:ease(hT/.6)*(1.-ease((hT-1.)/1.5));
+  vec2 w=vec2(fbm(p*1.6+vec2(0.,uTime*.1)+uSeed),fbm(p*1.6+vec2(5.2,-uTime*.08)-uSeed))-.5;
+  vec2 q=p+w*(.05+.18*ag);
+  float s2=ease((t-1.75)/2.2);
+  float r=length(q), ang=atan(q.y,q.x);
+  vec2 cs=q/max(r,1e-4);
+  float d=r-1.;
+  float gap=.085;
+  float u=fract((uRot-ang)/(2.*PI));
+  float uu=u/(1.-gap);
+  float press=.82+.42*exp(-uu*12.)+.1*sin(uu*9.4+1.3);
+  float taper=mix(1.,.3,ease((uu-.6)/.4));
+  float wid=.1*(1.+.2*ag)*press*taper*(1.+.22*(n2(cs*1.3+uSeed*7.)-.5));
+  float edgeN=(n2(cs*13.+vec2(d*24.))-.5)*.022;
+  float ac=(d+edgeN)/wid;
+  float arc=uu*2.*PI*(1.-gap);
+  float body=1.-smoothstep(.7,1.05,length(vec2(ac,min(arc/wid-1.,0.))));
+  float br=n2(vec2(ac*5.5+uSeed*3.,uu*2.4))*.62+n2(vec2(ac*14.-4.1,uu*6.))*.38;
+  float dry=sat(ease((uu-.5)/.5)*1.05+.18*ease((abs(ac)-.55)/.4));
+  float ink=body*mix(1.,smoothstep(.34,.6,br),dry);
+  float gapM=1.-smoothstep(.975,1.,uu);
+  float dens=(.88+.3*exp(-uu*16.)-.18*uu)*(.9+.2*n1(uu*11.+uSeed));
+  float emerge=smoothstep(0.,.3,s2*1.3-n2(cs*.8+uSeed)*.3);
+  float D=ink*gapM*dens*emerge*(1.-.4*ag);
+  D+=bloom(q,t-.3,s2,0.)*(1.-D);
+  D+=(.035+.03*fbm(q*2.+uSeed))*s2*smoothstep(1.,.6,r)*(1.-D);
+  D+=exp(-abs(d)/(.07+.25*ag))*(.06+.2*ag)*smoothstep(.35,.8,fbm(q*2.4+uTime*.04))*s2*(1.-D);
+  float dropS=ease(t/.25)*(1.-ease((t-.3)/.25));
+  D=max(D,smoothstep(.07,.045,length(p))*dropS);
+  float rp=.05+1.2*eout((t-.28)/.9);
+  D+=exp(-pow((length(p)-rp)/.012,2.))*.18*(1.-ease((t-.28)/.9))*step(.28,t)*(1.-D);
+  if(hT>=0.){
+    float dS=ease(hT/.2)*(1.-ease((hT-.25)/.2));
+    D=max(D,smoothstep(.06,.04,length(p))*dS*.9);
+    float hs=ease((hT-1.2)/1.4);
+    D+=bloom(q*1.02,hT-.25,hs,uSeed)*.85*(1.-D);
+    float rp2=.05+1.1*eout((hT-.22)/.8);
+    D+=exp(-pow((length(p)-rp2)/.012,2.))*.14*(1.-ease((hT-.22)/.8))*step(.22,hT)*(1.-D);
+  }
+  D*=smoothstep(1.6,1.32,max(abs(p.x),abs(p.y)))*smoothstep(1.62,1.2,length(p));
+  D=sat(D);
+  vec3 col=mix(vec3(.58,.5,.41),vec3(.17,.13,.1),smoothstep(.2,.95,D));
+  float al=sat(D*1.12);
+  gl_FragColor=vec4(col*al,al);
+}`;
+
+function stage(canvas, frag, opt) {
+  let gl = null;
+  try { gl = canvas.getContext('webgl', { alpha: !!opt.alpha, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' }); } catch (e) { gl = null; }
+  if (!gl) return null;
+  const compile = (type, src) => {
+    const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; }
+    return s;
+  };
+  const vs = compile(gl.VERTEX_SHADER, VERT), fs = compile(gl.FRAGMENT_SHADER, frag);
+  if (!vs || !fs) return null;
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.warn(gl.getProgramInfoLog(prog)); return null; }
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const cache = {};
+  const U = (n) => (n in cache ? cache[n] : (cache[n] = gl.getUniformLocation(prog, n)));
+  const s = {
+    gl, canvas, quality: 1, w: 2, h: 2, active: false, lost: false, ema: 16, frames: 0,
+    resize() {
+      const r = canvas.getBoundingClientRect();
+      const pr = Math.min(window.devicePixelRatio || 1, opt.cap) * s.quality;
+      const w = Math.max(2, Math.round(r.width * pr)), h = Math.max(2, Math.round(r.height * pr));
+      if (w !== canvas.width || h !== canvas.height) { canvas.width = w; canvas.height = h; }
+      s.w = w; s.h = h; gl.viewport(0, 0, w, h);
+    },
+    draw(set) {
+      if (s.lost) return;
+      gl.uniform2f(U('uRes'), s.w, s.h);
+      set(gl, U);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    },
+    // adaptive resolution: if frames are slow, render fewer pixels (the ink is soft anyway)
+    pace(dt) {
+      s.frames++;
+      if (s.frames < 20 || dt > 400) return;
+      s.ema = s.ema * .92 + dt * .08;
+      if (s.frames % 40 === 0 && s.ema > 30 && s.quality > .5) { s.quality = Math.max(.5, s.quality * .8); s.resize(); }
+    },
+  };
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); s.lost = true; });
+  canvas.addEventListener('webglcontextrestored', () => location.reload());
+  s.resize();
+  return s;
+}
+
+/* ---------- one rAF loop, paused offscreen and in hidden tabs ---------- */
+const ticks = new Set();
+let raf = 0, last = 0;
+const loop = (now) => {
+  raf = 0;
+  const dt = last ? now - last : 16; last = now;
+  let any = false;
+  ticks.forEach((t) => { if (t.on()) { t.tick(now, dt); any = true; } });
+  if (any && !document.hidden) raf = requestAnimationFrame(loop); else last = 0;
+};
+const kick = () => { if (!raf && !document.hidden) raf = requestAnimationFrame(loop); };
+document.addEventListener('visibilitychange', kick);
+
+/* ---------- hero ---------- */
+const heroCanvas = $('#hero-gl');
+const hero = stage(heroCanvas, HERO_FRAG, { cap: 1.25 });
+if (hero) {
+  const t0 = performance.now();
+  const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
+  let visible = true;
+  const lay = () => {
+    const a = hero.w / hero.h;
+    if (a < .8) return [.42, .2, .44, 1];
+    if (a < 1.25) return [.66, .3, .66, .6];
+    return [.705, .38, 1, 0];
+  };
+  let L = lay();
+  const render = (now) => {
+    const t = reduce ? 60 : (now - t0) / 1000;
+    hero.draw((gl, U) => {
+      gl.uniform1f(U('uTime'), t);
+      gl.uniform1f(U('uIntro'), reduce ? 60 : t);
+      gl.uniform2f(U('uPtr'), ptr.x, ptr.y);
+      gl.uniform4f(U('uLay'), L[0], L[1], L[2], L[3]);
+    });
+  };
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    ptr.tx = (e.clientX / innerWidth) * 2 - 1;
+    ptr.ty = (e.clientY / innerHeight) * 2 - 1;
+  }, { passive: true });
+  new IntersectionObserver(([en]) => { visible = en.isIntersecting; kick(); }).observe(heroCanvas);
+  new ResizeObserver(() => { hero.resize(); L = lay(); render(performance.now()); }).observe(heroCanvas);
+  if (reduce) render(performance.now());
+  else ticks.add({
+    on: () => visible,
+    tick(now, dt) {
+      hero.pace(dt);
+      ptr.x += (ptr.tx - ptr.x) * .035; ptr.y += (ptr.ty - ptr.y) * .035;
+      render(now);
+    },
+  });
+} else {
+  heroCanvas.remove();
+}
+
+/* ---------- SHŌ ---------- */
+const shoCanvas = $('#sho-gl'), shoName = $('#sho-name');
+const sho = stage(shoCanvas, SHO_FRAG, { cap: 2, alpha: true });
+if (sho) {
+  let started = reduce, tStart = 0, hoverStart = -1, visible = false, seed = 0;
+  let rotFrom = -2.25, rotTo = -2.25;
+  const ROTS = [-1.2, -2.9, -0.35];
+  if (!reduce) shoName.classList.add('wait');
+  const render = (now) => {
+    const T = reduce ? 30 : (started ? (now - tStart) / 1000 : 0);
+    const H = hoverStart < 0 ? -1 : (now - hoverStart) / 1000;
+    if (H > 4) hoverStart = -1;
+    const k = H < 0 ? 1 : Math.min(1, Math.max(0, (H - .5) / 1.1));
+    const r = rotFrom + (rotTo - rotFrom) * (k * k * (3 - 2 * k));
+    shoName.classList.toggle('wait', T < 3.4 || (H > .05 && H < 2.3));
+    sho.draw((gl, U) => {
+      gl.uniform1f(U('uT'), T);
+      gl.uniform1f(U('uH'), H);
+      gl.uniform1f(U('uRot'), r);
+      gl.uniform1f(U('uTime'), (now / 1000) % 600);
+      gl.uniform1f(U('uSeed'), seed * 1.37);
+    });
+    return r;
+  };
+  let lastRot = rotTo;
+  const bloom = (i) => {
+    if (reduce || !started) return;
+    const now = performance.now();
+    if ((now - tStart) / 1000 < 3.8) return;
+    if (hoverStart >= 0 && (now - hoverStart) / 1000 < 1.3) return;
+    rotFrom = lastRot; rotTo = ROTS[i % ROTS.length]; seed++;
+    hoverStart = now; kick();
+  };
+  $$('.ask').forEach((a) => {
+    const i = +a.dataset.q;
+    a.addEventListener('pointerenter', () => bloom(i));
+    a.addEventListener('focus', () => bloom(i));
+  });
+  new IntersectionObserver(([en]) => {
+    visible = en.isIntersecting;
+    if (visible && !started && en.intersectionRatio > .3) { started = true; tStart = performance.now(); }
+    kick();
+  }, { threshold: [0, .3, .6] }).observe(shoCanvas);
+  new ResizeObserver(() => { sho.resize(); lastRot = render(performance.now()); }).observe(shoCanvas);
+  if (reduce) render(performance.now());
+  else ticks.add({ on: () => visible, tick(now, dt) { sho.pace(dt); lastRot = render(now); } });
+} else {
+  shoCanvas.remove();
+}
+kick();
+})();
+</script>
+</body>
+</html>

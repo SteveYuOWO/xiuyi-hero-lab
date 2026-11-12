@@ -1,0 +1,11 @@
+{
+  "id": "v17",
+  "slug": "gsap-skills",
+  "tool": "GSAP skills (greensock/gsap-skills)",
+  "repo": "https://github.com/greensock/gsap-skills",
+  "title": "滚动叙事·照片之环",
+  "concept": "首屏用六张公司实拍照片组成的 CSS 3D 照片环替代铜环：加载时像一叠照片发牌成环，标题逐字聚合；滚动时首屏被固定，标题散开、换成五项支援服务目录，照片环随滚动逐张转到正面。SHŌ 区块固定后，问题在对话框里自己打出，回答随滚动逐字显影，背后是会在“思考”时加速的香槟色浑天仪线环；一条香槟色路线贯穿全页，最终落在「相談を予約」按钮上。",
+  "fromTool": "照 gsap-skills 的 ScrollTrigger / timeline / plugins / performance / matchMedia 规范实现：ScrollTrigger 只挂在顶层时间线上并按页面顺序创建，固定首屏用带 labels 的 scrub 时间线并吸附到标签；SplitText 拆分标题，Flip 做服务列表的预览图迁移，DrawSVG 画路线，TextPlugin 打字，ScrollSmoother 平滑滚动，只动 transform/opacity，用 gsap.matchMedia 区分桌面、手机与减少动态。",
+  "tech": "GSAP 3.15.0 (ScrollTrigger, ScrollSmoother, SplitText, Flip, DrawSVGPlugin, TextPlugin, ScrollToPlugin) + CSS 3D transforms, no WebGL",
+  "is3d": true
+}

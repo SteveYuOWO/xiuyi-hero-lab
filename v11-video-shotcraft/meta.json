@@ -1,0 +1,11 @@
+{
+  "id": "v11",
+  "slug": "video-shotcraft",
+  "tool": "video-shotcraft",
+  "repo": "https://github.com/Vincentwei1021/video-shotcraft",
+  "title": "一件器物的产品短片",
+  "concept": "首屏是一支实时 WebGL 产品短片：咖啡色陶石、香槟金拉丝圆环与盛着琥珀色“液体之光”（含金箔）的玻璃球，以微距、追焦、变形宽银幕遮幅与胶片颗粒按 3.0/2.2/1.8 秒渐紧的节奏切出四个镜头，再一镜到底升起机位、亮灯、遮幅打开，静止落在标题旁的纸色背景上，标题四个词随镜头逐一“显影”。SHŌ 是同一种镜头语言的一镜到底：三块刻着“准备／日程／陪同”的玻璃片前后排开，访客悬停哪个问题，跟焦就拉到哪块玻璃，SHŌ 的光点飞到它上方，下方的跟焦刻度同步移动。",
+  "fromTool": "取自仓库的 promo-energy-arc 全片骨架、品牌→动效参数表（平静关怀×精致高端：约45帧、bezier(.4,0,.6,1)、不过冲）、审美准则 R1/R3/Q4/Q5/Q7（单主角完整动作弧、宁慢勿快、光效全片只扫一次、物件特写侧斜机位+深色材质背景），以及 shot-transitions / transition-hidden-cut 的接缝语法（主体匹配切、快门回落硬切、深棕失焦前景遮挡藏切、一镜到底升降）、spotlight-hero-card 的“推闸开灯”、Polish 的颗粒与暗角、mulberry32 确定性随机；Remotion 渲染换成浏览器内实时 three.js。",
+  "tech": "three.js r170 + 自写 GLSL 后期（半分辨率散景景深/变形椭圆光圈、泛光与横向镜头光晕、Khronos Neutral 色调映射、颗粒、世界空间纸色雾）",
+  "is3d": true
+}

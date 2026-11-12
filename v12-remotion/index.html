@@ -1,0 +1,1130 @@
+<!doctype html>
+<!-- v12 · Remotion skills (remotion-dev/skills) · https://github.com/remotion-dev/skills · Decisions taken from the tool: both showpiece visuals are real Remotion compositions (remotion@4.0.539, @remotion/player@4.0.539, React 18.3.1, all from esm.sh) in which every pixel is a pure function of useCurrentFrame(); motion uses interpolate() with clamped extrapolation, Easing.bezier(0.16,1,0.3,1) and spring({damping:200}) "push without bounce" (one low-damping spring for the seal stamp); the six care chapters are <Sequence>s on one 21.6 s / 60 fps timeline, the SHŌ retarget freezes the outgoing answer with <Freeze> and cross-cuts with a 18-frame exit; scale/translate/rotate are individual CSS properties; no CSS transitions or keyframes inside a composition; video-layout rules (one focal element per scene, safe area, minimum text sizes scaled to composition width, a different composition size for phones). Frames are shown with @remotion/player's <Thumbnail> driven by a small requestAnimationFrame frame clock, because <Player> always opens an AudioContext that Chrome warns about before a user gesture. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜美・健康・暮らしを、日本で再定義する。</title>
+<meta name="description" content="XIUYI（秀一株式会社）は東京・代官山の医療コンシェルジュ。日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<meta name="theme-color" content="#e6e2db">
+<link rel="icon" href="../assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://esm.sh" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#e6e2db; --paper:#f3f0ea; --white:#fff;
+  --coffee:#5b4938; --ink:#44352a; --muted:#6b5946; --gold:#b9a17b; --logo:#7a6a56;
+  --night:#382c23; --night2:#2b221b;
+  --line:rgba(68,53,42,.15); --line-d:rgba(185,161,123,.28);
+  --jp:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --lat:"Cormorant Garamond","Shippori Mincho",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --pad:clamp(20px,5vw,72px); --max:1320px; --hdr:88px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--hdr)}
+body{margin:0;background:var(--beige);color:var(--ink);font:400 16px/1.95 var(--jp);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3,p,figure,ol,ul{margin:0}
+h1,h2,h3,p,li,a,button{word-break:auto-phrase;line-break:strict}
+h1,h2,h3{font-weight:500;font-feature-settings:"palt";text-wrap:balance}
+:focus-visible{outline:1.5px solid var(--coffee);outline-offset:4px;border-radius:4px}
+.lat{font-family:var(--lat)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* header */
+.hdr{position:sticky;top:0;z-index:40;background:rgba(230,226,219,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+.hdr.is-scrolled{border-bottom-color:var(--line)}
+.hdr__in{height:var(--hdr);display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;color:var(--coffee);justify-self:start}
+.brand img{width:46px;height:46px}
+.brand b{font:500 21px/1 var(--lat);letter-spacing:.34em;padding-left:.1em}
+.nav{display:flex;gap:clamp(28px,3.4vw,54px)}
+.nav a{font-size:15px;letter-spacing:.16em;text-decoration:none;position:relative;padding:6px 0}
+.nav a::after{content:"";position:absolute;left:0;right:.16em;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav a:hover::after{transform:scaleX(1)}
+.nav .lat{font-weight:600;font-size:16px;letter-spacing:.12em}
+.tools{justify-self:end;display:flex;align-items:center;gap:28px}
+.lang{position:relative}
+.lang summary{list-style:none;cursor:pointer;font-size:14px;letter-spacing:.12em;display:flex;align-items:center;gap:6px}
+.lang summary::-webkit-details-marker{display:none}
+.lang ul{position:absolute;right:-10px;top:calc(100% + 12px);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px;list-style:none;min-width:132px;box-shadow:0 14px 34px rgba(68,53,42,.1)}
+.lang li a{display:block;padding:6px 12px;text-decoration:none;font-size:14px;border-radius:6px}
+.lang li a:hover,.lang li a[aria-current]{background:var(--beige)}
+.login{font-size:14px;letter-spacing:.12em;text-decoration:none}
+.login:hover{opacity:.6}
+.menu-btn{display:flex;align-items:center;gap:12px;background:none;border:0;padding:8px 0;font:inherit;font-size:14px;letter-spacing:.12em;color:var(--ink);cursor:pointer}
+.menu-btn i{display:grid;gap:7px;width:26px}
+.menu-btn i::before,.menu-btn i::after{content:"";height:1.2px;background:currentColor}
+.menu-btn i::after{width:70%;justify-self:end}
+
+/* overlay menu */
+.menu{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding:0 var(--pad) 36px;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;overflow:auto}
+html[data-menu] .menu{opacity:1;visibility:visible}
+html[data-menu]{overflow:hidden}
+.menu__top{height:var(--hdr);display:flex;align-items:center;justify-content:space-between;flex:none}
+.menu__close{display:flex;align-items:center;gap:12px;background:none;border:0;font:inherit;font-size:14px;letter-spacing:.12em;color:var(--ink);cursor:pointer;padding:8px 0}
+.menu__close i{position:relative;width:22px;height:22px}
+.menu__close i::before,.menu__close i::after{content:"";position:absolute;left:0;right:0;top:50%;height:1.2px;background:currentColor;transform:rotate(45deg)}
+.menu__close i::after{transform:rotate(-45deg)}
+.menu__nav{display:grid;margin:3vh auto 0;width:100%;max-width:760px}
+.menu__nav a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);font-size:clamp(22px,4.6vw,32px);letter-spacing:.12em;text-decoration:none}
+.menu__nav a small{font:italic 400 16px var(--lat);color:var(--muted);letter-spacing:.06em}
+.menu__foot{margin:40px auto 0;width:100%;max-width:760px;display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center;font-size:14px;letter-spacing:.1em}
+.menu__foot a{text-decoration:none}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:16px;height:54px;padding:0 28px;border-radius:8px;font-size:14px;letter-spacing:.16em;text-decoration:none;border:1px solid transparent;transition:background-color .3s,color .3s,border-color .3s}
+.btn svg{width:20px;height:10px;transition:transform .3s}
+.btn:hover svg{transform:translateX(4px)}
+.btn--primary{background:var(--coffee);color:var(--paper)}
+.btn--primary:hover{background:var(--ink)}
+.btn--ghost{border-color:rgba(91,73,56,.42);color:var(--coffee)}
+.btn--ghost:hover{background:rgba(91,73,56,.07)}
+.btn--light{background:var(--paper);color:var(--coffee)}
+.btn--light:hover{background:var(--white)}
+.btn--line{border-color:rgba(243,240,234,.5);color:var(--paper)}
+.btn--line:hover{background:rgba(243,240,234,.08)}
+
+.eyebrow{display:flex;align-items:center;gap:16px;font-size:13px;line-height:1.6;letter-spacing:.3em;color:var(--muted)}
+.eyebrow::before{content:"";flex:none;width:36px;height:1px;background:var(--gold)}
+.h2{font-size:clamp(27px,2.7vw,38px);line-height:1.55;letter-spacing:.08em;margin-top:22px}
+.sec-lede{margin-top:22px;color:var(--muted);font-size:15.5px;line-height:2.05;max-width:30em}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,580px);gap:clamp(32px,5vw,80px);align-items:center;min-height:calc(100svh - var(--hdr));padding-top:4px;padding-bottom:24px}
+.h1{font-size:clamp(29px,3.25vw,47px);line-height:1.62;letter-spacing:.05em;margin:32px 0 30px}
+.h1 span{display:block;white-space:nowrap}
+.lede{font-size:clamp(15px,1.15vw,16.5px);line-height:2.15;color:var(--muted);max-width:29em}
+.ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:46px}
+.hero__meta{margin-top:56px;display:flex;gap:28px;font-size:12.5px;letter-spacing:.14em;color:var(--muted)}
+.hero__meta span{display:flex;align-items:center;gap:10px}
+.hero__meta span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.stage{width:100%;max-width:580px;justify-self:end}
+.dial{position:relative;width:100%;aspect-ratio:1/1}
+.dial__hit{position:absolute;width:9%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:1px solid transparent;background:none;padding:0;cursor:pointer;transition:border-color .3s,background-color .3s}
+.dial__hit:hover{border-color:rgba(91,73,56,.45);background:rgba(243,240,234,.35)}
+.dial__ph{position:absolute;inset:17%;border:1px solid rgba(185,161,123,.55);border-radius:50%}
+.tl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;margin-top:2px}
+.tl__btn{width:34px;height:34px;border-radius:8px;border:1px solid rgba(91,73,56,.28);background:transparent;display:grid;place-items:center;color:var(--coffee);cursor:pointer;padding:0;transition:background-color .3s}
+.tl__btn:hover{background:rgba(91,73,56,.07)}
+.tl__btn svg{width:12px;height:12px}
+.tl__track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.tl__seg{appearance:none;border:0;background:none;padding:12px 0 0;margin:0;cursor:pointer;text-align:left;font:inherit;color:var(--muted)}
+.tl__bar{display:block;height:2px;background:rgba(185,161,123,.42);position:relative;overflow:hidden;border-radius:1px}
+.tl__fill{position:absolute;inset:0;background:var(--coffee);transform-origin:left}
+.tl__no{display:block;font:italic 500 14px/1 var(--lat);margin-top:9px;letter-spacing:.04em;opacity:.7}
+.tl__seg[aria-current="step"] .tl__no{opacity:1;color:var(--ink)}
+.tl__seg:hover .tl__no{opacity:1}
+.tl__tc{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.06em;min-width:66px;text-align:right;font-variant-numeric:tabular-nums}
+.tl__tc small{font-size:12px;opacity:.55}
+.cap{margin-top:16px;min-height:62px;padding-left:50px}
+.cap__ttl{display:flex;align-items:baseline;gap:12px;font-size:16px;letter-spacing:.14em;color:var(--ink);line-height:1.6}
+.cap__ttl i{font:italic 500 15px var(--lat);color:var(--logo);letter-spacing:.04em}
+.cap__desc{font-size:13.5px;line-height:1.85;color:var(--muted);letter-spacing:.04em;margin-top:2px}
+.cap > *{animation:capIn .5s cubic-bezier(.16,1,.3,1) both}
+.cap__desc{animation-delay:.06s}
+@keyframes capIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* SHŌ */
+.sho{background:var(--night);color:var(--paper);padding:clamp(84px,10vw,140px) 0;position:relative;overflow:hidden}
+.sho::before{content:"";position:absolute;left:-12%;top:50%;width:68%;aspect-ratio:1;transform:translateY(-50%);border-radius:50%;background:radial-gradient(circle,rgba(185,161,123,.13),rgba(185,161,123,0) 62%);pointer-events:none}
+.sho__grid{position:relative;display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);grid-template-rows:1fr auto auto auto 1fr;grid-template-areas:"stage ." "stage copy" "stage qs" "stage cta" "stage .";column-gap:clamp(48px,7vw,112px)}
+.sho__copy{grid-area:copy}
+.sho .eyebrow{color:rgba(243,240,234,.7)}
+.sho .h2 .lat{font-weight:500;letter-spacing:.06em}
+.sho .sec-lede{color:rgba(243,240,234,.74)}
+.sho__stage{grid-area:stage;position:relative;width:100%;aspect-ratio:800/920;align-self:center}
+.sho__stage .cm{position:absolute;width:18px;height:18px;border-color:rgba(185,161,123,.6);border-style:solid;border-width:0}
+.cm--tl{left:-14px;top:-14px;border-left-width:1px!important;border-top-width:1px!important}
+.cm--tr{right:-14px;top:-14px;border-right-width:1px!important;border-top-width:1px!important}
+.cm--bl{left:-14px;bottom:-14px;border-left-width:1px!important;border-bottom-width:1px!important}
+.cm--br{right:-14px;bottom:-14px;border-right-width:1px!important;border-bottom-width:1px!important}
+.sho__screen{position:absolute;inset:0}
+.qs{grid-area:qs;list-style:none;padding:0;margin-top:44px;border-top:1px solid var(--line-d)}
+.q{width:100%;display:grid;grid-template-columns:46px minmax(0,1fr) 26px;align-items:center;gap:10px;padding:22px 0;border:0;border-bottom:1px solid var(--line-d);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;position:relative;opacity:.6;transition:opacity .3s}
+.q:hover,.q.is-on{opacity:1}
+.q__no{font:italic 500 18px/1 var(--lat);color:var(--gold);letter-spacing:.04em}
+.q__tx{font-size:15.5px;letter-spacing:.04em;line-height:1.8}
+.q__ar{width:22px;height:10px;justify-self:end;transition:transform .3s}
+.q:hover .q__ar{transform:translateX(4px)}
+.q__bar{position:absolute;left:0;right:0;bottom:-1px;height:1px;overflow:hidden}
+.q__bar i{position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left}
+.sho__cta{grid-area:cta;margin-top:44px;display:flex;flex-wrap:wrap;align-items:center;gap:20px 28px}
+.sho__cta p{font-size:12.5px;letter-spacing:.06em;color:rgba(243,240,234,.56);line-height:1.8}
+
+/* services */
+.svc{background:var(--paper);padding:clamp(84px,10vw,140px) 0}
+.svc__grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,104px);align-items:start}
+.svc__aside{position:sticky;top:calc(var(--hdr) + 36px)}
+.svc__photo{position:relative;margin-top:40px;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--beige)}
+.svc__photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.svc__photo img.is-on{opacity:1}
+.svc__photo::after{content:"";position:absolute;inset:auto 0 0;height:38%;background:linear-gradient(rgba(43,34,27,0),rgba(43,34,27,.42));pointer-events:none}
+.svc__photo figcaption{z-index:1;position:absolute;left:16px;bottom:14px;font:italic 400 14px var(--lat);color:var(--paper);letter-spacing:.06em;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.svc__list{list-style:none;padding:0;border-top:1px solid var(--line)}
+.svc__list a{display:grid;grid-template-columns:54px minmax(0,1fr) auto 28px;align-items:center;gap:14px;padding:27px 6px;border-bottom:1px solid var(--line);text-decoration:none;transition:padding .4s cubic-bezier(.16,1,.3,1),background-color .4s}
+.svc__list a:hover,.svc__list a.is-on{padding-left:18px;background:rgba(230,226,219,.45)}
+.svc__no{font:italic 500 17px var(--lat);color:var(--logo)}
+.svc__jp{font-size:clamp(19px,1.65vw,23px);letter-spacing:.1em;line-height:1.5}
+.svc__en{font:italic 400 16px var(--lat);color:var(--muted);letter-spacing:.04em}
+.svc__ar{width:22px;height:10px;justify-self:end;color:var(--coffee)}
+
+/* why */
+.why{padding:clamp(84px,10vw,140px) 0}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:clamp(40px,5vw,64px)}
+.sec-head .sec-lede{margin-top:0;justify-self:end}
+.why__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,2.8vw,44px);list-style:none;padding:0}
+.why__card figure{aspect-ratio:5/4;border-radius:12px;overflow:hidden;background:var(--paper)}
+.why__card img{width:100%;height:100%;object-fit:cover}
+.why__head{display:flex;align-items:baseline;gap:14px;margin-top:26px}
+.why__no{font:italic 500 18px var(--lat);color:var(--logo)}
+.why__card h3{font-size:clamp(18px,1.5vw,21px);letter-spacing:.08em;line-height:1.6}
+.why__card p{margin-top:12px;font-size:15px;line-height:2.05;color:var(--muted)}
+
+/* support */
+.sup{background:var(--paper);padding:clamp(84px,10vw,140px) 0}
+.sup__grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(40px,6vw,104px);align-items:start}
+.sup__aside{position:sticky;top:calc(var(--hdr) + 36px)}
+.sup__note{margin-top:28px;font-size:13px;line-height:1.95;color:var(--muted);padding-top:18px;border-top:1px solid var(--line);max-width:26em}
+.sup__list{list-style:none;padding:0;border-top:1px solid var(--line)}
+.sup__item{display:grid;grid-template-columns:54px minmax(0,1fr) 210px;gap:28px;padding:34px 0;border-bottom:1px solid var(--line);align-items:start}
+.sup__no{font:italic 500 18px/1.7 var(--lat);color:var(--logo)}
+.sup__item h3{font-size:clamp(18px,1.5vw,21px);letter-spacing:.08em;line-height:1.6}
+.sup__item p{margin-top:10px;font-size:15px;line-height:2.05;color:var(--muted)}
+.sup__item img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px}
+
+/* closing */
+.close{position:relative;color:var(--paper);padding:clamp(112px,14vw,196px) 0;background:#2b221b url(../assets/photos/home-closing.jpg) center/cover no-repeat;overflow:hidden}
+.close::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(43,34,27,.88) 0%,rgba(43,34,27,.66) 48%,rgba(43,34,27,.22) 100%)}
+.close .wrap{position:relative}
+.close .eyebrow{color:rgba(243,240,234,.74)}
+.close p.sec-lede{color:rgba(243,240,234,.82);max-width:31em}
+.close .ctas{margin-top:44px}
+
+/* footer */
+.ftr{background:var(--night2);color:rgba(243,240,234,.86);padding:76px 0 36px}
+.ftr__top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;padding-bottom:44px;border-bottom:1px solid var(--line-d)}
+.ftr__brand{display:flex;align-items:center;gap:18px;text-decoration:none}
+.disc{width:56px;height:56px;border-radius:50%;background:var(--paper);display:grid;place-items:center;flex:none}
+.disc img{width:46px;height:46px}
+.ftr__brand b{display:block;font:500 22px/1 var(--lat);letter-spacing:.34em;color:var(--paper)}
+.ftr__brand small{display:block;font-size:13px;letter-spacing:.12em;margin-top:10px;opacity:.72}
+.ftr__nav{display:flex;flex-wrap:wrap;gap:12px 30px;align-content:center;font-size:14px;letter-spacing:.12em}
+.ftr__nav a{text-decoration:none}
+.ftr__nav a:hover{opacity:.6}
+.ftr__bot{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;padding-top:26px;font-size:12.5px;letter-spacing:.08em;opacity:.64}
+
+/* floating contact */
+.fab{position:fixed;right:22px;bottom:22px;z-index:30;display:flex;align-items:center;gap:10px;text-decoration:none;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .4s,transform .4s}
+.fab.is-on{opacity:1;transform:none;pointer-events:auto}
+.fab span{background:var(--paper);color:var(--ink);font-size:14px;letter-spacing:.08em;padding:10px 16px;border-radius:8px;box-shadow:0 8px 26px rgba(43,34,27,.14)}
+.fab i{width:54px;height:54px;border-radius:12px;background:var(--coffee);display:grid;place-items:center;color:var(--paper);box-shadow:0 8px 26px rgba(43,34,27,.2)}
+.fab svg{width:24px;height:24px}
+
+@media (max-width:1100px){
+  .hero{grid-template-columns:minmax(0,1fr) minmax(0,480px)}
+  .sup__item{grid-template-columns:44px minmax(0,1fr) 160px;gap:22px}
+}
+@media (max-width:960px){
+  :root{--hdr:68px}
+  .nav,.lang,.login{display:none}
+  .hdr__in{grid-template-columns:1fr auto}
+  .brand img{width:40px;height:40px}
+  .brand b{font-size:19px}
+  .hero{grid-template-columns:minmax(0,1fr);min-height:0;padding-top:34px;padding-bottom:56px;gap:22px}
+  .stage{justify-self:center;max-width:540px}
+  .hero__meta{display:none}
+  .sho__grid{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"copy" "qs" "stage" "cta"}
+  .sho__stage{max-width:520px;width:100%;justify-self:center;margin-top:48px;aspect-ratio:560/1080}
+  .svc__grid,.sup__grid{grid-template-columns:minmax(0,1fr)}
+  .svc__aside,.sup__aside{position:static}
+  .sec-head{grid-template-columns:minmax(0,1fr)}
+  .sec-head .sec-lede{justify-self:start}
+  .why__grid{grid-template-columns:minmax(0,1fr);gap:48px}
+  .ftr__top{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  body{font-size:15px}
+  .h1{margin:22px 0 20px;line-height:1.62}
+  .ctas{margin-top:30px;gap:10px;flex-wrap:nowrap}
+  .ctas .btn{flex:1 1 0;padding:0 12px;gap:10px;height:52px;font-size:13.5px;letter-spacing:.08em}
+  .ctas .btn svg{width:16px}
+  .close .ctas .btn{flex:0 1 auto;padding:0 24px}
+  .tl{gap:12px}
+  .cap{padding-left:0;min-height:76px}
+  .svc__photo{aspect-ratio:16/10;margin-top:30px}
+  .svc__list a{grid-template-columns:40px minmax(0,1fr) 22px;padding:20px 2px;row-gap:0}
+  .svc__en{grid-column:2;grid-row:2;font-size:14px;line-height:1.4}
+  .svc__ar{grid-column:3;grid-row:1/3}
+  .svc__list a:hover,.svc__list a.is-on{padding-left:2px;background:none}
+  .sup__item{grid-template-columns:34px minmax(0,1fr);gap:4px 10px;padding:28px 0}
+  .sup__item img{grid-column:2;aspect-ratio:21/9;margin-top:16px}
+  .why__card figure{aspect-ratio:16/11}
+  .fab span{display:none}
+  .fab i{width:50px;height:50px}
+  .q{grid-template-columns:38px minmax(0,1fr) 22px;padding:18px 0}
+  .q__tx{font-size:14.5px}
+  .close::before{background:linear-gradient(180deg,rgba(43,34,27,.72),rgba(43,34,27,.86))}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+<script type="importmap">
+{"imports":{
+  "react":"https://esm.sh/react@18.3.1",
+  "react/":"https://esm.sh/react@18.3.1/",
+  "react-dom":"https://esm.sh/react-dom@18.3.1?external=react",
+  "react-dom/":"https://esm.sh/react-dom@18.3.1&external=react/",
+  "remotion":"https://esm.sh/remotion@4.0.539?external=react,react-dom",
+  "remotion/":"https://esm.sh/remotion@4.0.539&external=react,react-dom/",
+  "@remotion/player":"https://esm.sh/@remotion/player@4.0.539?external=react,react-dom,remotion",
+  "htm":"https://esm.sh/htm@3.1.1"
+}}
+</script>
+</head>
+<body>
+<a class="sr" href="#main">本文へ移動</a>
+
+<header class="hdr" id="top">
+  <div class="wrap hdr__in">
+    <a class="brand" href="#top" aria-label="XIUYI トップ"><img src="../assets/logo-mark.png" alt="" width="46" height="46"><b>XIUYI</b></a>
+    <nav class="nav" aria-label="メイン">
+      <a href="#services">サービス</a>
+      <a href="#column">コラム</a>
+      <a href="#company">会社案内</a>
+      <a href="#sho" class="lat">SHŌ AI</a>
+    </nav>
+    <div class="tools">
+      <details class="lang">
+        <summary>日本語 <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 1l4 4 4-4"/></svg></summary>
+        <ul>
+          <li><a href="#" aria-current="true">日本語</a></li>
+          <li><a href="#">English</a></li>
+          <li><a href="#">中文</a></li>
+        </ul>
+      </details>
+      <a class="login" href="#login">ログイン</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span>メニュー</span><i aria-hidden="true"></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="メニュー" aria-hidden="true">
+  <div class="menu__top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" alt="" width="40" height="40"><b>XIUYI</b></a>
+    <button class="menu__close" type="button"><span>閉じる</span><i aria-hidden="true"></i></button>
+  </div>
+  <nav class="menu__nav" aria-label="メニュー">
+    <a href="#services">サービス <small>Services</small></a>
+    <a href="#column">コラム <small>Column</small></a>
+    <a href="#company">会社案内 <small>Company</small></a>
+    <a href="#sho"><span class="lat">SHŌ AI</span> <small>Assistant</small></a>
+    <a href="#contact">相談を予約 <small>Consultation</small></a>
+  </nav>
+  <div class="menu__foot">
+    <a href="#" aria-current="true">日本語</a><a href="#">English</a><a href="#">中文</a>
+    <a href="#login" style="margin-left:auto">ログイン</a>
+  </div>
+</div>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="wrap hero" aria-labelledby="hero-title">
+    <div class="hero__copy">
+      <p class="eyebrow">東京・美と健康のライフスタイル</p>
+      <h1 class="h1" id="hero-title"><span>美・健康・暮らしを、</span><span>日本で再定義する。</span></h1>
+      <p class="lede">XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+      <div class="ctas">
+        <a class="btn btn--primary" href="#services">サービスを見る <svg viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h19M14.5 1l4.5 4-4.5 4"/></svg></a>
+        <a class="btn btn--ghost" href="#contact">相談を予約 <svg viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h19M14.5 1l4.5 4-4.5 4"/></svg></a>
+      </div>
+      <p class="hero__meta"><span>中国語・英語・日本語</span><span>東京・代官山</span></p>
+    </div>
+    <div class="stage" id="journey" role="group" aria-label="XIUYI のケアの流れ：相談、医療機関のマッチング、来日・送迎、同行・通訳、報告書、帰国後フォロー">
+      <div class="dial"><div class="dial__ph"></div></div>
+    </div>
+  </section>
+
+  <!-- SHŌ -->
+  <section class="sho" id="sho" aria-labelledby="sho-title">
+    <div class="wrap sho__grid">
+      <div class="sho__stage" id="sho-stage" aria-hidden="true">
+        <span class="cm cm--tl"></span><span class="cm cm--tr"></span><span class="cm cm--bl"></span><span class="cm cm--br"></span>
+        <div class="sho__screen" id="sho-screen"></div>
+      </div>
+      <div class="sho__copy">
+        <p class="eyebrow">AI アシスタント</p>
+        <h2 class="h2" id="sho-title"><span class="lat">SHŌ</span>でサービス情報を確認</h2>
+        <p class="sec-lede"><span class="lat">SHŌ</span>は XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+      </div>
+      <ol class="qs" aria-label="質問の例">
+        <li><button class="q is-on" type="button" aria-pressed="true"><span class="q__no">Q1</span><span class="q__tx">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span><svg class="q__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg><span class="q__bar"><i></i></span></button></li>
+        <li><button class="q" type="button" aria-pressed="false"><span class="q__no">Q2</span><span class="q__tx">滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span><svg class="q__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg><span class="q__bar"><i></i></span></button></li>
+        <li><button class="q" type="button" aria-pressed="false"><span class="q__no">Q3</span><span class="q__tx">母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span><svg class="q__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg><span class="q__bar"><i></i></span></button></li>
+      </ol>
+      <div class="sho__cta">
+        <a class="btn btn--light" href="#sho"><span><span class="lat" style="font-weight:600;letter-spacing:.1em">SHŌ</span>に相談</span> <svg viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h19M14.5 1l4.5 4-4.5 4"/></svg></a>
+        <p>回答は一般的なご案内です。<br>診療上の判断は医療機関が行います。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="svc" id="services" aria-labelledby="svc-title">
+    <div class="wrap svc__grid">
+      <div class="svc__aside">
+        <p class="eyebrow">Services</p>
+        <h2 class="h2" id="svc-title">医療サービス</h2>
+        <p class="sec-lede">健診から専門医の受診、滞在まで。目的に合わせて、日本の医療機関との連携を支援します。</p>
+        <figure class="svc__photo" aria-hidden="true">
+          <img class="is-on" src="../assets/photos/checkup-equipment.jpg" alt="" data-i="0">
+          <img src="../assets/photos/support-consult.jpg" alt="" data-i="1" loading="lazy">
+          <img src="../assets/photos/regenerative-waiting-area.jpg" alt="" data-i="2" loading="lazy">
+          <img src="../assets/photos/aesthetic-light.jpg" alt="" data-i="3" loading="lazy">
+          <img src="../assets/photos/support-attend.jpg" alt="" data-i="4" loading="lazy">
+          <img src="../assets/photos/service-detail-ivf.jpg" alt="" data-i="5" loading="lazy">
+          <img src="../assets/photos/support-transfer.jpg" alt="" data-i="6" loading="lazy">
+          <figcaption id="svc-cap">Precision Check-up</figcaption>
+        </figure>
+      </div>
+      <ol class="svc__list">
+        <li><a href="#services" data-i="0" class="is-on"><span class="svc__no">01</span><span class="svc__jp">精密健診</span><span class="svc__en">Precision Check-up</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+        <li><a href="#services" data-i="1"><span class="svc__no">02</span><span class="svc__jp">医療受診</span><span class="svc__en">Specialist Visits</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+        <li><a href="#services" data-i="2"><span class="svc__no">03</span><span class="svc__jp">再生医療</span><span class="svc__en">Regenerative Medicine</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+        <li><a href="#services" data-i="3"><span class="svc__no">04</span><span class="svc__jp">美容医療</span><span class="svc__en">Aesthetic Medicine</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+        <li><a href="#services" data-i="4"><span class="svc__no">05</span><span class="svc__jp">同行・医療通訳</span><span class="svc__en">Escort &amp; Interpreting</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+        <li><a href="#services" data-i="5"><span class="svc__no">06</span><span class="svc__jp">生殖補助医療</span><span class="svc__en">Assisted Reproduction</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+        <li><a href="#services" data-i="6"><span class="svc__no">07</span><span class="svc__jp">移動・宿泊サポート</span><span class="svc__en">Transfer &amp; Stay</span><svg class="svc__ar" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h21M16.5 1l4.5 4-4.5 4"/></svg></a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="why" id="company" aria-labelledby="why-title">
+    <div class="wrap">
+      <header class="sec-head">
+        <div><p class="eyebrow">Why XIUYI</p><h2 class="h2" id="why-title">XIUYI が選ばれる理由</h2></div>
+        <p class="sec-lede">初回相談から帰国後の連絡まで、ひとつの窓口で。</p>
+      </header>
+      <ol class="why__grid">
+        <li class="why__card">
+          <figure><img src="../assets/photos/why-network.jpg" alt="提携する医療機関のエントランス" loading="lazy"></figure>
+          <div class="why__head"><span class="why__no">01</span><h3>日本の正規医療機関と連携</h3></div>
+          <p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+        </li>
+        <li class="why__card">
+          <figure><img src="../assets/photos/why-concierge.jpg" alt="受付カウンターに置かれた資料" loading="lazy"></figure>
+          <div class="why__head"><span class="why__no">02</span><h3>専任担当者による一貫した調整</h3></div>
+          <p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+        </li>
+        <li class="why__card">
+          <figure><img src="../assets/photos/why-hospitality.jpg" alt="東京タワーを望む滞在先の窓辺" loading="lazy"></figure>
+          <div class="why__head"><span class="why__no">03</span><h3>移動・宿泊のサポート</h3></div>
+          <p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section class="sup" id="support" aria-labelledby="sup-title">
+    <div class="wrap sup__grid">
+      <div class="sup__aside">
+        <p class="eyebrow">Support</p>
+        <h2 class="h2" id="sup-title">サポート内容</h2>
+        <p class="sec-lede">受診の前から帰国後まで、ひとつの流れとして整えます。</p>
+        <p class="sup__note">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+      </div>
+      <ol class="sup__list">
+        <li class="sup__item"><span class="sup__no">01</span><div><h3>医療ニーズの確認と予約調整</h3><p>既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p></div><img src="../assets/photos/support-consult.jpg" alt="医師と資料を確認する相談の様子" loading="lazy"></li>
+        <li class="sup__item"><span class="sup__no">02</span><div><h3>中国語・英語・日本語での同行サポート</h3><p>来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p></div><img src="../assets/photos/support-attend.jpg" alt="同行する担当者" loading="lazy"></li>
+        <li class="sup__item"><span class="sup__no">03</span><div><h3>医療機関・医師とのマッチング</h3><p>検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p></div><img src="../assets/photos/support-access.jpg" alt="医療機関の外観" loading="lazy"></li>
+        <li class="sup__item"><span class="sup__no">04</span><div><h3>空港送迎と医療機関間の移動</h3><p>フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p></div><img src="../assets/photos/support-transfer.jpg" alt="送迎車両" loading="lazy"></li>
+        <li class="sup__item"><span class="sup__no">05</span><div><h3>宿泊・滞在日程の調整</h3><p>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></div><img src="../assets/photos/support-stay-ryokan.jpg" alt="庭に面した和室の客室" loading="lazy"></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="close" id="contact" aria-labelledby="close-title">
+    <div class="wrap">
+      <p class="eyebrow">Consultation</p>
+      <h2 class="h2" id="close-title">医療相談を予約する</h2>
+      <p class="sec-lede">これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+      <div class="ctas"><a class="btn btn--light" href="#contact">相談を予約 <svg viewBox="0 0 20 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h19M14.5 1l4.5 4-4.5 4"/></svg></a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr" id="column">
+  <div class="wrap">
+    <div class="ftr__top">
+      <a class="ftr__brand" href="#top"><span class="disc"><img src="../assets/logo-mark.png" alt="" width="46" height="46"></span><span><b>XIUYI</b><small>秀一株式会社 · 東京都渋谷区（代官山）</small></span></a>
+      <nav class="ftr__nav" aria-label="フッター">
+        <a href="#services">サービス</a><a href="#column">コラム</a><a href="#support">事例</a><a href="#support">医師</a><a href="#company">会社案内</a><a href="#privacy">プライバシー</a>
+      </nav>
+    </div>
+    <div class="ftr__bot"><span>© XIUYI CO., LTD.</span><span>診断・治療は各医療機関および医師が行います。</span></div>
+  </div>
+</footer>
+
+<a class="fab" href="#contact" aria-label="お問い合わせ"><span>お問い合わせ</span><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5.5h16v10H10l-4 3.5v-3.5H4z" stroke-linejoin="round"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" stroke-width="2" stroke-linecap="round"/></svg></i></a>
+
+<script>
+// Page shell: header state, overlay menu, services photo, floating contact.
+(() => {
+  const root = document.documentElement, hdr = document.querySelector('.hdr'), fab = document.querySelector('.fab');
+  const onScroll = () => { const y = scrollY; hdr.classList.toggle('is-scrolled', y > 8); fab.classList.toggle('is-on', y > innerHeight * 0.6); };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  const menu = document.getElementById('menu'), openBtn = document.querySelector('.menu-btn');
+  const setMenu = (open) => {
+    root.toggleAttribute('data-menu', open);
+    openBtn.setAttribute('aria-expanded', String(open));
+    menu.setAttribute('aria-hidden', String(!open));
+    if (open) menu.querySelector('.menu__close').focus(); else openBtn.focus({ preventScroll: true });
+  };
+  openBtn.addEventListener('click', () => setMenu(true));
+  menu.querySelector('.menu__close').addEventListener('click', () => setMenu(false));
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && root.hasAttribute('data-menu')) setMenu(false); });
+
+  const lang = document.querySelector('.lang');
+  document.addEventListener('click', (e) => { if (lang.open && !lang.contains(e.target)) lang.open = false; });
+
+  const imgs = [...document.querySelectorAll('.svc__photo img')], links = [...document.querySelectorAll('.svc__list a')];
+  const cap = document.getElementById('svc-cap');
+  const show = (i) => {
+    imgs.forEach((im) => im.classList.toggle('is-on', +im.dataset.i === i));
+    links.forEach((a) => a.classList.toggle('is-on', +a.dataset.i === i));
+    cap.textContent = links[i].querySelector('.svc__en').textContent;
+  };
+  links.forEach((a) => { const i = +a.dataset.i; a.addEventListener('mouseenter', () => show(i)); a.addEventListener('focus', () => show(i)); });
+})();
+</script>
+
+<script type="module">
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
+import { AbsoluteFill, Sequence, Freeze, useCurrentFrame, useVideoConfig, interpolate, interpolateColors, spring, Easing } from 'remotion';
+import { Thumbnail } from '@remotion/player';
+import htm from 'htm';
+const html = htm.bind(React.createElement);
+// ?debug exposes frame seeking for inspection; never used by the page itself
+const DEBUG = new URLSearchParams(location.search).has('debug') ? (window.__v12 = {}) : null;
+
+/* ───────────── shared design tokens + motion helpers ───────────── */
+const C = { ink: '#44352a', coffee: '#5b4938', muted: '#6b5946', gold: '#b9a17b', logo: '#7a6a56', paper: '#f3f0ea', beige: '#e6e2db' };
+const JP = '"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif';
+const LAT = '"Cormorant Garamond","Shippori Mincho",serif';
+const CLAMP = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' };
+const OUT = Easing.bezier(0.16, 1, 0.3, 1);
+const INOUT = Easing.bezier(0.65, 0, 0.35, 1);
+// 0→1 over [a, a+d] frames
+const lerp = (t, a, d, easing = INOUT) => interpolate(t, [a, a + d], [0, 1], { ...CLAMP, easing });
+// spring that stays at 0 before it starts
+const sp = (f, fps, config = { damping: 200 }, durationInFrames) => (f <= 0 ? 0 : spring({ frame: f, fps, config, durationInFrames }));
+// Line drawing: pathLength=1 lets any path draw in (p) and retract from its start (q)
+const dash = (p, q = 0) => ({ pathLength: 1, strokeDasharray: '1 1', strokeDashoffset: 1 - p - q, opacity: p > 0.002 && q < 0.998 ? 1 : 0 });
+const quad = (a, b, c, s) => { const u = 1 - s; return [u * u * a[0] + 2 * u * s * b[0] + s * s * c[0], u * u * a[1] + 2 * u * s * b[1] + s * s * c[1]]; };
+const quadAngle = (a, b, c, s) => Math.atan2(2 * (1 - s) * (b[1] - a[1]) + 2 * s * (c[1] - b[1]), 2 * (1 - s) * (b[0] - a[0]) + 2 * s * (c[0] - b[0])) * 180 / Math.PI;
+const cubic = (P, s) => { const u = 1 - s; return [0, 1].map((i) => u * u * u * P[0][i] + 3 * u * u * s * P[1][i] + 3 * u * s * s * P[2][i] + s * s * s * P[3][i]); };
+// Sample a curve as a polyline so the drawn tip is exactly where the moving marker is
+const poly = (fn, s0, s1, n = 44) => { if (s1 - s0 < 0.002) return 'M0 0'; let d = ''; for (let i = 0; i <= n; i++) { const [x, y] = fn(s0 + (s1 - s0) * i / n); d += (i ? 'L' : 'M') + x.toFixed(2) + ' ' + y.toFixed(2); } return d; };
+
+/* ───────────── frame clock (Player semantics, no AudioContext) ───────────── */
+function useFrameClock({ fps, duration, loop, active, onEnded }) {
+  const [frame, setFrame] = useState(0);
+  const st = useRef({ frame: 0, acc: 0, ended: false });
+  const cb = useRef(onEnded); cb.current = onEnded;
+  useEffect(() => {
+    if (!active) return undefined;
+    let raf = 0, last = performance.now();
+    const tick = (now) => {
+      raf = requestAnimationFrame(tick);
+      const s = st.current;
+      s.acc += Math.max(0, Math.min(64, now - last)) * fps / 1000; last = now;
+      const adv = Math.floor(s.acc); if (!adv) return; s.acc -= adv;
+      if (s.ended) return;
+      let f = s.frame + adv;
+      if (f >= duration) { if (loop) f %= duration; else { f = duration - 1; s.ended = true; } }
+      if (f !== s.frame) { s.frame = f; setFrame(f); }
+      if (s.ended && cb.current) cb.current();
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, fps, duration, loop]);
+  const seek = useCallback((f) => { const s = st.current; s.frame = f; s.acc = 0; s.ended = !loop && f >= duration - 1; setFrame(f); }, [duration, loop]);
+  return [frame, seek, st];
+}
+const useMedia = (q) => { const [m, setM] = useState(() => matchMedia(q).matches); useEffect(() => { const mq = matchMedia(q); const f = () => setM(mq.matches); mq.addEventListener('change', f); return () => mq.removeEventListener('change', f); }, [q]); return m; };
+const usePageVisible = () => { const [v, setV] = useState(!document.hidden); useEffect(() => { const f = () => setV(!document.hidden); document.addEventListener('visibilitychange', f); return () => document.removeEventListener('visibilitychange', f); }, []); return v; };
+const useInView = (el) => { const [v, setV] = useState(false); useEffect(() => { if (!el) return undefined; const io = new IntersectionObserver(([e]) => setV(e.isIntersecting), { rootMargin: '60px' }); io.observe(el); return () => io.disconnect(); }, [el]); return v; };
+
+/* ═════════════════════ HERO · "The care journey" composition ═════════════════════ */
+const FPS = 60, CH = 240, NCH = 6, DUR = CH * NCH, GLIDE = 54, EXIT = CH - 58, CLOSE_AT = 76, RETRACT_AT = CH - 82;
+const CX = 500, CY = 500, R = 330;
+const CHAPTERS = [
+  { no: '01', en: 'Consultation', label: '相談', lines: ['相談'], desc: '検査結果・病歴・今回の受診目的をうかがい、相談内容を整理します。' },
+  { no: '02', en: 'Matching', label: '医療機関のマッチング', lines: ['医療機関の', 'マッチング'], desc: '検査内容に応じて施設と専門医を選定し、予約と資料提出を代行します。' },
+  { no: '03', en: 'Arrival', label: '来日・送迎', lines: ['来日・送迎'], desc: 'フライトと受診予定に合わせ、空港送迎と医療機関間の移動を手配します。' },
+  { no: '04', en: 'Escort', label: '同行・通訳', lines: ['同行・通訳'], desc: '中国語・英語・日本語で、来院から退出まで担当者が同席します。' },
+  { no: '05', en: 'Report', label: '報告書', lines: ['報告書'], desc: '医療機関からの診療資料を整理し、翻訳にも対応します。' },
+  { no: '06', en: 'Follow-up', label: '帰国後フォロー', lines: ['帰国後', 'フォロー'], desc: '帰国後も、受診後のご連絡まで専任担当者が調整します。' },
+];
+const rad = (deg) => (deg - 90) * Math.PI / 180; // degrees clockwise from 12 o'clock
+const polar = (deg, r) => [CX + r * Math.cos(rad(deg)), CY + r * Math.sin(rad(deg))];
+const circleD = (r) => `M ${CX} ${CY - r} A ${r} ${r} 0 1 1 ${CX} ${CY + r} A ${r} ${r} 0 1 1 ${CX} ${CY - r}`;
+const TICKS = (() => {
+  let minor = '', mid = '';
+  for (let i = 0; i < 120; i++) {
+    const d = i * 3; if (d % 60 === 0) continue;
+    const isMid = d % 15 === 0;
+    const [x1, y1] = polar(d, isMid ? 338 : 341), [x2, y2] = polar(d, isMid ? 354 : 349);
+    const seg = `M${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}`;
+    if (isMid) mid += seg; else minor += seg;
+  }
+  return { minor, mid };
+})();
+// Where the playhead is, in chapter units: head travels 0→6, tail reels it back in during chapter 06
+function ringState(frame, fps) {
+  const ci = Math.min(NCH - 1, Math.floor(frame / CH)), t = frame - ci * CH;
+  if (ci < NCH - 1) return { ci, t, head: ci + sp(t - (CH - GLIDE), fps, { damping: 200 }, GLIDE), tail: 0 };
+  const head = ci + sp(t - CLOSE_AT, fps, { damping: 200 }, 60);
+  const tail = t >= CH - 1 ? NCH : NCH * interpolate(t, [RETRACT_AT, CH - 1], [0, 1], { ...CLAMP, easing: INOUT });
+  return { ci, t, head, tail };
+}
+const arrivals = (k) => (k === 0 ? [0, 5 * CH + CLOSE_AT + 40] : [k * CH - 16]);
+
+const Dial = ({ compact }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const { ci, t, head, tail } = ringState(frame, fps);
+  const prev = ringState(Math.max(0, frame - 1), fps);
+  const headDeg = head * 60, tailDeg = tail * 60, len = Math.max(0, headDeg - tailDeg);
+  const moving = Math.min(1, Math.abs(headDeg - prev.head * 60) / 1.1);
+  const [hx, hy] = polar(headDeg, R);
+  const breathe = Math.sin(frame / 108 * Math.PI * 2); // 12 whole cycles per loop
+  const spin = -(frame / DUR) * 6;                     // 2 dash periods per loop → seamless
+  let wave = '';
+  for (let i = 0; i < 120; i++) {
+    const d = i * 3; if (d % 60 === 0) continue;
+    const dd = Math.abs(((d - headDeg) % 360 + 540) % 360 - 180); if (dd > 24) continue;
+    const amp = Math.exp(-(dd * dd) / 72) * (0.35 + 0.65 * moving);
+    const [x1, y1] = polar(d, 341), [x2, y2] = polar(d, 349 + 15 * amp);
+    wave += `M${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}`;
+  }
+  const close = interpolate(frame, [5 * CH + CLOSE_AT + 40, 5 * CH + CLOSE_AT + 70, 5 * CH + RETRACT_AT], [0, 1, 0], CLAMP);
+  const nodes = CHAPTERS.map((c, k) => {
+    const lit = k === 0 ? 1 : Math.min(interpolate(head, [k - 0.1, k - 0.01], [0, 1], CLAMP), interpolate(tail, [k - 0.04, k + 0.01], [1, 0], CLAMP));
+    let bump = 0, rip = 0;
+    for (const a of arrivals(k)) {
+      const dt = frame - a;
+      bump = Math.max(bump, interpolate(dt, [0, 9, 42], [0, 1, 0], { ...CLAMP, easing: OUT }));
+      if (dt >= 0 && dt < 60) rip = Math.max(rip, dt / 60);
+    }
+    const act = k === ci ? interpolate(t, [0, 24, CH - GLIDE, CH - GLIDE + 22], [0, 1, 1, 0], CLAMP) : 0;
+    const [x, y] = polar(k * 60, R);
+    return { k, x, y, lit, bump, rip, act };
+  });
+  return html`<${AbsoluteFill}>
+    <div style=${{ position: 'absolute', left: 140, top: 140, width: 720, height: 720, borderRadius: '50%', background: 'radial-gradient(circle, rgba(243,240,234,.95) 0%, rgba(243,240,234,.7) 52%, rgba(243,240,234,0) 71%)' }}></div>
+    <svg width="1000" height="1000" viewBox="0 0 1000 1000" style=${{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+      <defs>
+        <mask id="jr-lit" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
+          <path d=${circleD(346)} fill="none" stroke="#fff" strokeWidth="44" pathLength="360" strokeDasharray=${`${len} 400`} strokeDashoffset=${-tailDeg} />
+        </mask>
+      </defs>
+      <circle cx=${CX} cy=${CY} r=${R} fill="none" stroke=${C.gold} strokeOpacity=${0.7 + 0.3 * close} strokeWidth=${1.2 + 1.4 * close} />
+      <g transform=${`rotate(${spin} ${CX} ${CY})`}>
+        <circle cx=${CX} cy=${CY} r="298" fill="none" stroke=${C.gold} strokeOpacity="0.55" strokeWidth="1.4" pathLength="360" strokeDasharray="0.45 2.55" />
+      </g>
+      <path d=${TICKS.minor} stroke=${C.gold} strokeOpacity="0.85" strokeWidth="1.3" />
+      <path d=${TICKS.mid} stroke=${C.gold} strokeWidth="1.8" />
+      <g mask="url(#jr-lit)">
+        <path d=${TICKS.minor} stroke=${C.coffee} strokeWidth="1.3" />
+        <path d=${TICKS.mid} stroke=${C.coffee} strokeWidth="1.8" />
+      </g>
+      <path d=${wave || 'M0 0'} stroke=${C.coffee} strokeWidth="1.5" strokeLinecap="round" />
+      <path d=${circleD(R)} fill="none" stroke=${C.coffee} strokeWidth="2.4" pathLength="360" strokeDasharray=${`${len} 400`} strokeDashoffset=${-tailDeg} opacity=${len > 0.05 ? 1 : 0} />
+      ${nodes.map((n) => html`<g key=${n.k}>
+        <circle cx=${n.x} cy=${n.y} r=${10 + 38 * n.rip} fill="none" stroke=${C.coffee} strokeWidth="1.2" strokeOpacity=${n.rip > 0 ? 0.55 * (1 - n.rip) : 0} />
+        <circle cx=${n.x} cy=${n.y} r="18" fill="none" stroke=${C.coffee} strokeOpacity=${0.45 * n.act} strokeWidth="1.2" />
+        <circle cx=${n.x} cy=${n.y} r=${9 * (1 + 0.38 * n.bump)} fill=${interpolateColors(n.lit, [0, 1], [C.paper, C.coffee])} stroke=${interpolateColors(n.lit, [0, 1], [C.gold, C.coffee])} strokeWidth="1.6" />
+      </g>`)}
+      <circle cx=${hx} cy=${hy} r="26" fill=${C.gold} fillOpacity="0.14" />
+      <circle cx=${hx} cy=${hy} r=${13.5 + 1.8 * breathe} fill="none" stroke=${C.gold} strokeWidth="1.2" />
+      <circle cx=${hx} cy=${hy} r="5.5" fill=${C.coffee} />
+    </svg>
+    ${nodes.map((n) => html`<${RingLabel} key=${'l' + n.k} n=${n} compact=${compact} />`)}
+  <//>`;
+};
+
+const RingLabel = ({ n, compact }) => {
+  const c = CHAPTERS[n.k];
+  const deg = n.k * 60;
+  const [x, y] = polar(deg, compact ? 392 : 388);
+  const side = n.k === 0 ? 'top' : n.k === 3 ? 'bottom' : n.k < 3 ? 'right' : 'left';
+  const tr = { top: '-50% -100%', bottom: '-50% 0', right: '0 -50%', left: '-100% -50%' }[side];
+  const align = side === 'right' ? 'left' : side === 'left' ? 'right' : 'center';
+  const opacity = 0.46 + 0.2 * n.lit + 0.34 * n.act;
+  return html`<div style=${{ position: 'absolute', left: x, top: y, translate: tr, textAlign: align, opacity, color: C.ink, whiteSpace: 'nowrap' }}>
+    <div style=${{ fontFamily: LAT, fontStyle: 'italic', fontWeight: 500, fontSize: compact ? 40 : 25, color: C.logo, lineHeight: 1.1, letterSpacing: '.04em' }}>${c.no}</div>
+    ${compact ? null : c.lines.map((l, i) => html`<div key=${i} style=${{ fontFamily: JP, fontSize: 21, letterSpacing: '.12em', lineHeight: 1.4, marginTop: i ? 0 : 4 }}>${l}</div>`)}
+  </div>`;
+};
+
+/* six line-work vignettes, drawn in a 320×200 box */
+const ArtConsult = ({ t, out }) => {
+  const P0 = [124, 84], P1 = [160, 48], P2 = [196, 84];
+  const s = t < 116 ? lerp(t, 70, 36) : 1 - lerp(t, 122, 36);
+  const [dx, dy] = quad(P0, P1, P2, s);
+  const r1 = lerp(t, 104, 40, OUT), r2 = lerp(t, 156, 40, OUT);
+  return html`<g fill="none" strokeLinecap="round">
+    <path d="M34 150 H286" stroke=${C.gold} strokeWidth="1.5" ...${dash(lerp(t, 0, 44), out)} />
+    <circle cx="96" cy="76" r="17" stroke=${C.coffee} strokeWidth="1.7" transform="rotate(-90 96 76)" ...${dash(lerp(t, 4, 36))} />
+    <path d="M62 146 C62 110 130 110 130 146" stroke=${C.coffee} strokeWidth="1.7" ...${dash(lerp(t, 10, 44))} />
+    <circle cx="224" cy="76" r="17" stroke=${C.coffee} strokeWidth="1.7" transform="rotate(-90 224 76)" ...${dash(lerp(t, 14, 36))} />
+    <path d="M190 146 C190 110 258 110 258 146" stroke=${C.coffee} strokeWidth="1.7" ...${dash(lerp(t, 20, 44))} />
+    ${[0.12, 0.31, 0.5, 0.69, 0.88].map((u, k) => { const [x, y] = quad(P0, P1, P2, u); return html`<circle key=${k} cx=${x} cy=${y} r="1.9" fill=${C.gold} stroke="none" opacity=${0.9 * lerp(t, 46 + k * 5, 16)} />`; })}
+    <circle cx=${dx} cy=${dy} r="4.4" fill=${C.coffee} stroke="none" opacity=${interpolate(t, [64, 72, 158, 166], [0, 1, 1, 0], CLAMP)} />
+    <circle cx="224" cy="76" r=${17 + 17 * r1} stroke=${C.coffee} strokeWidth="1.2" opacity=${r1 > 0 ? 0.65 * (1 - r1) : 0} />
+    <circle cx="96" cy="76" r=${17 + 17 * r2} stroke=${C.coffee} strokeWidth="1.2" opacity=${r2 > 0 ? 0.65 * (1 - r2) : 0} />
+    ${[64, 50, 36].map((w, k) => html`<path key=${'n' + k} d=${`M${160 - w / 2} ${168 + k * 10} h${w}`} stroke=${C.gold} strokeWidth="1.7" ...${dash(lerp(t, 92 + k * 10, 30, OUT))} />`)}
+  </g>`;
+};
+
+const ArtMatch = ({ t, out, fps }) => {
+  const pts = []; for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) pts.push([176 + c * 34, 64 + r * 36]);
+  const scanX = interpolate(t, [34, 96], [152, 300], { ...CLAMP, easing: INOUT });
+  const scanO = interpolate(t, [34, 44, 86, 96], [0, 0.8, 0.8, 0], CLAMP);
+  const CAND = [1, 6, 8], PICK = 6;
+  const dim = lerp(t, 100, 20), unpick = lerp(t, 118, 18), pick = sp(t - 122, fps, { damping: 13, stiffness: 150 });
+  const L = [[60, 100], [118, 100], [168, 142], [230, 101]];
+  return html`<g fill="none" strokeLinecap="round">
+    <circle cx="48" cy="100" r="12" stroke=${C.coffee} strokeWidth="1.7" transform="rotate(-90 48 100)" ...${dash(lerp(t, 0, 32), out)} />
+    <circle cx="48" cy="100" r="3.8" fill=${C.coffee} stroke="none" opacity=${lerp(t, 10, 20)} />
+    <path d=${poly((s) => cubic(L, s), 0, lerp(t, 120, 42))} stroke=${C.coffee} strokeWidth="1.6" />
+    <line x1=${scanX} y1="42" x2=${scanX} y2="158" stroke=${C.gold} strokeWidth="1.3" opacity=${scanO} />
+    ${pts.map((p, k) => {
+      const s = sp(t - 6 - k * 2.4, fps);
+      const near = Math.max(0, 1 - Math.abs(p[0] - scanX) / 26) * scanO;
+      const isC = CAND.includes(k);
+      return html`<circle key=${k} cx=${p[0]} cy=${p[1]} r=${3.4 * s * (1 + 0.4 * near)} stroke="none" fill=${interpolateColors(near, [0, 1], [C.gold, C.coffee])} opacity=${1 - (isC ? 0 : 0.62 * dim)} />`;
+    })}
+    ${CAND.map((k, j) => {
+      const rs = sp(t - 90 - j * 7, fps);
+      const gone = k === PICK ? 0 : unpick;
+      return html`<circle key=${'c' + k} cx=${pts[k][0]} cy=${pts[k][1]} r=${9 * rs + (k === PICK ? 3.5 * pick : 0)} stroke=${C.coffee} strokeWidth="1.3" opacity=${rs * (1 - gone)} />`;
+    })}
+    <circle cx="244" cy="100" r="21" stroke=${C.gold} strokeWidth="1.3" transform="rotate(-90 244 100)" ...${dash(lerp(t, 126, 32, OUT))} />
+    <circle cx="244" cy="100" r=${4.8 * pick} fill=${C.coffee} stroke="none" />
+  </g>`;
+};
+
+const ArtArrival = ({ t, out }) => {
+  const P0 = [34, 140], P1 = [146, -22], P2 = [230, 142];
+  const a = lerp(t, 30, 84);
+  const [px, py] = quad(P0, P1, P2, a), ang = quadAngle(P0, P1, P2, Math.min(a, 0.995));
+  const land = lerp(t, 112, 40, OUT), car = lerp(t, 120, 44);
+  const sunY = interpolate(t, [0, 170], [200, 150], { ...CLAMP, easing: OUT });
+  return html`<g fill="none" strokeLinecap="round">
+    <defs><clipPath id="jr-sky"><rect x="-20" y="-60" width="360" height="212" /></clipPath></defs>
+    <g clipPath="url(#jr-sky)"><circle cx="98" cy=${sunY} r="42" fill=${C.gold} fillOpacity=${0.16 * lerp(t, 4, 50)} stroke=${C.gold} strokeWidth="1.3" ...${dash(lerp(t, 4, 56))} /></g>
+    <path d="M16 152 H304" stroke=${C.coffee} strokeWidth="1.5" ...${dash(lerp(t, 0, 40), out)} />
+    <path d=${poly((s) => quad(P0, P1, P2, s), 0, a)} stroke=${C.gold} strokeWidth="1.6" />
+    <g transform=${`translate(${px} ${py}) rotate(${ang})`} opacity=${interpolate(t, [30, 38, 112, 122], [0, 1, 1, 0], CLAMP)}>
+      <path d="M8 0 L-6 -5 L-3 0 L-6 5 Z" fill=${C.coffee} stroke="none" />
+    </g>
+    <circle cx="230" cy="148" r=${3 + 22 * land} stroke=${C.coffee} strokeWidth="1.2" opacity=${land > 0 ? 0.75 * (1 - land) : 0} />
+    <rect x=${226 + 32 * car} y="144" width="15" height="6" rx="2.5" fill=${C.coffee} stroke="none" opacity=${interpolate(t, [118, 126], [0, 1], CLAMP)} />
+    <path d="M276 152 V116 H296 V152 M281 126 h10 M281 134 h10 M281 142 h10" stroke=${C.coffee} strokeWidth="1.5" ...${dash(lerp(t, 108, 42))} />
+  </g>`;
+};
+
+const ArtEscort = ({ t, out, fps }) => {
+  const xs = [92, 160, 228], labels = ['中', 'EN', '日'];
+  const hx = 92 + 68 * sp(t - 92, fps) + 68 * sp(t - 128, fps);
+  const hlO = interpolate(t, [52, 68], [0, 1], CLAMP);
+  const walk = lerp(t, 16, 132, Easing.bezier(0.4, 0, 0.3, 1));
+  const W1 = [[38, 154], [110, 140], [210, 168], [284, 152]], W2 = [[38, 166], [110, 152], [210, 180], [284, 164]];
+  const [ax, ay] = cubic(W1, walk), [bx, by] = cubic(W2, walk);
+  const wO = interpolate(t, [16, 24], [0, 1], CLAMP);
+  return html`<g fill="none" strokeLinecap="round">
+    ${xs.map((x, k) => html`<circle key=${k} cx=${x} cy="84" r="28" stroke=${C.gold} strokeWidth="1.5" transform=${`rotate(-90 ${x} 84)`} ...${dash(lerp(t, k * 8, 40), k === 0 ? out : 0)} />`)}
+    <path d="M120 84 H132 M188 84 H200" stroke=${C.coffee} strokeWidth="1.5" ...${dash(lerp(t, 40, 24))} />
+    <circle cx=${hx} cy="84" r="35" stroke=${C.coffee} strokeWidth="1.6" opacity=${hlO} />
+    ${xs.map((x, k) => {
+      const near = Math.max(0, 1 - Math.abs(hx - x) / 68) * hlO;
+      return html`<text key=${'g' + k} x=${x} y="85" textAnchor="middle" dominantBaseline="central" stroke="none" fill=${interpolateColors(near, [0, 1], [C.muted, C.ink])} fontFamily=${k === 1 ? LAT : JP} fontSize=${k === 1 ? 24 : 24} fontWeight=${k === 1 ? 600 : 500} letterSpacing=${k === 1 ? '0.04em' : '0'} opacity=${lerp(t, 26 + k * 8, 24, OUT)}>${labels[k]}</text>`;
+    })}
+    <path d=${poly((s) => cubic(W1, s), 0, walk)} stroke=${C.gold} strokeWidth="1.5" />
+    <path d=${poly((s) => cubic(W2, s), 0, walk)} stroke=${C.coffee} strokeWidth="1.5" strokeOpacity="0.85" />
+    <circle cx=${ax} cy=${ay} r="3.8" fill=${C.gold} stroke="none" opacity=${wO} />
+    <circle cx=${bx} cy=${by} r="3.8" fill=${C.coffee} stroke="none" opacity=${wO} />
+  </g>`;
+};
+
+const ArtReport = ({ t, out, fps }) => {
+  const W = [56, 46, 58, 34, 52, 40];
+  const st = sp(t - 140, fps, { damping: 11, stiffness: 170, mass: 0.7 });
+  const sc = interpolate(st, [0, 1], [1.9, 1]);
+  const ink = lerp(t, 143, 30, OUT);
+  return html`<g fill="none" strokeLinecap="round">
+    <rect x="58" y="28" width="86" height="124" rx="5" stroke=${C.coffee} strokeWidth="1.6" ...${dash(lerp(t, 0, 40), out)} />
+    ${W.map((w, k) => html`<path key=${k} d=${`M70 ${50 + k * 14} h${w}`} stroke=${C.gold} strokeWidth="2.2" ...${dash(lerp(t, 22 + k * 6, 22, OUT))} />`)}
+    <path d="M152 90 H174 M168 84 L174 90 L168 96" stroke=${C.coffee} strokeWidth="1.6" ...${dash(lerp(t, 60, 22))} />
+    <rect x="182" y="28" width="86" height="124" rx="5" stroke=${C.coffee} strokeWidth="1.6" ...${dash(lerp(t, 70, 36))} />
+    ${W.map((w, k) => html`<path key=${'b' + k} d=${`M194 ${50 + k * 14} h${k === 5 ? 26 : w}`} stroke=${C.coffee} strokeOpacity="0.75" strokeWidth="2.2" ...${dash(lerp(t, 96 + k * 6, 22, OUT))} />`)}
+    <g transform=${`translate(248 128) rotate(-10) scale(${sc})`} opacity=${interpolate(t, [140, 145], [0, 1], CLAMP)}>
+      <circle r="21" fill=${C.coffee} fillOpacity="0.08" stroke=${C.coffee} strokeWidth="1.6" />
+      <circle r="17.5" stroke=${C.coffee} strokeWidth="0.9" />
+      <text y="1" textAnchor="middle" dominantBaseline="central" fontFamily=${JP} fontSize="17" fontWeight="600" fill=${C.coffee} stroke="none">済</text>
+    </g>
+    <circle cx="248" cy="128" r=${21 + 18 * ink} stroke=${C.coffee} strokeWidth="1" opacity=${ink > 0 ? 0.5 * (1 - ink) : 0} />
+  </g>`;
+};
+
+const ArtFollow = ({ t, out }) => {
+  const P0 = [236, 108], P1 = [152, -30], P2 = [74, 116];
+  const a = lerp(t, 26, 76);
+  const [px, py] = quad(P0, P1, P2, a), ang = quadAngle(P0, P1, P2, Math.min(a, 0.995));
+  return html`<g fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 152 H304" stroke=${C.gold} strokeWidth="1.5" ...${dash(lerp(t, 0, 40), out)} />
+    <path d="M56 152 V131 L70 119 L84 131 V152 M65 152 V140 H75 V152" stroke=${C.coffee} strokeWidth="1.6" ...${dash(lerp(t, 6, 36))} />
+    <path d="M228 152 V116 H246 V152 M233 126 h8 M233 134 h8 M233 142 h8 M237 116 V104" stroke=${C.coffee} strokeWidth="1.6" ...${dash(lerp(t, 0, 36))} />
+    <path d=${poly((s) => quad(P0, P1, P2, s), 0, a)} stroke=${C.gold} strokeWidth="1.6" />
+    <g transform=${`translate(${px} ${py}) rotate(${ang})`} opacity=${interpolate(t, [26, 34, 100, 110], [0, 1, 1, 0], CLAMP)}>
+      <path d="M8 0 L-6 -5 L-3 0 L-6 5 Z" fill=${C.coffee} stroke="none" />
+    </g>
+    ${[0, 1, 2, 3].map((n) => { const p = interpolate(t, [100 + n * 24, 162 + n * 24], [0, 1], CLAMP); return html`<circle key=${n} cx="70" cy="134" r=${8 + 42 * p} stroke=${C.coffee} strokeWidth="1.1" opacity=${p > 0 ? 0.6 * (1 - p) : 0} />`; })}
+    <path d="M90 128 Q154 66 222 112" stroke=${C.coffee} strokeWidth="1.3" strokeDasharray="2 7" strokeDashoffset=${-t * 0.35} opacity=${interpolate(t, [116, 140], [0, 0.85], CLAMP)} />
+  </g>`;
+};
+const ARTS = [ArtConsult, ArtMatch, ArtArrival, ArtEscort, ArtReport, ArtFollow];
+
+const Word = ({ lines, t, fps, compact }) => {
+  const two = lines.length > 1;
+  const size = compact ? (two ? 64 : 84) : (two ? 58 : 76);
+  let idx = 0;
+  return html`<div style=${{ position: 'absolute', top: compact ? 580 : 566, left: 0, right: 0, textAlign: 'center', fontFamily: JP, fontWeight: 500, fontSize: size, lineHeight: 1.24, letterSpacing: '.08em', paddingLeft: '.08em', color: C.ink, fontFeatureSettings: '"palt"' }}>
+    ${lines.map((ln, li) => html`<div key=${li} style=${{ overflow: 'hidden', padding: '0 .1em .08em' }}>
+      ${[...ln].map((ch) => {
+        const k = idx++;
+        const s = sp(t - 10 - k * 3, fps);
+        const o = interpolate(t, [EXIT + k * 1.6, EXIT + 24 + k * 1.6], [0, 1], { ...CLAMP, easing: INOUT });
+        return html`<span key=${k} style=${{ display: 'inline-block', translate: `0 ${(1 - s) * 105 - o * 60}%`, opacity: Math.min(1, s * 1.5) * (1 - o) }}>${ch}</span>`;
+      })}
+    </div>`)}
+  </div>`;
+};
+
+const Chapter = ({ i, compact }) => {
+  const t = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const c = CHAPTERS[i], Art = ARTS[i];
+  const out = lerp(t, EXIT, 34);
+  const ey = lerp(t, 2, 44, OUT);
+  const k = compact ? 1.32 : 1.28;
+  return html`<${AbsoluteFill}>
+    ${compact ? null : html`<div style=${{ position: 'absolute', top: 256, left: 0, right: 0, textAlign: 'center', fontFamily: LAT, fontSize: 19, fontWeight: 500, color: C.muted, letterSpacing: `${0.6 - 0.26 * ey}em`, textIndent: `${0.6 - 0.26 * ey}em`, opacity: ey * (1 - out), whiteSpace: 'nowrap' }}>
+      <span style=${{ fontStyle: 'italic', fontSize: 23, color: C.logo, letterSpacing: '.04em', marginRight: '.5em' }}>${c.no}</span>${c.en.toUpperCase()}
+    </div>`}
+    <div style=${{ position: 'absolute', left: 500 - 160 * k, top: compact ? 284 : 292, width: 320 * k, height: 200 * k, opacity: 1 - out * 0.9, translate: `0 ${-out * 14}px` }}>
+      <svg viewBox="0 0 320 200" width="100%" height="100%" style=${{ overflow: 'visible' }}><${Art} t=${t} out=${out} fps=${fps} /></svg>
+    </div>
+    <${Word} lines=${c.lines} t=${t} fps=${fps} compact=${compact} />
+  <//>`;
+};
+
+const CareJourney = ({ compact }) => {
+  const { fps } = useVideoConfig();
+  return html`<${AbsoluteFill}>
+    <${Dial} compact=${compact} />
+    ${CHAPTERS.map((c, i) => html`<${Sequence} key=${i} name=${c.label} from=${i * CH} durationInFrames=${4 * fps}><${Chapter} i=${i} compact=${compact} /><//>`)}
+  <//>`;
+};
+
+const Icon = ({ paused }) => (paused
+  ? html`<svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z" /></svg>`
+  : html`<svg viewBox="0 0 12 12" fill="currentColor"><rect x="2.5" y="1.5" width="2.2" height="9" rx=".6" /><rect x="7.3" y="1.5" width="2.2" height="9" rx=".6" /></svg>`);
+
+function HeroApp() {
+  const [el, setEl] = useState(null);
+  const inView = useInView(el), visible = usePageVisible();
+  const reduced = useMedia('(prefers-reduced-motion: reduce)');
+  const compact = useMedia('(max-width: 720px)');
+  const [paused, setPaused] = useState(false);
+  const [frame, seek] = useFrameClock({ fps: FPS, duration: DUR, loop: true, active: inView && visible && !paused && !reduced });
+  useEffect(() => { if (reduced) seek(2 * CH + 120); }, [reduced, seek]);
+  useEffect(() => { if (DEBUG) DEBUG.hero = (f) => { setPaused(true); seek(f); }; }, [seek]);
+  const props = useMemo(() => ({ compact }), [compact]);
+  const ci = Math.min(NCH - 1, Math.floor(frame / CH)), t = frame - ci * CH;
+  const c = CHAPTERS[ci];
+  const sec = Math.floor(frame / FPS), ff = frame % FPS;
+  return html`<${React.Fragment}><div class="dial" ref=${setEl} aria-hidden="true">
+      <${Thumbnail} component=${CareJourney} compositionWidth=${1000} compositionHeight=${1000} frameToDisplay=${frame} durationInFrames=${DUR} fps=${FPS} inputProps=${props} style=${{ width: '100%', height: '100%' }} />
+      ${CHAPTERS.map((ch, k) => { const [x, y] = polar(k * 60, R); return html`<button key=${k} class="dial__hit" type="button" tabIndex="-1" aria-label=${`${ch.no} ${ch.label}`} style=${{ left: `${x / 10}%`, top: `${y / 10}%` }} onClick=${() => seek(k * CH + (reduced ? 120 : 0))}></button>`; })}
+    </div>
+    <div class="tl">
+      <button class="tl__btn" type="button" onClick=${() => setPaused((p) => !p)} aria-label=${paused || reduced ? '再生' : '一時停止'} aria-pressed=${paused}><${Icon} paused=${paused || reduced} /></button>
+      <div class="tl__track">
+        ${CHAPTERS.map((ch, k) => html`<button key=${k} class="tl__seg" type="button" aria-label=${`${ch.no} ${ch.label}`} aria-current=${k === ci ? 'step' : undefined} onClick=${() => seek(k * CH + (reduced ? 120 : 0))}>
+          <span class="tl__bar"><span class="tl__fill" style=${{ transform: `scaleX(${k < ci ? 1 : k === ci ? (t + 1) / CH : 0})` }}></span></span>
+          <span class="tl__no">${ch.no}</span>
+        </button>`)}
+      </div>
+      <span class="tl__tc" aria-hidden="true">00:${String(sec).padStart(2, '0')}<small>.${String(ff).padStart(2, '0')}</small></span>
+    </div>
+    <div class="cap" key=${ci}>
+      <p class="cap__ttl"><i>${c.no}</i>${c.label}</p>
+      <p class="cap__desc">${c.desc}</p>
+    </div><//>`;
+}
+
+/* ═════════════════════ SHŌ · answering composition ═════════════════════ */
+const S_DUR = 600, SWITCH = 18;
+const QUESTIONS = [
+  {
+    q: '初めて日本で人間ドックを受けます。何から準備すればよいですか。',
+    keys: ['人間ドック', '準備'],
+    intro: ['初めての人間ドックなら、まず', '三つのこと', 'を整理しましょう。'],
+    kind: 'list',
+    items: [
+      { t: '受診目的の整理', d: 'これまでの検査結果・病歴・今回の目的をうかがいます。' },
+      { t: '医療機関と検査内容', d: '検査内容に応じて施設と専門医を選び、予約を調整します。' },
+      { t: '渡航・滞在の準備', d: 'フライトに合わせて、送迎・宿泊・日程を整えます。' },
+    ],
+    note: '診療上の判断は医療機関にご相談ください。',
+    next: ['精密健診について', '相談を予約'],
+  },
+  {
+    q: '滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。',
+    keys: ['4 日間', '検査', '美容医療', '同じ日程'],
+    intro: ['4 日間なら、たとえば次のような', '組み立て', 'が考えられます。'],
+    kind: 'days',
+    items: [
+      { t: '到着・送迎', d: '空港から宿泊先へ' },
+      { t: '精密健診', d: '受診に担当者が同行' },
+      { t: '美容医療', d: '医療機関の判断で調整' },
+      { t: '帰国', d: '受診後の連絡まで対応' },
+    ],
+    note: '同じ日程に入れられるかは、検査内容と医療機関の判断によります。',
+    next: ['美容医療について', '日程を相談'],
+  },
+  {
+    q: '母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。',
+    keys: ['母（68 歳）', '付き添い'],
+    intro: ['お母さまの受診では、次の', '範囲', 'でお手伝いします。'],
+    kind: 'list',
+    items: [
+      { t: '空港送迎と移動', d: '空港送迎と、宿泊先・医療機関間の移動を手配します。' },
+      { t: '受診中の同席・通訳', d: '来院から退出まで同席し、中国語・英語・日本語で通訳します。' },
+      { t: '宿泊・滞在日程', d: '受診場所に合わせ、宿泊先と日程の調整を支援します。' },
+    ],
+    note: '※ 送迎・宿泊は付帯サービスです。費用は正式なお見積りをご確認ください。',
+    next: ['同行・医療通訳について', '相談を予約'],
+  },
+];
+const segment = (text, keys) => {
+  const out = []; let i = 0;
+  while (i < text.length) {
+    let hit = null, at = text.length;
+    for (const k of keys) { const j = text.indexOf(k, i); if (j !== -1 && j < at) { at = j; hit = k; } }
+    if (at > i) out.push({ text: text.slice(i, at), key: -1 });
+    if (hit) { out.push({ text: hit, key: keys.indexOf(hit) }); i = at + hit.length; } else i = text.length;
+  }
+  return out;
+};
+const qaTimes = (Q) => {
+  const n = [...Q.q].length;
+  const typeStart = 26, typeEnd = typeStart + Math.round(n * 2.2);
+  const sent = typeEnd + 10, thinkStart = sent + 8, thinkEnd = thinkStart + 58;
+  const introEnd = thinkEnd + Math.round(Q.intro.join('').length * 1.3);
+  const cards = introEnd + 8;
+  const chips = cards + Q.items.length * 14 + 22;
+  const note = chips + 34;
+  return { n, typeStart, typeEnd, sent, thinkStart, thinkEnd, introEnd, cards, chips, note };
+};
+
+const Presence = ({ size, frame, think }) => {
+  const br = Math.sin(frame / 150 * Math.PI * 2);
+  return html`<svg width=${size} height=${size} viewBox="-30 -30 60 60" style=${{ display: 'block', overflow: 'visible', flex: 'none' }}>
+    ${[11, 17.5, 24].map((r, k) => html`<circle key=${k} r=${r * (1 + 0.025 * br * (k + 1))} fill="none" stroke=${C.gold} strokeWidth=${k === 0 ? 1.4 : 1} strokeOpacity=${0.95 - k * 0.24} />`)}
+    ${[0, 1, 2].map((k) => { const p = ((frame + k * 22) % 66) / 66; return html`<circle key=${'w' + k} r=${6 + 26 * p} fill="none" stroke=${C.paper} strokeWidth="1" strokeOpacity=${think * (1 - p) * 0.75} />`; })}
+    <circle r=${4.8 + 0.5 * br + 1.2 * think * (0.5 + 0.5 * Math.sin(frame / 7))} fill=${C.gold} />
+  </svg>`;
+};
+
+const ShoHeader = ({ q, off, compact }) => {
+  const frame = useCurrentFrame();
+  const T = qaTimes(QUESTIONS[q]);
+  const think = interpolate(frame, [off + T.thinkStart, off + T.thinkStart + 10, off + T.thinkEnd - 6, off + T.thinkEnd + 10], [0, 1, 1, 0], CLAMP);
+  const P = compact ? 32 : 40;
+  return html`<div style=${{ position: 'absolute', left: P, right: P, top: 30, height: 78, display: 'flex', alignItems: 'center', gap: 20, borderBottom: '1px solid rgba(185,161,123,.3)', paddingBottom: 18 }}>
+    <${Presence} size=${58} frame=${frame} think=${think} />
+    <div>
+      <div style=${{ fontFamily: LAT, fontSize: 33, fontWeight: 500, letterSpacing: '.24em', lineHeight: 1 }}>SHŌ</div>
+      <div style=${{ fontSize: 18, letterSpacing: '.14em', opacity: 0.62, marginTop: 9, lineHeight: 1 }}>XIUYI の AI アシスタント</div>
+    </div>
+    <div style=${{ marginLeft: 'auto', fontFamily: LAT, fontStyle: 'italic', fontSize: 27, color: C.gold, letterSpacing: '.04em' }}>Q${q + 1}<span style=${{ opacity: 0.5 }}> / 3</span></div>
+  </div>`;
+};
+
+const Typed = ({ text, count, caret = null }) => { const cs = [...text]; return html`<${React.Fragment}><span>${cs.slice(0, count).join('')}</span>${caret}<span style=${{ color: 'transparent' }}>${cs.slice(count).join('')}</span><//>`; };
+
+const QA = ({ q, compact }) => {
+  const t = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const Q = QUESTIONS[q], T = qaTimes(Q);
+  const P = compact ? 32 : 40;
+  const typed = Math.round(interpolate(t, [T.typeStart, T.typeEnd], [0, T.n], CLAMP));
+  const bubbleIn = sp(t - 4, fps, { damping: 200 }, 30);
+  const sent = sp(t - T.sent, fps, { damping: 200 }, 24);
+  const typing = t >= T.typeStart && t <= T.typeEnd;
+  const caretOn = t < T.sent + 2 && (typing || Math.floor(t / 24) % 2 === 0);
+  const caret = html`<span style=${{ display: 'inline-block', width: 2, height: '1.05em', marginRight: -2, verticalAlign: '-0.16em', background: C.gold, opacity: caretOn ? 1 : 0 }}></span>`;
+  const ansIn = sp(t - T.thinkStart, fps, { damping: 200 }, 30);
+  const think = interpolate(t, [T.thinkStart, T.thinkStart + 8, T.thinkEnd - 4, T.thinkEnd + 4], [0, 1, 1, 0], CLAMP);
+  const [a, kw, b] = Q.intro;
+  const iN = Math.round(interpolate(t, [T.thinkEnd, T.introEnd], [0, a.length + kw.length + b.length], CLAMP));
+  const ul = lerp(t, T.thinkEnd + Math.round((a.length + kw.length) * 1.3), 26, OUT);
+  const noteIn = lerp(t, T.note, 26, OUT);
+  return html`<div style=${{ position: 'absolute', left: P, right: P, top: 132, bottom: 36, display: 'flex', flexDirection: 'column', fontFamily: JP }}>
+    <div style=${{ alignSelf: 'flex-end', maxWidth: compact ? '92%' : '82%', opacity: bubbleIn, translate: `0 ${(1 - bubbleIn) * 18}px` }}>
+      <div style=${{ padding: '20px 28px', borderRadius: '22px 22px 6px 22px', border: `1px solid rgba(185,161,123,${0.38 + 0.42 * sent})`, background: `rgba(243,240,234,${0.03 + 0.08 * sent})`, fontSize: 26, lineHeight: 1.72, letterSpacing: '.03em', wordBreak: 'auto-phrase' }}>
+        ${(() => { let off = 0; const segs = segment(Q.q, Q.keys); return segs.map((sg, i) => {
+          const len = [...sg.text].length, vis = Math.max(0, Math.min(len, typed - off));
+          const here = (typed >= off && typed < off + len) || (i === segs.length - 1 && typed >= off + len);
+          off += len;
+          const hl = sg.key < 0 ? 0 : lerp(t, T.thinkStart + 6 + sg.key * 11, 22, OUT);
+          const body = html`<${Typed} text=${sg.text} count=${vis} caret=${here ? caret : null} />`;
+          return sg.key < 0 ? html`<span key=${i}>${body}</span>` : html`<span key=${i} style=${{ backgroundImage: 'linear-gradient(rgba(185,161,123,.42), rgba(185,161,123,.42))', backgroundRepeat: 'no-repeat', backgroundPosition: '0 88%', backgroundSize: `${hl * 100}% .36em`, color: interpolateColors(hl, [0, 1], [C.paper, '#fffaf0']) }}>${body}</span>`;
+        }); })()}
+      </div>
+    </div>
+    <div style=${{ marginTop: 30, opacity: ansIn, translate: `0 ${(1 - ansIn) * 14}px` }}>
+      <div style=${{ display: 'flex', alignItems: 'center', gap: 12, height: 32 }}>
+        <${Presence} size=${28} frame=${t} think=${think} />
+        <span style=${{ fontFamily: LAT, fontSize: 22, fontWeight: 500, letterSpacing: '.22em' }}>SHŌ</span>
+        <span style=${{ display: 'flex', gap: 7, marginLeft: 4, opacity: think }}>
+          ${[0, 1, 2].map((k) => html`<i key=${k} style=${{ width: 6, height: 6, borderRadius: 3, background: C.gold, opacity: 0.3 + 0.7 * (0.5 + 0.5 * Math.sin((t - k * 9) / 60 * Math.PI * 2 * 1.4)) }}></i>`)}
+        </span>
+      </div>
+      <div style=${{ marginTop: 12, fontSize: 25, lineHeight: 1.75, letterSpacing: '.03em', wordBreak: 'auto-phrase' }}>
+        <${Typed} text=${a} count=${Math.min(iN, a.length)} />
+        <span style=${{ position: 'relative', display: 'inline-block' }}>
+          <${Typed} text=${kw} count=${Math.max(0, Math.min(iN - a.length, kw.length))} />
+          <svg viewBox="0 0 100 12" preserveAspectRatio="none" style=${{ position: 'absolute', left: -2, right: -2, bottom: -4, width: 'calc(100% + 4px)', height: 12, overflow: 'visible' }}>
+            <path d="M2 8 C 26 3, 58 11, 98 4" fill="none" stroke=${C.gold} strokeWidth="2.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" ...${dash(ul)} />
+          </svg>
+        </span>
+        <${Typed} text=${b} count=${Math.max(0, iN - a.length - kw.length)} />
+      </div>
+    </div>
+    ${Q.kind === 'list' ? html`<${ListCards} Q=${Q} T=${T} t=${t} fps=${fps} compact=${compact} />` : html`<${DayCards} Q=${Q} T=${T} t=${t} fps=${fps} compact=${compact} />`}
+    <div style=${{ marginTop: 24, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+      ${Q.next.map((label, k) => { const s = sp(t - (T.chips + k * 9), fps); return html`<span key=${k} style=${{ display: 'inline-flex', alignItems: 'center', gap: 14, height: 54, padding: '0 22px', borderRadius: 8, border: `1px solid rgba(185,161,123,${k ? 0.5 : 0.9})`, background: k ? 'transparent' : 'rgba(185,161,123,.14)', fontSize: 20, letterSpacing: '.08em', opacity: s, translate: `0 ${(1 - s) * 18}px` }}>${label}<svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke=${C.gold} strokeWidth="1.3"><path d="M0 5h21M16.5 1l4.5 4-4.5 4" /></svg></span>`; })}
+    </div>
+    <div style=${{ marginTop: 'auto', paddingTop: 18, display: 'flex', gap: 14, alignItems: 'baseline', fontSize: 18, lineHeight: 1.7, letterSpacing: '0', opacity: noteIn * 0.82, translate: `0 ${(1 - noteIn) * 8}px` }}>
+      <span style=${{ flex: 'none', width: 26, height: 1, background: C.gold, translate: '0 -6px' }}></span><span>${Q.note}</span>
+    </div>
+  </div>`;
+};
+
+const ListCards = ({ Q, T, t, fps, compact }) => html`<div style=${{ marginTop: 26, display: 'flex', flexDirection: 'column', gap: 12 }}>
+  ${Q.items.map((it, k) => {
+    const s = sp(t - (T.cards + k * 14), fps);
+    const line = lerp(t, T.cards + k * 14 + 8, 30, OUT);
+    return html`<div key=${k} style=${{ position: 'relative', background: C.paper, color: C.ink, borderRadius: 12, padding: compact ? '18px 22px' : '18px 28px', display: 'grid', gridTemplateColumns: '52px 1fr', columnGap: 4, opacity: s, translate: `${(1 - s) * 72}px 0`, overflow: 'hidden' }}>
+      <span style=${{ position: 'absolute', left: 0, top: 18, bottom: 18, width: 2, background: C.gold, scale: `1 ${line}`, transformOrigin: 'top' }}></span>
+      <div style=${{ fontFamily: LAT, fontStyle: 'italic', fontWeight: 500, fontSize: 30, color: C.logo, lineHeight: 1.25 }}>0${k + 1}</div>
+      <div>
+        <div style=${{ fontSize: 26, fontWeight: 600, letterSpacing: '.06em', lineHeight: 1.45 }}>${it.t}</div>
+        <div style=${{ fontSize: 20, color: C.muted, lineHeight: 1.65, marginTop: 4, wordBreak: 'auto-phrase' }}>${it.d}</div>
+      </div>
+    </div>`;
+  })}
+</div>`;
+
+const DayCards = ({ Q, T, t, fps, compact }) => {
+  const line = lerp(t, T.cards - 4, 64, INOUT);
+  return html`<div style=${{ marginTop: 28, position: 'relative' }}>
+    <div style=${{ position: 'relative', height: 14, marginBottom: 14 }}>
+      <div style=${{ position: 'absolute', left: 6, right: 6, top: 6, height: 1.5, background: C.gold, scale: `${line} 1`, transformOrigin: 'left' }}></div>
+      ${(compact ? [0, 1] : [0, 1, 2, 3]).map((k, i, arr) => { const pos = arr.length > 1 ? i / (arr.length - 1) : 0; const on = sp(t - (T.cards - 4 + pos * 56), fps, { damping: 12, stiffness: 160 }); return html`<i key=${k} style=${{ position: 'absolute', top: 1, left: `calc(${pos * 100}% - ${pos * 12}px)`, width: 12, height: 12, borderRadius: 6, background: C.gold, scale: `${on}` }}></i>`; })}
+    </div>
+    <div style=${{ display: 'grid', gridTemplateColumns: compact ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 12 }}>
+      ${Q.items.map((it, k) => {
+        const s = sp(t - (T.cards + k * 12), fps);
+        return html`<div key=${k} style=${{ background: C.paper, color: C.ink, borderRadius: 12, padding: '18px 16px 20px', opacity: s, translate: `0 ${(1 - s) * 46}px` }}>
+          <div style=${{ fontFamily: LAT, fontStyle: 'italic', fontWeight: 500, fontSize: 24, color: C.logo, letterSpacing: '.06em', lineHeight: 1.2 }}>Day ${k + 1}</div>
+          <div style=${{ fontSize: 24, fontWeight: 600, letterSpacing: '.02em', lineHeight: 1.45, marginTop: 10, whiteSpace: 'nowrap' }}>${it.t}</div>
+          <div style=${{ fontSize: 19, color: C.muted, lineHeight: 1.6, marginTop: 6, wordBreak: 'auto-phrase' }}>${it.d}</div>
+        </div>`;
+      })}
+    </div>
+  </div>`;
+};
+
+const Exit = ({ children }) => {
+  const f = useCurrentFrame();
+  const o = interpolate(f, [0, SWITCH], [0, 1], { ...CLAMP, easing: INOUT });
+  return html`<${AbsoluteFill} style=${{ opacity: 1 - o, translate: `${-o * 36}px 0` }}>${children}<//>`;
+};
+
+const ShoComposition = ({ q, prev, prevFrame, compact }) => {
+  const off = prev == null ? 0 : SWITCH;
+  return html`<${AbsoluteFill} style=${{ fontFamily: JP, color: C.paper }}>
+    <${ShoHeader} q=${q} off=${off} compact=${compact} />
+    ${prev == null ? null : html`<${Sequence} name="previous answer" durationInFrames=${SWITCH + 2}><${Exit}><${Freeze} frame=${prevFrame}><${QA} q=${prev} compact=${compact} /><//><//><//>`}
+    <${Sequence} name=${`answer ${q + 1}`} from=${off}><${QA} q=${q} compact=${compact} /><//>
+  <//>`;
+};
+
+function ShoApp({ rows, stage }) {
+  const reduced = useMedia('(prefers-reduced-motion: reduce)');
+  const compact = useMedia('(max-width: 960px)');
+  const visible = usePageVisible(), inView = useInView(stage);
+  const [state, setState] = useState({ q: 0, prev: null, prevFrame: 0 });
+  const stRef = useRef(state); stRef.current = state;
+  const hover = useRef(false), redRef = useRef(reduced); redRef.current = reduced;
+  const selectRef = useRef(null);
+  const [frame, seek, clock] = useFrameClock({
+    fps: FPS, duration: S_DUR, loop: false, active: inView && visible && !reduced,
+    onEnded: () => { if (!hover.current) selectRef.current((stRef.current.q + 1) % 3, true); },
+  });
+  const select = useCallback((i, auto) => {
+    const cur = stRef.current, c = clock.current;
+    if (i === cur.q && !c.ended && !auto) return;
+    const local = c.frame - (cur.prev == null ? 0 : SWITCH);
+    setState({ q: i, prev: redRef.current ? null : cur.q, prevFrame: Math.max(0, local) });
+    seek(redRef.current ? S_DUR - 1 : 0);
+  }, [seek, clock]);
+  selectRef.current = select;
+  useEffect(() => { if (DEBUG) DEBUG.sho = (q, f, prev = null, pf = 0) => { hover.current = true; setState({ q, prev, prevFrame: pf }); seek(f); }; }, [seek]);
+  useEffect(() => { if (reduced) { setState((s) => ({ ...s, prev: null })); seek(S_DUR - 1); } }, [reduced, seek]);
+  useEffect(() => {
+    const hs = rows.map((el, i) => { const h = () => select(i, false); el.addEventListener('click', h); return h; });
+    const enter = () => { hover.current = true; };
+    const leave = () => { hover.current = false; if (clock.current.ended && !redRef.current) select((stRef.current.q + 1) % 3, true); };
+    stage.addEventListener('pointerenter', enter); stage.addEventListener('pointerleave', leave);
+    return () => { rows.forEach((el, i) => el.removeEventListener('click', hs[i])); stage.removeEventListener('pointerenter', enter); stage.removeEventListener('pointerleave', leave); };
+  }, [rows, stage, select, clock]);
+  useEffect(() => { rows.forEach((el, i) => { el.classList.toggle('is-on', i === state.q); el.setAttribute('aria-pressed', String(i === state.q)); }); }, [rows, state.q]);
+  useEffect(() => { rows.forEach((el, i) => { el.querySelector('.q__bar i').style.transform = `scaleX(${i === state.q ? frame / (S_DUR - 1) : 0})`; }); }, [rows, frame, state.q]);
+  const props = useMemo(() => ({ ...state, compact }), [state, compact]);
+  return html`<${Thumbnail} component=${ShoComposition} compositionWidth=${compact ? 560 : 800} compositionHeight=${compact ? 1080 : 920} frameToDisplay=${frame} durationInFrames=${S_DUR} fps=${FPS} inputProps=${props} style=${{ width: '100%', height: '100%' }} />`;
+}
+
+createRoot(document.getElementById('journey')).render(html`<${HeroApp} />`);
+createRoot(document.getElementById('sho-screen')).render(html`<${ShoApp} rows=${[...document.querySelectorAll('.q')]} stage=${document.getElementById('sho-stage')} />`);
+</script>
+</body>
+</html>

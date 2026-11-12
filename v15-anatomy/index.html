@@ -1,0 +1,1483 @@
+<!doctype html>
+<!-- v15 · tool: anatomy · repo: https://github.com/wheresryan22/anatomy · decisions taken from the tool: "the object is the explanation" (XIUYI's six services are built as the six assemblies of a real andon lantern: base, frame, light, handle, washi panels, cap; SHŌ is a chōchin whose rib bands are the parts of an answer); a parts list of ~120 solids with bevels, pegs, brass caps, a ruler strip with sun ticks and a groove on the floor board; one spring per assembly (stiffness/drag springs, sub-stepped) with a staggered take-apart order chosen so nothing passes through anything and closing in reverse; selection makes one assembly the lit accent while the rest step down a tone; a framed plate with Fig n / title / hint / live readout read from the same model that moves the parts; idle tour, pointer + keyboard + legend selection, stop offscreen, still under reduced motion; ink outlines on solids, soft halo under the base; opening = "arming" (it assembles, then it is lit). Rendered with three.js r170 in an orthographic isometric camera instead of the kit's SVG, because the brief asks for real-time 3D. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜美・健康・暮らしを、日本で再定義する。</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#e6e2db; --paper:#f3f0ea; --white:#fff;
+  --coffee:#5b4938; --ink:#44352a; --muted:#6b5946; --gold:#b9a17b; --logo:#7a6a56;
+  --line:rgba(68,53,42,.14); --line-2:rgba(68,53,42,.26); --line-3:rgba(68,53,42,.42);
+  --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --ease:cubic-bezier(.32,.72,0,1);
+  --hh:76px; --gut:clamp(16px,5vw,88px); --max:1328px; --vh:9px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--hh)}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--mincho);font-size:16px;line-height:2;letter-spacing:.02em;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
+:lang(ja){word-break:auto-phrase;line-break:strict}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:500;font-feature-settings:"palt";text-wrap:balance}
+p{text-wrap:pretty}
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
+.mono{font-family:var(--mono)}
+.nw{white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:1px solid var(--coffee);outline-offset:4px}
+
+/* ---------- header ---------- */
+.hdr{position:fixed;inset:0 0 auto;z-index:50;height:var(--hh);background:rgba(230,226,219,0);transition:background .3s,box-shadow .3s}
+.hdr.is-solid{background:var(--page);box-shadow:0 1px 0 var(--line)}
+.hdr__in{height:100%;display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;flex:none}
+.brand img{width:44px;height:44px}
+.brand__word{font-size:17px;font-weight:600;letter-spacing:.32em;color:var(--coffee);line-height:1;padding-top:2px}
+.nav{display:flex;gap:44px;margin:0 auto;font-size:15px;letter-spacing:.16em}
+.nav a{position:relative;padding:6px 0}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--coffee);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.nav a:hover::after{transform:scaleX(1)}
+.nav .latin{font-weight:600;letter-spacing:.12em}
+.hdr__tools{display:flex;align-items:center;gap:26px;font-size:14px;letter-spacing:.12em;flex:none}
+.lang{display:flex;align-items:center;gap:6px}
+.lang svg,.menu-btn svg{display:block}
+.login{color:var(--muted)}
+.menu-btn{display:flex;align-items:center;gap:12px;letter-spacing:.16em}
+.sheet{position:fixed;inset:0;z-index:49;background:var(--page);padding:calc(var(--hh) + 24px) var(--gut) 40px;display:flex;flex-direction:column;gap:8px;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.sheet.is-open{opacity:1;visibility:visible;transition:opacity .3s}
+.sheet a.big{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line);font-size:22px;letter-spacing:.12em}
+.sheet a.big span{font:400 11px/1 var(--mono);letter-spacing:.14em;color:var(--muted)}
+.sheet__foot{margin-top:auto;display:flex;gap:16px;flex-wrap:wrap}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:16px;height:52px;padding:0 24px 0 28px;border-radius:8px;font-size:14px;letter-spacing:.18em;line-height:1;white-space:nowrap;transition:background .25s,color .25s,border-color .25s}
+.btn svg{flex:none;transition:transform .3s var(--ease)}
+.btn:hover svg{transform:translateX(4px)}
+.btn--primary{background:var(--coffee);color:var(--paper)}
+.btn--primary:hover{background:var(--ink)}
+.btn--ghost{border:1px solid rgba(91,73,56,.42);color:var(--coffee)}
+.btn--ghost:hover{border-color:var(--coffee);background:rgba(91,73,56,.05)}
+.eyebrow{display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:.32em;color:var(--muted);line-height:1.6}
+.eyebrow::before{content:"";width:36px;height:1px;background:var(--line-3)}
+
+/* ---------- plates (the anatomy card) ---------- */
+.plate{position:relative;border:1px solid var(--line-2);overflow:hidden;
+  background:radial-gradient(ellipse var(--gw,34%) var(--gh,30%) at var(--gx,55%) var(--gy,52%),rgb(255 206 140 / calc(var(--glow,0) * .26)),rgb(255 206 140 / 0) 100%),var(--page)}
+.plate canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.plate__over{position:absolute;inset:0;pointer-events:none}
+.plate__over svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pc{position:absolute;font:500 10.5px/1.2 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;white-space:nowrap;pointer-events:none;z-index:2}
+.pc--fig{top:18px;left:20px;color:var(--ink)}
+.pc--title{top:18px;right:20px}
+.pc--hint{bottom:18px;left:20px}
+.pc--read{bottom:18px;right:20px;color:var(--ink);text-transform:none;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.lead{fill:none;stroke:var(--ink);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.ldot{fill:var(--page);stroke:var(--ink);stroke-width:1;vector-effect:non-scaling-stroke}
+.lgrp.is-on .ldot{fill:var(--gold);stroke:var(--coffee)}
+.tag{position:absolute;left:0;top:0;width:var(--tw,150px);display:flex;flex-direction:column;gap:4px;padding:2px 0;pointer-events:auto;text-align:left;opacity:0;will-change:transform,opacity}
+.tag[data-side="L"]{align-items:flex-end;text-align:right}
+.tag__row{display:flex;align-items:baseline;gap:8px}
+.tag[data-side="L"] .tag__row{flex-direction:row-reverse}
+.tag__no{font:500 10px/1 var(--mono);letter-spacing:.06em;color:var(--muted)}
+.tag__svc{font-size:14.5px;font-weight:500;line-height:1.35;letter-spacing:.06em;color:var(--ink)}
+.tag__part{font:400 10px/1.2 var(--mono);letter-spacing:.14em;color:var(--muted)}
+.tag.is-on .tag__svc{color:var(--coffee);font-weight:700}
+.tag.is-on .tag__no{color:var(--coffee)}
+.spec{position:absolute;left:20px;right:20px;bottom:44px;display:flex;justify-content:center;pointer-events:none;z-index:2}
+.spec p{max-width:440px;padding:9px 14px;border-top:1px solid var(--line-2);font-size:13px;line-height:1.8;letter-spacing:.04em;color:var(--ink);text-align:center;background:rgb(230 226 219 / .9);
+  opacity:0;transform:translateY(4px);transition:opacity .35s,transform .35s var(--ease)}
+.spec.is-on p{opacity:1;transform:none}
+
+/* ---------- hero + anatomy ---------- */
+.anat{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);column-gap:clamp(32px,4.5vw,72px);padding-top:var(--hh)}
+.copy{grid-column:1;grid-row:1;min-height:calc(var(--vh) * 100 - var(--hh));display:flex;flex-direction:column;justify-content:center;padding:32px 0 48px}
+.copy h1{margin-top:30px;font-size:clamp(30px,3.25vw,48px);line-height:1.52;letter-spacing:.06em;color:var(--ink)}
+.copy h1 span{display:inline-block;white-space:nowrap}
+.copy .sub{margin-top:26px;max-width:30em;font-size:16px;line-height:2.05;color:var(--muted)}
+.ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+.parts{margin-top:52px;max-width:560px}
+.parts__label{display:flex;justify-content:space-between;align-items:baseline;font:500 10.5px/1 var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase;padding-bottom:12px}
+.parts__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line-2)}
+.pbtn{display:flex;flex-direction:column;gap:5px;padding:12px 10px 13px 0;border-bottom:1px solid var(--line);text-align:left;transition:color .25s}
+.pbtn__no{font:500 10px/1 var(--mono);letter-spacing:.08em;color:var(--muted)}
+.pbtn__svc{font-size:14px;line-height:1.35;letter-spacing:.05em;position:relative;align-self:flex-start}
+.pbtn__svc::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+.pbtn:hover .pbtn__svc::after,.pbtn.is-on .pbtn__svc::after{transform:scaleX(1)}
+.pbtn.is-on .pbtn__svc{color:var(--coffee);font-weight:600}
+
+.stickcol{grid-column:2;grid-row:1 / span 2;position:relative}
+.stick{position:sticky;top:calc(var(--hh) + 12px);height:calc(var(--vh) * 100 - var(--hh) - 36px);min-height:520px}
+.stick .plate{height:100%}
+
+.steps{grid-column:1;grid-row:2;padding-bottom:calc(var(--vh) * 12)}
+.steps__head{padding:calc(var(--vh) * 10) 0 calc(var(--vh) * 4)}
+.steps__head h2{margin-top:22px;font-size:clamp(24px,2.4vw,34px);line-height:1.65;letter-spacing:.08em}
+.steps__head p{margin-top:18px;color:var(--muted);font-size:15px;max-width:30em}
+.step{min-height:calc(var(--vh) * 58);display:flex;flex-direction:column;justify-content:center;padding:calc(var(--vh) * 6) 0;border-top:1px solid var(--line);opacity:.4;transition:opacity .45s}
+.step.is-on{opacity:1}
+.step__no{display:flex;align-items:baseline;gap:10px;font:500 12px/1 var(--mono);letter-spacing:.1em;color:var(--coffee)}
+.step__no i{font-style:normal;color:var(--muted);font-weight:400}
+.step__part{margin-top:18px;font:400 11px/1 var(--mono);letter-spacing:.18em;color:var(--muted)}
+.step h3{margin-top:14px;font-size:clamp(26px,2.5vw,36px);line-height:1.4;letter-spacing:.1em}
+.step__title{margin-top:18px;font-size:17px;font-weight:600;letter-spacing:.06em;line-height:1.7}
+.step__body{margin-top:10px;max-width:29em;color:var(--muted);font-size:15.5px;line-height:2.05}
+.step__note{margin-top:20px;display:flex;align-items:center;gap:12px;font-size:13.5px;letter-spacing:.08em;color:var(--coffee)}
+.step__note::before{content:"";width:22px;height:1px;background:var(--gold)}
+.step--final h3{font-size:clamp(24px,2.3vw,32px)}
+.fine{margin-top:18px;font-size:13px;line-height:1.9;color:var(--muted);max-width:32em}
+.step--final .btn{margin-top:28px;align-self:flex-start}
+
+/* ---------- SHŌ ---------- */
+.band-paper{background:var(--paper)}
+.band-paper .plate{background:radial-gradient(ellipse var(--gw,30%) var(--gh,36%) at var(--gx,40%) var(--gy,50%),rgb(255 206 140 / calc(var(--glow,0) * .3)),rgb(255 206 140 / 0) 100%),var(--paper)}
+.sho{padding:128px 0 136px}
+.sho__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,104px);align-items:center}
+.sho__fig{display:flex;flex-direction:column}
+.sho__fig .plate{height:clamp(440px,46vw,600px)}
+.answer{border:1px solid var(--line-2);border-top:0;padding:18px 20px 20px;min-height:132px;background:var(--paper)}
+.answer__head{display:flex;justify-content:space-between;align-items:baseline;font:500 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.answer__head b{color:var(--ink);font-weight:500}
+.answer__text{margin-top:12px;font-size:15px;line-height:1.95;letter-spacing:.03em;min-height:3.9em}
+.answer__text .caret{display:inline-block;width:1px;height:1em;margin-left:2px;vertical-align:-2px;background:var(--coffee)}
+.answer__note{margin-top:8px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+.sho__text h2{margin-top:24px;font-size:clamp(26px,2.6vw,38px);line-height:1.5;letter-spacing:.06em}
+.sho__text .lead-p{margin-top:24px;color:var(--muted);font-size:15.5px;line-height:2.05;max-width:34em}
+.qs{margin-top:40px;border-top:1px solid var(--line-2)}
+.q{width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) 26px;align-items:center;gap:10px;padding:22px 0;border-bottom:1px solid var(--line-2);text-align:left;font-size:15.5px;line-height:1.75;letter-spacing:.03em;transition:color .25s}
+.q__n{font:500 11px/1 var(--mono);letter-spacing:.08em;color:var(--muted)}
+.q svg{justify-self:start;transition:transform .3s var(--ease)}
+.q:hover svg,.q.is-on svg{transform:translateX(5px)}
+.q.is-on{color:var(--coffee)}
+.q.is-on .q__n{color:var(--coffee)}
+.q__t{position:relative}
+.q{position:relative}
+.q::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:var(--coffee);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.q.is-on::before{transform:scaleX(1)}
+.sho__text .btn{margin-top:40px}
+
+/* ---------- services ---------- */
+.svc{padding:128px 0}
+.svc__grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,104px);align-items:start}
+.sec-h2{margin-top:22px;font-size:clamp(26px,2.6vw,38px);line-height:1.5;letter-spacing:.08em}
+.sec-p{margin-top:20px;color:var(--muted);font-size:15.5px;line-height:2.05;max-width:30em}
+.svc__photo{margin:44px 0 0;position:relative}
+.svc__photo .ph{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#d9d3c8}
+.svc__photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.svc__photo img.is-on{opacity:1}
+figcaption{margin-top:12px;font:400 10.5px/1.5 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.svc__list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-2)}
+.svc__list a{display:grid;grid-template-columns:52px minmax(0,1fr) auto 26px;align-items:center;gap:12px;padding:26px 0;border-bottom:1px solid var(--line-2)}
+.svc__no{font:500 11px/1 var(--mono);letter-spacing:.08em;color:var(--muted)}
+.svc__ja{font-size:clamp(19px,1.8vw,24px);letter-spacing:.12em;line-height:1.4}
+.svc__en{font:400 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.svc__list svg{justify-self:start;transition:transform .3s var(--ease)}
+.svc__list a:hover svg,.svc__list a.is-on svg{transform:translateX(5px)}
+.svc__list a.is-on .svc__ja{color:var(--coffee)}
+
+/* ---------- why ---------- */
+.why{padding:128px 0 136px}
+.why__head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px}
+.why__grid{margin-top:56px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,2.6vw,40px)}
+.why__card .ph{aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#d9d3c8}
+.why__card img{width:100%;height:100%;object-fit:cover}
+.why__no{margin-top:22px;display:flex;justify-content:space-between;font:500 11px/1 var(--mono);letter-spacing:.12em;color:var(--muted);padding-bottom:14px;border-bottom:1px solid var(--line-2)}
+.why__card h3{margin-top:18px;font-size:20px;line-height:1.6;letter-spacing:.08em}
+.why__card p{margin-top:12px;font-size:15px;line-height:2;color:var(--muted)}
+
+/* ---------- closing ---------- */
+.close{padding:120px 0 136px}
+.close__grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:center}
+.close__ph{aspect-ratio:3/2;border-radius:12px;overflow:hidden}
+.close__ph img{width:100%;height:100%;object-fit:cover}
+.close .btn{margin-top:36px}
+
+/* ---------- footer ---------- */
+.ftr{background:var(--ink);color:#e9e2d6;padding:72px 0 40px}
+.ftr__top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.ftr__brand{display:flex;align-items:center;gap:14px}
+.ftr__disc{width:52px;height:52px;border-radius:50%;background:var(--paper);display:grid;place-items:center}
+.ftr__disc img{width:44px;height:44px}
+.ftr__name{font-size:18px;letter-spacing:.32em;font-weight:600}
+.ftr__co{margin-top:18px;font-size:14px;line-height:2;color:#cfc4b4}
+.ftr__links{display:flex;flex-wrap:wrap;gap:14px 34px;font-size:14px;letter-spacing:.12em;align-content:flex-start;max-width:520px}
+.ftr__links a:hover{color:var(--white)}
+.ftr__bot{margin-top:56px;padding-top:22px;border-top:1px solid rgba(233,226,214,.16);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font:400 11px/1.6 var(--mono);letter-spacing:.14em;color:#b9ad9b}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){.nav{gap:28px}.login{display:none}}
+@media (max-width:980px){
+  :root{--hh:62px}
+  .nav,.lang,.login{display:none}
+  .hdr__tools{margin-left:auto}
+  .brand img{width:40px;height:40px}
+  .anat{display:block}
+  .copy{min-height:0;padding:40px 0 36px}
+  .copy h1{margin-top:22px;font-size:clamp(28px,7.8vw,40px);letter-spacing:.05em}
+  .copy .sub{margin-top:18px;font-size:15px}
+  .ctas{margin-top:28px}
+  .ctas .btn{flex:1 1 150px;padding:0 16px 0 18px;letter-spacing:.14em}
+  .parts{display:none}
+  .stickcol{position:sticky;top:var(--hh);z-index:5;background:var(--page);padding:0 0 12px;margin:0 calc(var(--gut) * -1);padding-left:var(--gut);padding-right:var(--gut)}
+  .stick{position:relative;top:0;height:min(calc(var(--vh) * 54),460px);min-height:360px}
+  .steps__head{padding:calc(var(--vh) * 8) 0 calc(var(--vh) * 2)}
+  .step{min-height:calc(var(--vh) * 44);padding:calc(var(--vh) * 5) 0 calc(var(--vh) * 7)}
+  .step h3{font-size:26px}
+  .step__body{font-size:15px}
+  .sho{padding:88px 0 96px}
+  .sho__grid{grid-template-columns:1fr;gap:0}
+  .sho__text{display:contents}
+  .sho__head{order:1}
+  .sho__fig{order:2;margin-top:32px}
+  .qs{order:3;margin-top:28px}
+  .sho__cta{order:4}
+  .sho__fig .plate{height:420px}
+  .svc{padding:88px 0}
+  .svc__grid{grid-template-columns:1fr;gap:36px}
+  .svc__photo{margin-top:28px}
+  .why{padding:88px 0 96px}
+  .why__head{display:block}
+  .why__grid{grid-template-columns:1fr;gap:44px;margin-top:40px}
+  .why__card .ph{aspect-ratio:3/2}
+  .close{padding:72px 0 88px}
+  .close__grid{grid-template-columns:1fr;gap:36px}
+}
+@media (max-width:560px){
+  .pc{font-size:9.5px;letter-spacing:.1em}
+  .pc--fig,.pc--title{top:14px}.pc--fig{left:14px}.pc--title{right:14px}
+  .pc--hint{left:14px;bottom:14px}.pc--read{right:14px;bottom:14px}
+  .tag__svc{font-size:12.5px;letter-spacing:.03em}
+  .tag__part{font-size:9px;letter-spacing:.1em}
+  .spec{bottom:36px;left:12px;right:12px}
+  .spec p{font-size:12px;padding:6px 10px}
+  .q{grid-template-columns:34px minmax(0,1fr) 26px;font-size:15px;padding:18px 0}
+  .svc__list a{grid-template-columns:38px minmax(0,1fr) 26px;padding:20px 0}
+  .svc__en{display:none}
+  .answer{padding:16px 16px 18px}
+  .ftr__links{gap:12px 24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+
+<header class="hdr" id="hdr">
+  <div class="wrap hdr__in">
+    <a class="brand" href="#top" aria-label="XIUYI トップ">
+      <img src="../assets/logo-mark.png" alt="" width="44" height="44">
+      <span class="brand__word">XIUYI</span>
+    </a>
+    <nav class="nav" aria-label="メインメニュー">
+      <a href="#services">サービス</a>
+      <a href="#column">コラム</a>
+      <a href="#about">会社案内</a>
+      <a href="#sho" class="latin">SHŌ AI</a>
+    </nav>
+    <div class="hdr__tools">
+      <button class="lang" type="button" aria-label="言語を選択">日本語
+        <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+      <a class="login" href="#login">ログイン</a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="sheet">
+        <span id="menuLabel">メニュー</span>
+        <svg width="26" height="14" viewBox="0 0 26 14" aria-hidden="true"><path id="menuIcon" d="M0 3.5h26M0 10.5h26" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="sheet" id="sheet" aria-hidden="true">
+  <a class="big" href="#services">サービス <span>SERVICES</span></a>
+  <a class="big" href="#column">コラム <span>COLUMN</span></a>
+  <a class="big" href="#about">会社案内 <span>ABOUT</span></a>
+  <a class="big" href="#sho">SHŌ AI <span>ASSISTANT</span></a>
+  <a class="big" href="#login">ログイン <span>LOGIN</span></a>
+  <div class="sheet__foot">
+    <a class="btn btn--primary" href="#contact">相談を予約 <svg width="18" height="8" viewBox="0 0 18 8" aria-hidden="true"><path d="M0 4h17M13 .5L17 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+    <button class="btn btn--ghost" type="button">日本語 / 中文 / English</button>
+  </div>
+</div>
+
+<main id="top">
+  <section class="wrap anat" id="anat">
+    <div class="copy">
+      <p class="eyebrow">東京・美と健康のライフスタイル</p>
+      <h1><span>美・健康・暮らしを、</span><br><span>日本で再定義する。</span></h1>
+      <p class="sub">XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、<span class="nw">健康と美を支えます。</span></p>
+      <div class="ctas">
+        <a class="btn btn--primary" href="#services">サービスを見る <svg width="18" height="8" viewBox="0 0 18 8" aria-hidden="true"><path d="M0 4h17M13 .5L17 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+        <a class="btn btn--ghost" href="#contact">相談を予約 <svg width="18" height="8" viewBox="0 0 18 8" aria-hidden="true"><path d="M0 4h17M13 .5L17 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+      </div>
+      <div class="parts" aria-label="行灯の部位とサービス">
+        <p class="parts__label"><span>Fig. 1 — 部位 · 6</span><span>選ぶと分解</span></p>
+        <div class="parts__grid">
+          <button class="pbtn" type="button" data-asm="base"><span class="pbtn__no">01 · 台座</span><span class="pbtn__svc">相談・予約</span></button>
+          <button class="pbtn" type="button" data-asm="frame"><span class="pbtn__no">02 · 骨組み</span><span class="pbtn__svc">医療機関マッチング</span></button>
+          <button class="pbtn" type="button" data-asm="light"><span class="pbtn__no">03 · 灯</span><span class="pbtn__svc">同行・通訳</span></button>
+          <button class="pbtn" type="button" data-asm="handle"><span class="pbtn__no">04 · 提げ手</span><span class="pbtn__svc">送迎</span></button>
+          <button class="pbtn" type="button" data-asm="panels"><span class="pbtn__no">05 · 火袋</span><span class="pbtn__svc">宿泊</span></button>
+          <button class="pbtn" type="button" data-asm="cap"><span class="pbtn__no">06 · 笠</span><span class="pbtn__svc">帰国後フォロー</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stickcol">
+      <div class="stick">
+        <figure class="plate" id="fig1" tabindex="0" role="group" aria-roledescription="分解図"
+          aria-label="行灯の分解図。六つの部位が XIUYI の六つのサービスに対応しています。矢印キーで部位を選び、スペースで分解と組み立てを切り替えます。" style="margin:0">
+          <canvas id="c1" aria-hidden="true"></canvas>
+          <div class="plate__over" id="over1"><svg id="lines1" aria-hidden="true"></svg></div>
+          <span class="pc pc--fig">Fig. 1</span>
+          <span class="pc pc--title">行灯 · Andon — 解剖図</span>
+          <span class="pc pc--hint" id="hint1">Hover · Scroll — 分解</span>
+          <span class="pc pc--read" id="read1" aria-hidden="true">組立 · 6 部位</span>
+          <div class="spec" id="spec1"><p id="specText1"></p></div>
+          <p class="sr" aria-live="polite" id="live1"></p>
+        </figure>
+      </div>
+    </div>
+
+    <div class="steps" id="steps">
+      <header class="steps__head">
+        <p class="eyebrow">サポート内容</p>
+        <h2>行灯をひらくと、<br>六つのサポートが見えてきます。</h2>
+        <p>ひとつの灯りは、六つの部位でできています。XIUYI のサポートも同じです。</p>
+      </header>
+      <article class="step" data-asm="base">
+        <p class="step__no">01 <i>/ 06</i></p>
+        <p class="step__part">台座 — BASE</p>
+        <h3>相談・予約</h3>
+        <p class="step__title">医療ニーズの確認と予約調整</p>
+        <p class="step__body">既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p>
+        <p class="step__note">すべてを支える台座から始まります。</p>
+      </article>
+      <article class="step" data-asm="frame">
+        <p class="step__no">02 <i>/ 06</i></p>
+        <p class="step__part">骨組み — FRAME</p>
+        <h3>医療機関マッチング</h3>
+        <p class="step__title">医療機関・医師とのマッチング</p>
+        <p class="step__body">検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p>
+        <p class="step__note">組子のように、ご希望と医療機関を組み合わせます。</p>
+      </article>
+      <article class="step" data-asm="light">
+        <p class="step__no">03 <i>/ 06</i></p>
+        <p class="step__part">灯 — LIGHT</p>
+        <h3>同行・通訳</h3>
+        <p class="step__title">中国語・英語・日本語での同行サポート</p>
+        <p class="step__body">来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p>
+        <p class="step__note">受診のあいだ、灯りはいつもそばに。</p>
+      </article>
+      <article class="step" data-asm="handle">
+        <p class="step__no">04 <i>/ 06</i></p>
+        <p class="step__part">提げ手 — HANDLE</p>
+        <h3>送迎</h3>
+        <p class="step__title">空港送迎と医療機関間の移動</p>
+        <p class="step__body">フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p>
+        <p class="step__note">灯りを提げて、空港から医療機関へ。</p>
+      </article>
+      <article class="step" data-asm="panels">
+        <p class="step__no">05 <i>/ 06</i></p>
+        <p class="step__part">火袋 — WASHI PANELS</p>
+        <h3>宿泊</h3>
+        <p class="step__title">宿泊・滞在日程の調整</p>
+        <p class="step__body">受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p>
+        <p class="step__note">和紙のように、滞在をやわらかく包みます。</p>
+      </article>
+      <article class="step" data-asm="cap">
+        <p class="step__no">06 <i>/ 06</i></p>
+        <p class="step__part">笠 — CAP</p>
+        <h3>帰国後フォロー</h3>
+        <p class="step__title">受診後の連絡まで</p>
+        <p class="step__body">初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+        <p class="step__note">帰国後も、灯りにふたをして守ります。</p>
+      </article>
+      <article class="step step--final" data-asm="">
+        <p class="step__part">組み上がり — ASSEMBLED</p>
+        <h3>六つがそろって、<br>ひとつの灯りに。</h3>
+        <p class="step__body">ご相談の内容に合わせて、必要な部位を組み合わせます。</p>
+        <p class="fine">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+        <a class="btn btn--primary" href="#contact">相談を予約 <svg width="18" height="8" viewBox="0 0 18 8" aria-hidden="true"><path d="M0 4h17M13 .5L17 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+      </article>
+    </div>
+  </section>
+
+  <section class="band-paper sho" id="sho">
+    <div class="wrap sho__grid">
+      <div class="sho__fig">
+        <figure class="plate" id="fig2" style="margin:0" role="img" aria-label="SHŌ の提灯。質問を選ぶと提灯がひらき、回答の要点が四つの帯に分かれて表示されます。">
+          <canvas id="c2" aria-hidden="true"></canvas>
+          <div class="plate__over" id="over2"><svg id="lines2" aria-hidden="true"></svg></div>
+          <span class="pc pc--fig">Fig. 2</span>
+          <span class="pc pc--title">提灯 · Chōchin — 回答の解剖</span>
+          <span class="pc pc--hint">質問を選ぶと、ひらきます</span>
+          <span class="pc pc--read" id="read2">待機 · 灯 50%</span>
+        </figure>
+        <div class="answer" aria-live="polite">
+          <p class="answer__head"><b>SHŌ</b><span id="ansQ">回答の要点</span></p>
+          <p class="answer__text" id="ansText"></p>
+          <p class="answer__note">診療上の判断は医療機関にご相談ください。</p>
+        </div>
+      </div>
+      <div class="sho__text">
+        <div class="sho__head">
+          <p class="eyebrow">AI アシスタント</p>
+          <h2>SHŌでサービス情報を確認</h2>
+          <p class="lead-p">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+        </div>
+        <div class="qs" id="qs">
+          <button class="q" type="button" data-q="0"><span class="q__n">Q1</span><span class="q__t">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span>
+            <svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+          <button class="q" type="button" data-q="1"><span class="q__n">Q2</span><span class="q__t">滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span>
+            <svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+          <button class="q" type="button" data-q="2"><span class="q__n">Q3</span><span class="q__t">母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span>
+            <svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+        </div>
+        <div class="sho__cta">
+          <a class="btn btn--primary" href="#sho-chat">SHŌに相談 <svg width="18" height="8" viewBox="0 0 18 8" aria-hidden="true"><path d="M0 4h17M13 .5L17 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="svc" id="services">
+    <div class="wrap svc__grid">
+      <div>
+        <p class="eyebrow">Medical Services</p>
+        <h2 class="sec-h2">医療サービス</h2>
+        <p class="sec-p">日本の正規医療機関と連携し、ご希望に合わせて受診を整えます。診断と治療は医療機関・医師が行います。</p>
+        <figure class="svc__photo">
+          <div class="ph" id="svcPh">
+            <img class="is-on" src="../assets/photos/checkup-equipment.jpg" alt="健診施設の検査機器" loading="lazy">
+            <img src="../assets/photos/checkup-arrival.jpg" alt="医療機関の廊下" loading="lazy">
+            <img src="../assets/photos/regenerative-waiting-area.jpg" alt="医療機関の待合" loading="lazy">
+            <img src="../assets/photos/aesthetic-light.jpg" alt="光の差す洗面台と鏡" loading="lazy">
+            <img src="../assets/photos/support-attend.jpg" alt="同行する担当者" loading="lazy">
+            <img src="../assets/photos/service-detail-ivf.jpg" alt="朝の庭園" loading="lazy">
+            <img src="../assets/photos/support-stay-ryokan.jpg" alt="旅館の客室" loading="lazy">
+          </div>
+          <figcaption id="svcCap">Fig. 3 — 01 精密健診</figcaption>
+        </figure>
+      </div>
+      <ol class="svc__list" id="svcList">
+        <li><a href="#services" class="is-on"><span class="svc__no">01</span><span class="svc__ja">精密健診</span><span class="svc__en">Health check-up</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#services"><span class="svc__no">02</span><span class="svc__ja">医療受診</span><span class="svc__en">Specialist visits</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#services"><span class="svc__no">03</span><span class="svc__ja">再生医療</span><span class="svc__en">Regenerative medicine</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#services"><span class="svc__no">04</span><span class="svc__ja">美容医療</span><span class="svc__en">Aesthetic medicine</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#services"><span class="svc__no">05</span><span class="svc__ja">同行・医療通訳</span><span class="svc__en">Escort &amp; interpreting</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#services"><span class="svc__no">06</span><span class="svc__ja">生殖補助医療</span><span class="svc__en">Assisted reproduction</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+        <li><a href="#services"><span class="svc__no">07</span><span class="svc__ja">移動・宿泊サポート</span><span class="svc__en">Transfer &amp; stay</span><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><path d="M0 4h19M15 .5L19 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band-paper why" id="about">
+    <div class="wrap">
+      <div class="why__head">
+        <div>
+          <p class="eyebrow">Why XIUYI</p>
+          <h2 class="sec-h2">XIUYI が選ばれる理由</h2>
+        </div>
+      </div>
+      <div class="why__grid">
+        <article class="why__card">
+          <div class="ph"><img src="../assets/photos/why-network.jpg" alt="医療機関のエントランス" loading="lazy"></div>
+          <p class="why__no"><span>01</span><span>Fig. 4a</span></p>
+          <h3>日本の正規医療機関と連携</h3>
+          <p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+        </article>
+        <article class="why__card">
+          <div class="ph"><img src="../assets/photos/why-concierge.jpg" alt="受付カウンターの資料" loading="lazy"></div>
+          <p class="why__no"><span>02</span><span>Fig. 4b</span></p>
+          <h3>専任担当者による一貫した調整</h3>
+          <p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+        </article>
+        <article class="why__card">
+          <div class="ph"><img src="../assets/photos/why-hospitality.jpg" alt="東京タワーを望む客室" loading="lazy"></div>
+          <p class="why__no"><span>03</span><span>Fig. 4c</span></p>
+          <h3>移動・宿泊のサポート</h3>
+          <p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" id="contact">
+    <div class="wrap close__grid">
+      <figure style="margin:0">
+        <div class="close__ph"><img src="../assets/photos/home-closing.jpg" alt="行灯の灯る夕暮れの中庭" loading="lazy"></div>
+        <figcaption>Fig. 5 — 灯りのある場所で</figcaption>
+      </figure>
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 class="sec-h2">医療相談を予約する</h2>
+        <p class="sec-p">これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+        <a class="btn btn--primary" href="#contact">相談を予約 <svg width="18" height="8" viewBox="0 0 18 8" aria-hidden="true"><path d="M0 4h17M13 .5L17 4l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr" id="column">
+  <div class="wrap">
+    <div class="ftr__top">
+      <div>
+        <div class="ftr__brand"><span class="ftr__disc"><img src="../assets/logo-mark.png" alt="" width="44" height="44"></span><span class="ftr__name">XIUYI</span></div>
+        <p class="ftr__co">秀一株式会社<br>東京都渋谷区（代官山）</p>
+      </div>
+      <nav class="ftr__links" aria-label="フッター">
+        <a href="#services">サービス</a><a href="#column">コラム</a><a href="#cases">事例</a><a href="#doctors">医師</a><a href="#about">会社案内</a><a href="#privacy">プライバシー</a>
+      </nav>
+    </div>
+    <div class="ftr__bot"><span>© XIUYI CO., LTD.</span><span>Fig. 1 行灯 · Fig. 2 提灯</span></div>
+  </div>
+</footer>
+
+<script>
+/* page chrome: header, menu, services hover — no dependencies */
+(() => {
+  // On touch devices the viewport height is pinned and only re-read when the width changes,
+  // so the mobile URL bar showing or hiding never reflows the scroll story.
+  let vw = 0;
+  const touch = matchMedia('(hover: none)').matches;
+  const pin = () => { if (!touch || innerWidth !== vw) { vw = innerWidth; document.documentElement.style.setProperty('--vh', innerHeight / 100 + 'px'); } };
+  pin(); addEventListener('resize', pin);
+  const hdr = document.getElementById('hdr');
+  const onScroll = () => hdr.classList.toggle('is-solid', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  const btn = document.getElementById('menuBtn'), sheet = document.getElementById('sheet');
+  const icon = document.getElementById('menuIcon'), label = document.getElementById('menuLabel');
+  const set = (open) => {
+    sheet.classList.toggle('is-open', open); sheet.setAttribute('aria-hidden', String(!open));
+    btn.setAttribute('aria-expanded', String(open)); label.textContent = open ? '閉じる' : 'メニュー';
+    icon.setAttribute('d', open ? 'M6 1l14 12M6 13L20 1' : 'M0 3.5h26M0 10.5h26');
+    hdr.classList.toggle('is-solid', open || scrollY > 8);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  btn.addEventListener('click', () => set(!sheet.classList.contains('is-open')));
+  sheet.addEventListener('click', (e) => { if (e.target.closest('a')) set(false); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('is-open')) set(false); });
+
+  const names = ['精密健診', '医療受診', '再生医療', '美容医療', '同行・医療通訳', '生殖補助医療', '移動・宿泊サポート'];
+  const links = [...document.querySelectorAll('#svcList a')], imgs = [...document.querySelectorAll('#svcPh img')];
+  const cap = document.getElementById('svcCap');
+  const pick = (i) => {
+    links.forEach((a, j) => a.classList.toggle('is-on', i === j));
+    imgs.forEach((im, j) => im.classList.toggle('is-on', i === j));
+    cap.textContent = `Fig. 3 — ${String(i + 1).padStart(2, '0')} ${names[i]}`;
+  };
+  links.forEach((a, i) => { a.addEventListener('mouseenter', () => pick(i)); a.addEventListener('focus', () => pick(i)); a.addEventListener('click', (e) => { e.preventDefault(); pick(i); }); });
+})();
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+/* ======================= shared helpers ======================= */
+const still = matchMedia('(prefers-reduced-motion: reduce)');
+const TAU = Math.PI * 2;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const mix = (a, b, t) => a + (b - a) * t;
+const follow = (x, target, dt, tau, calm) => calm ? target : x + (target - x) * (1 - Math.exp(-dt / tau));
+const rng = (seed) => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+// One spring per assembly, sub-stepped (anatomy: one spring each, value 0 = assembled, 1 = apart).
+function spring(s, target, dt, calm, k = 46, c = 12.4) {
+  if (calm) { s.x = target; s.v = 0; return false; }
+  const n = 4, h = dt / n;
+  for (let i = 0; i < n; i++) { s.v += (k * (target - s.x) - c * s.v) * h; s.x += s.v * h; }
+  if (Math.abs(target - s.x) < 5e-4 && Math.abs(s.v) < 5e-4) { s.x = target; s.v = 0; return false; }
+  return true;
+}
+const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
+function cnv(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; }
+function toTex(c, srgb = true) { const t = new THREE.CanvasTexture(c); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t; }
+function turned(t) { const r = t.clone(); r.center.set(.5, .5); r.rotation = Math.PI / 2; r.needsUpdate = true; return r; }
+
+function woodCanvas({ base, dark, light, seed, w = 256, h = 1024 }) {
+  const [c, g] = cnv(w, h), r = rng(seed);
+  g.fillStyle = base; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 16; i++) {
+    const x = r() * w, bw = 16 + r() * 60, col = r() < .5 ? dark : light;
+    const grd = g.createLinearGradient(x - bw, 0, x + bw, 0);
+    grd.addColorStop(0, hexA(col, 0)); grd.addColorStop(.5, hexA(col, .12 + r() * .12)); grd.addColorStop(1, hexA(col, 0));
+    g.fillStyle = grd; g.fillRect(x - bw, 0, bw * 2, h);
+  }
+  for (let i = 0; i < 190; i++) {
+    const x0 = r() * w, amp = 1.5 + r() * 7, fr = .002 + r() * .007, ph = r() * TAU;
+    g.strokeStyle = hexA(r() < .62 ? dark : light, .06 + r() * .16); g.lineWidth = .5 + r() * 1.8;
+    g.beginPath();
+    for (let y = 0; y <= h; y += 12) { const x = x0 + Math.sin(y * fr + ph) * amp + Math.sin(y * .03 + i) * .6; y ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke();
+  }
+  return c;
+}
+function washiCanvas(seed, w = 512) {
+  const [c, g] = cnv(w, w), r = rng(seed);
+  g.fillStyle = '#f7f1e5'; g.fillRect(0, 0, w, w);
+  for (let i = 0; i < 80; i++) {
+    const x = r() * w, y = r() * w, rad = 20 + r() * 90, warm = r() < .55;
+    const grd = g.createRadialGradient(x, y, 0, x, y, rad);
+    grd.addColorStop(0, warm ? 'rgba(214,194,160,.10)' : 'rgba(255,255,255,.22)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+  }
+  g.lineCap = 'round';
+  for (let i = 0; i < 1300; i++) {
+    const x = r() * w, y = r() * w, a = r() * TAU, l = 5 + r() * 46;
+    g.strokeStyle = r() < .6 ? 'rgba(255,255,255,.6)' : 'rgba(176,150,112,.2)'; g.lineWidth = .35 + r() * .9;
+    g.beginPath(); g.moveTo(x, y);
+    g.quadraticCurveTo(x + Math.cos(a + .7) * l * .5, y + Math.sin(a + .7) * l * .5, x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  return c;
+}
+// Emissive map for paper lit from behind: pale core, saturated amber toward the frame (anatomy: glow on paper).
+function glowCanvas(seed, cy, w = 256, h = 512, vertical = false) {
+  const [c, g] = cnv(w, h), r = rng(seed);
+  let grd;
+  if (vertical) {
+    grd = g.createLinearGradient(0, 0, 0, h);
+    grd.addColorStop(0, '#c97733'); grd.addColorStop(.3, '#ffcf8c'); grd.addColorStop(.55, '#fff2d8'); grd.addColorStop(.8, '#ffcf8c'); grd.addColorStop(1, '#c97733');
+  } else {
+    grd = g.createRadialGradient(w * .5, h * cy, 0, w * .5, h * cy, h * .66);
+    grd.addColorStop(0, '#fff4de'); grd.addColorStop(.3, '#ffd99e'); grd.addColorStop(.7, '#f2a556'); grd.addColorStop(1, '#bf6e2c');
+  }
+  g.fillStyle = grd; g.fillRect(0, 0, w, h);
+  g.lineCap = 'round';
+  for (let i = 0; i < 700; i++) {
+    const x = r() * w, y = r() * h, a = r() * TAU, l = 4 + r() * 30;
+    g.strokeStyle = r() < .5 ? 'rgba(255,255,255,.16)' : 'rgba(150,90,40,.10)'; g.lineWidth = .4 + r() * .8;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  if (!vertical) { // vignette toward the panel edges
+    const v = g.createRadialGradient(w / 2, h / 2, h * .3, w / 2, h / 2, h * .75);
+    v.addColorStop(0, 'rgba(120,60,20,0)'); v.addColorStop(1, 'rgba(120,60,20,.28)');
+    g.fillStyle = v; g.fillRect(0, 0, w, h);
+  }
+  return c;
+}
+function radialCanvas(stops, s = 128) {
+  const [c, g] = cnv(s, s), grd = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+  stops.forEach(([o, col]) => grd.addColorStop(o, col)); g.fillStyle = grd; g.fillRect(0, 0, s, s); return c;
+}
+function engraveCanvas(text) {
+  const [c, g] = cnv(512, 96);
+  g.fillStyle = '#c4a97f'; g.fillRect(0, 0, 512, 96);
+  const grd = g.createLinearGradient(0, 0, 512, 96); grd.addColorStop(0, 'rgba(255,255,255,.18)'); grd.addColorStop(1, 'rgba(0,0,0,.08)');
+  g.fillStyle = grd; g.fillRect(0, 0, 512, 96);
+  g.fillStyle = '#5b4938'; g.font = '500 40px "IBM Plex Mono", Menlo, monospace'; g.textBaseline = 'middle';
+  g.fillText(text, 30, 50);
+  g.strokeStyle = 'rgba(91,73,56,.5)'; g.lineWidth = 2; g.strokeRect(10, 10, 492, 76);
+  return c;
+}
+
+const TEX = (() => {
+  const dark = toTex(woodCanvas({ base: '#4f3e30', dark: '#2b2018', light: '#75604c', seed: 7 }));
+  const pale = toTex(woodCanvas({ base: '#dccdb2', dark: '#bea783', light: '#efe3cc', seed: 11 }));
+  return {
+    woodV: dark, woodH: turned(dark), boardH: turned(pale),
+    washi: toTex(washiCanvas(5)),
+    glowPanel: toTex(glowCanvas(9, .6)), glowBand: toTex(glowCanvas(13, .5, 256, 256, true)),
+    spark: toTex(radialCanvas([[0, 'rgba(255,255,255,1)'], [.25, 'rgba(255,255,255,.45)'], [1, 'rgba(255,255,255,0)']])),
+    halo: toTex(radialCanvas([[0, 'rgba(60,40,24,.55)'], [.55, 'rgba(60,40,24,.22)'], [1, 'rgba(60,40,24,0)']])),
+  };
+})();
+
+function flameMaterial() {
+  return new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uI: { value: 1 }, uAmp: { value: 1 }, uH: { value: .42 } },
+    vertexShader: `uniform float uTime,uAmp,uH; varying float vY; varying vec3 vN;
+      void main(){ vec3 p=position; float h=clamp(p.y/uH,0.,1.); float w=h*h;
+        p.x+=(sin(uTime*7.3+p.y*9.)*.6+sin(uTime*12.7)*.4)*.02*w*uAmp;
+        p.z+=cos(uTime*5.9+p.y*7.)*.013*w*uAmp;
+        p.y*=1.+sin(uTime*8.3)*.035*uAmp;
+        vY=h; vN=normalize(normalMatrix*normal);
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.); }`,
+    fragmentShader: `uniform float uI; varying float vY; varying vec3 vN;
+      void main(){ float f=clamp(abs(vN.z),0.,1.);
+        vec3 rim=vec3(.92,.44,.12), mid=vec3(1.,.75,.34), core=vec3(1.,.97,.87);
+        vec3 c=mix(rim,mid,smoothstep(.1,.6,f));
+        c=mix(c,core,smoothstep(.55,.95,f)*(1.-smoothstep(.4,.95,vY)));
+        c=mix(vec3(.52,.58,.92),c,smoothstep(.0,.13,vY));
+        float a=smoothstep(.0,.42,f)*(1.-smoothstep(.8,1.,vY)*.75)*uI;
+        gl_FragColor=vec4(c,a); }`,
+    transparent: true, depthWrite: false, toneMapped: false,
+  });
+}
+function flameGeo(H = .42, R = .072) {
+  const pts = [];
+  for (let i = 0; i <= 26; i++) { const t = i / 26; pts.push(new THREE.Vector2(Math.max(1e-4, R * Math.sin(Math.PI * Math.pow(t, .6))), t * H)); }
+  return new THREE.LatheGeometry(pts, 32);
+}
+function lathe(profile, seg = 48) { return new THREE.LatheGeometry(profile.map(([x, y]) => new THREE.Vector2(x, y)), seg); }
+function rbox(w, h, d, r = .03) { return new RoundedBoxGeometry(w, h, d, 2, Math.max(.001, Math.min(r, w / 2 - .002, h / 2 - .002, d / 2 - .002))); }
+
+/* A stage: renderer + loop that stops offscreen and in hidden tabs, DPR capped at 2. */
+class Stage {
+  constructor(canvas, host, tick) {
+    this.canvas = canvas; this.host = host; this.tick = tick; this.visible = false; this.raf = 0; this.last = 0;
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    const r = this.renderer;
+    r.setClearColor(0x000000, 0); r.outputColorSpace = THREE.SRGBColorSpace;
+    r.toneMapping = THREE.NeutralToneMapping; r.toneMappingExposure = 1.0;
+    r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFShadowMap;
+    this.frame = this.frame.bind(this);
+    new IntersectionObserver((es) => { this.visible = es[es.length - 1].isIntersecting; this.kick(); }, { rootMargin: '120px 0px' }).observe(host);
+    document.addEventListener('visibilitychange', () => this.kick());
+  }
+  size() {
+    const w = Math.max(1, this.host.clientWidth), h = Math.max(1, this.host.clientHeight);
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    this.renderer.setSize(w, h, false); this.w = w; this.h = h; return [w, h];
+  }
+  kick() { if (!this.raf && this.visible && !document.hidden) { this.last = 0; this.raf = requestAnimationFrame(this.frame); } }
+  frame(now) {
+    this.raf = 0;
+    const dt = this.last ? Math.min((now - this.last) / 1000, 1 / 30) : 1 / 60; this.last = now;
+    const more = this.tick(dt, now / 1000);
+    if (more && this.visible && !document.hidden) this.raf = requestAnimationFrame(this.frame);
+  }
+}
+
+/* Camera basis for an isometric-style orthographic view (azimuth, elevation in degrees). */
+function basis(az, el) {
+  const a = az * Math.PI / 180, e = el * Math.PI / 180;
+  const back = new THREE.Vector3(Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e));
+  const right = new THREE.Vector3(Math.cos(a), 0, -Math.sin(a));
+  const up = new THREE.Vector3().crossVectors(back, right).normalize();
+  return { back, right, up };
+}
+const _v = new THREE.Vector3(), _b = new THREE.Box3();
+function extents(meshes, B) {
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const m of meshes) {
+    if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+    const bb = m.geometry.boundingBox;
+    for (let i = 0; i < 8; i++) {
+      _v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z).applyMatrix4(m.matrixWorld);
+      const x = _v.dot(B.right), y = _v.dot(B.up);
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+  }
+  return { x0, x1, y0, y1 };
+}
+// Fit view extents into a W×H canvas with pixel padding; returns world-per-pixel scale and view centre.
+function fit(ext, W, H, pad) {
+  const aw = Math.max(40, W - pad.l - pad.r), ah = Math.max(40, H - pad.t - pad.b);
+  const s = Math.max((ext.x1 - ext.x0) / aw, (ext.y1 - ext.y0) / ah);
+  const mx = (ext.x0 + ext.x1) / 2, my = (ext.y0 + ext.y1) / 2;
+  return { s, cx: mx - ((pad.l + aw / 2) - W / 2) * s, cy: my + ((pad.t + ah / 2) - H / 2) * s };
+}
+function placeCamera(cam, B, view, W, H) {
+  cam.left = -W / 2 * view.s; cam.right = W / 2 * view.s; cam.top = H / 2 * view.s; cam.bottom = -H / 2 * view.s;
+  cam.position.copy(B.right).multiplyScalar(view.cx).addScaledVector(B.up, view.cy).addScaledVector(B.back, 60);
+  cam.up.set(0, 1, 0); cam.lookAt(_v.copy(cam.position).sub(B.back)); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+}
+function project(p, cam, W, H) { _v.copy(p).project(cam); return [(_v.x + 1) / 2 * W, (1 - _v.y) / 2 * H]; }
+function lights(scene, renderer, { keyPos, keyI = 2.3, hemi = 1.05, env = .32, shadow = 2048, bounds = 7 }) {
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = env; pm.dispose();
+  scene.add(new THREE.HemisphereLight(0xfff7ec, 0xb9a68a, hemi));
+  const key = new THREE.DirectionalLight(0xfff1e2, keyI); key.position.copy(keyPos); key.castShadow = true;
+  key.shadow.mapSize.set(shadow, shadow); key.shadow.radius = 5; key.shadow.bias = -.0004; key.shadow.normalBias = .02;
+  Object.assign(key.shadow.camera, { left: -bounds, right: bounds, top: bounds, bottom: -bounds, near: .5, far: 60 });
+  scene.add(key, key.target);
+  const rim = new THREE.DirectionalLight(0xffe6cc, .45); rim.position.set(6, 5, -7); scene.add(rim);
+  return key;
+}
+
+/* A shadow catcher whose shadow fades out before the plate edge (anatomy: no hard cut-offs). */
+function fadingShadow(opacity, cx, cz, r0, r1) {
+  const m = new THREE.ShadowMaterial({ opacity });
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uFade = { value: new THREE.Vector4(cx, cz, r0, r1) };
+    sh.vertexShader = 'varying vec2 vXZ;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n\tvXZ = (modelMatrix * vec4(transformed, 1.0)).xz;');
+    sh.fragmentShader = 'uniform vec4 uFade;\nvarying vec2 vXZ;\n' + sh.fragmentShader.replace('gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );',
+      'gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) * ( 1.0 - smoothstep( uFade.z, uFade.w, length( vXZ - uFade.xy ) ) ) );');
+  };
+  return m;
+}
+/* Every material in an assembly is registered so selection can step the others down a tone. */
+const GHOST = new THREE.Color('#e6e2db'), INK = new THREE.Color('#44352a'), GOLD = new THREE.Color('#c9ad7c');
+function matKit(asm) {
+  const reg = (m) => { m.polygonOffset = true; m.polygonOffsetFactor = 1; m.polygonOffsetUnits = 1; asm.mats.push({ m, c: m.color.clone() }); return m; };
+  return {
+    lacquer: (h = false) => reg(new THREE.MeshPhysicalMaterial({ color: 0x55433a, map: h ? TEX.woodH : TEX.woodV, roughness: .46, clearcoat: .45, clearcoatRoughness: .32 })),
+    brass: () => reg(new THREE.MeshStandardMaterial({ color: 0xd2b98f, metalness: 1, roughness: .3 })),
+    ceramic: () => reg(new THREE.MeshPhysicalMaterial({ color: 0xf1ebe1, roughness: .26, clearcoat: .8, clearcoatRoughness: .18 })),
+    paper: () => reg(new THREE.MeshStandardMaterial({ color: 0xfbf8f1, roughness: .92 })),
+    washi: () => reg(new THREE.MeshStandardMaterial({ color: 0xf2e8d8, map: TEX.washi, emissive: 0xffffff, emissiveMap: TEX.glowPanel, emissiveIntensity: 0, roughness: .96, side: THREE.DoubleSide })),
+    oil: () => reg(new THREE.MeshStandardMaterial({ color: 0x8a5a24, emissive: 0xffa040, emissiveIntensity: .25, roughness: .15 })),
+    candle: () => reg(new THREE.MeshPhysicalMaterial({ color: 0xf4ecdc, roughness: .5, emissive: 0xffc27a, emissiveIntensity: .05 })),
+  };
+}
+
+/* ======================= Fig. 1 — the andon ======================= */
+const ASM = {
+  base:   { no: '01', svc: '相談・予約', part: '台座', en: 'BASE', side: 'L', desc: '既往の検査結果やご希望を伺い、検査や診療の予約を調整します。' },
+  frame:  { no: '02', svc: '医療機関マッチング', svcHtml: '医療機関<wbr>マッチング', part: '骨組み', en: 'FRAME', side: 'R', desc: '検査内容に応じて施設と専門医を選定し、日程を調整します。' },
+  light:  { no: '03', svc: '同行・通訳', part: '灯', en: 'LIGHT', side: 'R', desc: '中国語・英語・日本語で、来院から退出まで担当者が同席します。' },
+  handle: { no: '04', svc: '送迎', part: '提げ手', en: 'HANDLE', side: 'R', desc: 'フライトと受診予定に合わせ、空港送迎と移動を手配します。' },
+  panels: { no: '05', svc: '宿泊', part: '火袋', en: 'WASHI', side: 'L', desc: '受診場所と予約日時に合わせ、宿泊先と滞在日程を整えます。' },
+  cap:    { no: '06', svc: '帰国後フォロー', svcHtml: '帰国後<wbr>フォロー', part: '笠', en: 'CAP', side: 'L', desc: '受診後の連絡まで、専任担当者が対応します。' },
+};
+const KEYS = ['base', 'frame', 'light', 'handle', 'panels', 'cap'];
+// Take-apart order: whoever is outside leaves first (handle, cap, washi), the light rises before the frame
+// so its shelf never pushes through it; the base is the stand and stays. Closing runs in reverse.
+const MOVERS = ['handle', 'cap', 'panels', 'light', 'frame'];
+const MOVE = { handle: 3.9, cap: 2.65, light: 2.15, frame: 1.0, panelsOut: 1.38, panelsUp: 1.0 };
+
+function buildAndon() {
+  const root = new THREE.Group(), A = {}, all = [];
+  const ink = new THREE.Color('#44352a');
+  const corners = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+  for (const key of ['board', ...KEYS]) {
+    const a = A[key] = { key, ...(ASM[key] || {}), group: new THREE.Group(), meshes: [], mats: [], s: { x: 0, v: 0 }, hoverT: 0, pend: null, dim: 0, lit: 0,
+      lineMat: new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: .14, depthWrite: false, toneMapped: false }) };
+    a.M = matKit(a); root.add(a.group);
+  }
+  const part = (a, geo, mat, { edges = true, edgeBox = null, cast = true, at = null, parent = null } = {}) => {
+    const m = new THREE.Mesh(geo, mat); m.castShadow = cast; m.receiveShadow = true; m.userData.asm = a.key;
+    if (edges) {
+      const src = edgeBox ? new THREE.BoxGeometry(...edgeBox) : geo;
+      const l = new THREE.LineSegments(new THREE.EdgesGeometry(src, 32), a.lineMat); l.raycast = () => {}; m.add(l);
+      if (edgeBox) src.dispose();
+    }
+    if (at) m.position.set(...at);
+    (parent || a.group).add(m); a.meshes.push(m); all.push(m); return m;
+  };
+  const box = (a, w, h, d, mat, at, r = .03, o = {}) => part(a, rbox(w, h, d, r), mat, { edgeBox: [w, h, d], at, ...o });
+
+  /* board (static ground, kit tones): groove, ruler strip with sun ticks, corner screws, label plate */
+  const G = A.board;
+  const boardMat = G.M.lacquer(); boardMat.color.set(0xe6dccd); boardMat.map = TEX.boardH; boardMat.clearcoat = .1; boardMat.roughness = .7; G.mats[0].c.copy(boardMat.color);
+  box(G, 4.5, .16, 4.5, boardMat, [0, .08, 0], .04);
+  const tickPts = [], groove = [];
+  const strip = box(G, 3.9, .012, .24, G.M.lacquer(), [0, .166, 1.98], .004, { edges: false });
+  strip.material.color.set(0xcdb894); strip.material.map = TEX.boardH; G.mats[G.mats.length - 1].c.copy(strip.material.color);
+  const SUN = .303; // one sun = 30.3 mm; 1 unit = 100 mm
+  for (let i = 0, x = -1.82; x <= 1.82 + 1e-6; i++, x += SUN / 2) {
+    const major = i % 10 === 0, midT = i % 2 === 0;
+    tickPts.push(x, .173, 2.1, x, .173, 2.1 - (major ? .19 : midT ? .11 : .065));
+  }
+  const gi = 2.1; groove.push(-gi, .161, -gi, gi, .161, -gi, gi, .161, -gi, gi, .161, gi - .02, -gi, .161, -gi, -gi, .161, gi - .02);
+  const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute([...tickPts, ...groove], 3));
+  const ticks = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: .55, toneMapped: false })); G.group.add(ticks);
+  for (const [sx, sz] of corners) part(G, new THREE.CylinderGeometry(.045, .045, .012, 20), G.M.brass(), { at: [sx * 2.1, .166, sz * 2.1], edges: false });
+  const plateTex = new THREE.CanvasTexture(engraveCanvas('XIUYI · ANDON 1:1')); plateTex.colorSpace = THREE.SRGBColorSpace;
+  document.fonts?.ready.then(() => { plateTex.image = engraveCanvas('XIUYI · ANDON 1:1'); plateTex.needsUpdate = true; });
+  const lbl = part(G, new THREE.BoxGeometry(1.05, .014, .2), [G.M.brass(), G.M.brass(), new THREE.MeshStandardMaterial({ map: plateTex, metalness: .6, roughness: .4 }), G.M.brass(), G.M.brass(), G.M.brass()], { edges: false, at: [1.95, .168, -2.42] });
+  lbl.rotation.y = -Math.PI / 2; lbl.position.set(1.98, .168, -1.25);
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 7.6), new THREE.MeshBasicMaterial({ map: TEX.halo, transparent: true, depthWrite: false, opacity: .5, toneMapped: false }));
+  halo.rotation.x = -Math.PI / 2; halo.position.y = .002; G.group.add(halo);
+  const catcher = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), fadingShadow(.13, .6, -.4, 2.6, 4.6));
+  catcher.rotation.x = -Math.PI / 2; catcher.receiveShadow = true; G.group.add(catcher);
+
+  /* 01 base: feet, plinth, raised rim, drawer with pull ring, brass corner caps, records inside */
+  const B = A.base, lacB = B.M.lacquer(true), brassB = B.M.brass();
+  for (const [sx, sz] of corners) box(B, .46, .14, .46, lacB, [sx * 1.4, .23, sz * 1.4], .03);
+  box(B, 3.34, .5, 3.34, lacB, [0, .55, 0], .05);
+  for (const s of [-1, 1]) { box(B, 3.34, .05, .14, lacB, [0, .825, s * 1.6], .02); box(B, .14, .05, 3.06, lacB, [s * 1.6, .825, 0], .02); }
+  for (const [sx, sz] of corners) { box(B, .34, .03, .09, brassB, [sx * 1.5, .865, sz * 1.625], .01, { edges: false }); box(B, .09, .03, .34, brassB, [sx * 1.625, .865, sz * 1.5], .01, { edges: false }); }
+  const drawer = new THREE.Group(); B.group.add(drawer); B.drawer = drawer; B.dr = { x: 0, v: 0 };
+  box(B, 1.6, .28, .05, lacB, [0, .55, 1.695], .02, { parent: drawer });
+  box(B, 1.5, .03, 1.15, lacB, [0, .43, 1.1], .01, { parent: drawer, edges: false });
+  for (const s of [-1, 1]) box(B, .03, .2, 1.15, lacB, [s * .735, .52, 1.1], .01, { parent: drawer, edges: false });
+  const sheet = B.M.paper();
+  for (let i = 0; i < 3; i++) { const p = box(B, 1.2, .012, .8, sheet, [(i - 1) * .03, .455 + i * .014, 1.12 - i * .02], .004, { parent: drawer, edges: false }); p.rotation.y = (i - 1) * .06; }
+  part(B, new THREE.CylinderGeometry(.075, .075, .02, 24), brassB, { parent: drawer, at: [0, .58, 1.73], edges: false }).rotation.x = Math.PI / 2;
+  part(B, new THREE.TorusGeometry(.07, .013, 10, 28), brassB, { parent: drawer, at: [0, .52, 1.75], edges: false });
+
+  /* 02 frame: four posts, rails, shelf, brass shoes, pegs at every joint */
+  const F = A.frame, lacV = F.M.lacquer(), lacH = F.M.lacquer(true), brassF = F.M.brass();
+  const P0 = .85, PH = 6.0, PC = 1.35;
+  for (const [sx, sz] of corners) {
+    box(F, .2, PH, .2, lacV, [sx * PC, P0 + PH / 2, sz * PC], .025);
+    box(F, .26, .12, .26, brassF, [sx * PC, P0 + .06, sz * PC], .015);
+    for (const y of [1.08, 2.3, 6.62]) {
+      part(F, new THREE.CylinderGeometry(.024, .024, .02, 12), brassF, { at: [sx * PC, y, sz * 1.452], edges: false }).rotation.x = Math.PI / 2;
+      part(F, new THREE.CylinderGeometry(.024, .024, .02, 12), brassF, { at: [sx * 1.452, y, sz * PC], edges: false }).rotation.z = Math.PI / 2;
+    }
+  }
+  for (const y of [1.08, 6.62]) for (const s of [-1, 1]) { box(F, 2.5, .11, .11, lacH, [0, y, s * PC], .02); box(F, .11, .11, 2.5, lacH, [s * PC, y, 0], .02); }
+  for (const s of [-1, 1]) box(F, .11, .11, 2.5, lacH, [s * PC, 2.3, 0], .02);
+  box(F, 2.5, .05, 2.5, lacH, [0, 2.38, 0], .015);
+
+  /* 03 light: turned stand, glazed saucer, oil dish, wick, flame, glow */
+  const L = A.light, lacL = L.M.lacquer(), cer = L.M.ceramic();
+  const y0 = 2.405;
+  part(L, lathe([[0, 0], [.21, 0], [.21, .04], [.13, .075], [.075, .12], [.062, .44], [.09, .49], [.2, .52], [.22, .56], [0, .56]]), lacL, { at: [0, y0, 0] });
+  part(L, lathe([[0, 0], [.3, 0], [.34, .055], [.32, .06], [.27, .022], [0, .022]]), cer, { at: [0, y0 + .56, 0] });
+  part(L, lathe([[0, 0], [.17, 0], [.22, .065], [.205, .07], [.16, .018], [0, .018]]), cer, { at: [0, y0 + .585, 0] });
+  part(L, new THREE.CylinderGeometry(.16, .16, .006, 32), L.M.oil(), { at: [0, y0 + .63, 0], edges: false });
+  const wick = part(L, new THREE.CylinderGeometry(.012, .012, .3, 8), L.M.paper(), { at: [.07, y0 + .645, .04], edges: false });
+  wick.rotation.z = Math.PI / 2 - .25; wick.rotation.y = -.5;
+  const flameAt = new THREE.Vector3(.2, y0 + .68, .1);
+  const fMat = flameMaterial(), flame = new THREE.Mesh(flameGeo(), fMat); flame.position.copy(flameAt); flame.renderOrder = 5; L.group.add(flame);
+  const core = new THREE.Mesh(flameGeo(.2, .03), fMat.clone()); core.material.uniforms = { ...fMat.uniforms, uH: { value: .2 } }; core.position.copy(flameAt); core.renderOrder = 6; L.group.add(core);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.spark, color: 0xffb760, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, opacity: .5 }));
+  glow.scale.set(1.1, 1.1, 1); glow.position.copy(flameAt).add(new THREE.Vector3(0, .16, 0)); glow.renderOrder = 4; L.group.add(glow);
+  const bulb = new THREE.PointLight(0xffab55, 0, 0, 1.6); bulb.position.copy(flameAt).add(new THREE.Vector3(0, .2, 0)); L.group.add(bulb);
+  Object.assign(L, { flame, core, glow, bulb, fMat, flameAt });
+
+  /* 05 washi panels: four outer-mounted shoji panels, each with stiles, rails, kumiko and paper */
+  const W = A.panels; W.subs = [];
+  const pw = 2.5, ph = 5.6, pyc = 3.83;
+  [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(([nx, nz], i) => {
+    const g = new THREE.Group(); g.rotation.y = Math.atan2(nx, nz); const rest = new THREE.Vector3(nx * 1.52, pyc, nz * 1.52);
+    g.position.copy(rest); W.group.add(g);
+    const lac = W.M.lacquer(), lacR = W.M.lacquer(true), wm = W.M.washi();
+    for (const s of [-1, 1]) box(W, .1, ph, .08, lac, [s * (pw / 2 - .05), 0, 0], .02, { parent: g });
+    for (const s of [-1, 1]) box(W, pw - .2, .13, .08, lacR, [0, s * (ph / 2 - .065), 0], .02, { parent: g });
+    const iw = pw - .2, ih = ph - .26;
+    for (let k = 1; k < 4; k++) box(W, .028, ih, .045, lac, [-iw / 2 + iw * k / 4, 0, .012], .008, { parent: g, edges: false });
+    for (let k = 1; k < 7; k++) box(W, iw, .028, .045, lacR, [0, -ih / 2 + ih * k / 7, .012], .008, { parent: g, edges: false });
+    const paper = part(W, new THREE.PlaneGeometry(iw, ih), wm, { parent: g, edges: false, at: [0, 0, -.022] }); paper.castShadow = false;
+    W.subs.push({ g, rest, dir: new THREE.Vector3(nx, 0, nz), wm });
+  });
+
+  /* 06 cap: frame boards, crossbars, brass vent ring, brass corner caps */
+  const C = A.cap, lacC = C.M.lacquer(true), brassC = C.M.brass();
+  const cy = P0 + PH + .07;
+  for (const s of [-1, 1]) { box(C, 3.56, .14, .36, lacC, [0, cy, s * 1.6], .03); box(C, .36, .14, 2.84, lacC, [s * 1.6, cy, 0], .03); }
+  for (const s of [-1, 1]) box(C, 2.84, .06, .08, lacC, [0, cy + .02, s * .3], .015);
+  part(C, new THREE.TorusGeometry(.33, .022, 10, 48), brassC, { at: [0, cy + .07, 0], edges: false }).rotation.x = Math.PI / 2;
+  for (const [sx, sz] of corners) { box(C, .5, .025, .1, brassC, [sx * 1.53, cy + .082, sz * 1.73], .008, { edges: false }); box(C, .1, .025, .5, brassC, [sx * 1.73, cy + .082, sz * 1.53], .008, { edges: false }); }
+
+  /* 04 handle: brass base plates, two uprights, ferrules, grip, hanging eye and ring */
+  const Hd = A.handle, lacHd = Hd.M.lacquer(), brassH = Hd.M.brass();
+  const hb = cy + .07;
+  for (const s of [-1, 1]) {
+    box(Hd, .32, .04, .32, brassH, [s * 1.6, hb + .02, 0], .01, { edges: false });
+    box(Hd, .14, 1.06, .14, lacHd, [s * 1.6, hb + .04 + .53, 0], .02);
+    part(Hd, new THREE.CylinderGeometry(.1, .1, .14, 24), brassH, { at: [s * 1.6, hb + 1.12, 0] });
+  }
+  const grip = part(Hd, new THREE.CylinderGeometry(.068, .068, 3.5, 28), Hd.M.lacquer(true), { at: [0, hb + 1.12, 0] }); grip.rotation.z = Math.PI / 2;
+  for (const s of [-1, 1]) part(Hd, new THREE.SphereGeometry(.085, 20, 14), brassH, { at: [s * 1.79, hb + 1.12, 0], edges: false });
+  part(Hd, new THREE.CylinderGeometry(.05, .05, .1, 16), brassH, { at: [0, hb + 1.22, 0], edges: false });
+  part(Hd, new THREE.TorusGeometry(.13, .022, 10, 36), brassH, { at: [0, hb + 1.4, 0], edges: false });
+  Hd.top = hb + 1.55;
+
+  /* anchors for the labels, in each assembly's own space */
+  A.base.anchor = { obj: B.group, p: new THREE.Vector3(-1.67, .55, 1.0) };
+  A.frame.anchor = { obj: F.group, p: new THREE.Vector3(1.45, 1.7, -1.35) };
+  A.light.anchor = { obj: L.group, p: flameAt.clone().add(new THREE.Vector3(0, .2, 0)) };
+  A.handle.anchor = { obj: Hd.group, p: new THREE.Vector3(1.79, hb + 1.12, 0) };
+  A.panels.anchor = { obj: W.subs[0].g, p: new THREE.Vector3(-.6, .6, .06) };
+  A.cap.anchor = { obj: C.group, p: new THREE.Vector3(-1.3, cy + .07, 1.78) };
+  return { root, A, all };
+}
+
+function setupFig1() {
+  const host = document.getElementById('fig1'), canvas = document.getElementById('c1');
+  const over = document.getElementById('over1'), svg = document.getElementById('lines1');
+  const readEl = document.getElementById('read1'), spec = document.getElementById('spec1'), specText = document.getElementById('specText1'), live = document.getElementById('live1');
+  const hint = document.getElementById('hint1');
+  const coarse = matchMedia('(hover: none)').matches;
+  if (coarse) hint.textContent = 'Tap · Scroll — 分解';
+
+  let scene, cam, B, andon, key;
+  const S = { sel: null, hoverAsm: null, legendHover: null, legendPin: null, stepAsm: null, plateHover: false, pinApart: false,
+    scrollApart: 0, clock: 0, light: 0, yaw: 0, yawT: 0, drag: null, idleAt: 0, tour: null, cam: 0, lastSel: undefined, lastRead: '', W: 0, H: 0, views: null };
+  const stage = new Stage(canvas, host, tick);
+  scene = new THREE.Scene();
+  cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 200);
+  B = basis(42, 24);
+  key = lights(scene, stage.renderer, { keyPos: new THREE.Vector3(-3.6, 16, 5.2), keyI: 2.35, bounds: 8, shadow: innerWidth < 700 ? 1024 : 2048 });
+  key.target.position.set(0, 3.5, 0);
+  andon = buildAndon(); scene.add(andon.root);
+  const A = andon.A;
+
+  /* labels: one tag + lead line + terminal dot per assembly */
+  const tags = {}, leads = {}, dots = {}, grps = {};
+  const NS = 'http://www.w3.org/2000/svg';
+  for (const k of KEYS) {
+    const a = A[k], t = document.createElement('button');
+    t.type = 'button'; t.className = 'tag'; t.dataset.side = a.side; t.dataset.asm = k; t.tabIndex = -1;
+    t.innerHTML = `<span class="tag__row"><span class="tag__no">${a.no}</span><span class="tag__svc">${a.svcHtml || a.svc}</span></span><span class="tag__part">${a.part} · ${a.en}</span>`;
+    over.appendChild(t); tags[k] = t;
+    const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'lgrp');
+    const p = document.createElementNS(NS, 'path'); p.setAttribute('class', 'lead');
+    const c = document.createElementNS(NS, 'circle'); c.setAttribute('class', 'ldot'); c.setAttribute('r', '2.6');
+    g.append(p, c); svg.appendChild(g); leads[k] = p; dots[k] = c; grps[k] = g;
+    t.addEventListener('pointerenter', () => { S.legendHover = k; wake(); });
+    t.addEventListener('pointerleave', () => { if (S.legendHover === k) S.legendHover = null; wake(); });
+    t.addEventListener('click', () => { S.legendPin = S.legendPin === k ? null : k; wake(); });
+  }
+
+  function resize() {
+    const [W, H] = stage.size(); S.W = W; S.H = H;
+    const small = W < 520;
+    const tw = small ? 88 : 128; host.style.setProperty('--tw', tw + 'px');
+    // Fit the apart pose with room for the tags; the assembled pose gets its own, closer view.
+    const pose = (v) => { for (const k of MOVERS) A[k].s.x = v; place(); andon.root.updateMatrixWorld(true); return extents(andon.all.filter((m) => m.userData.asm !== 'board' || m.geometry.type !== 'PlaneGeometry'), B); };
+    const keep = MOVERS.map((k) => A[k].s.x); const yaw = andon.root.rotation.y; andon.root.rotation.y = 0;
+    const eA = pose(0), eE = pose(1);
+    MOVERS.forEach((k, i) => (A[k].s.x = keep[i])); andon.root.rotation.y = yaw; place();
+    const side = tw + (small ? 18 : 30);
+    const vE = fit(eE, W, H, { t: small ? 34 : 54, b: small ? 40 : 74, l: side, r: side });
+    const vA = fit(eA, W, H, { t: small ? 54 : 84, b: small ? 64 : 92, l: small ? 60 : 110, r: small ? 60 : 110 });
+    if (vA.s < vE.s * .62) { vA.s = vE.s * .62; }
+    S.views = { vA, vE };
+  }
+
+  function place() {
+    for (const k of MOVERS) {
+      const a = A[k], x = a.s.x;
+      const lift = .24 * a.lit * smooth(.4, 1, x);
+      if (k === 'panels') for (const sub of a.subs) sub.g.position.copy(sub.rest).addScaledVector(sub.dir, MOVE.panelsOut * x + lift).add(_v.set(0, MOVE.panelsUp * x, 0));
+      else a.group.position.y = MOVE[k] * x + (k === 'frame' ? 0 : lift);
+    }
+    A.base.drawer.position.z = .62 * A.base.dr.x;
+  }
+
+  /* hover apart: staggered targets, rescheduling only what changes (anatomy: reversal rule) */
+  function setApart(on) {
+    const v = on ? 1 : 0, list = on ? MOVERS : [...MOVERS].reverse();
+    const changing = list.filter((k) => (A[k].pend ? A[k].pend.v : A[k].hoverT) !== v);
+    changing.forEach((k, i) => { A[k].pend = { v, at: S.clock + i * .075 }; });
+  }
+  function wake() { S.idleAt = S.clock; if (S.tour) { S.tour = null; S.tourSel = null; if (!S.pinApart && !S.plateHover) setApart(false); } stage.kick(); }
+
+  /* scroll: the steps column drives apart → per-step selection → reassembly at the last step */
+  const steps = [...document.querySelectorAll('.step')], stepsEl = document.getElementById('steps');
+  function onScroll() {
+    const vh = innerHeight, r0 = stepsEl.getBoundingClientRect();
+    const stacked = getComputedStyle(document.querySelector('.anat')).display === 'block';
+    const plateR = host.getBoundingClientRect();
+    const line = stacked ? (plateR.bottom + vh) / 2 : vh * .55;
+    const pre = clamp((vh * .98 - r0.top) / (vh * (stacked ? .5 : .62)));
+    const fin = steps[steps.length - 1].getBoundingClientRect();
+    const post = clamp((line + vh * .12 - fin.top) / (vh * .3));
+    S.scrollApart = pre * (1 - post);
+    let act = null;
+    for (const st of steps) { const rr = st.getBoundingClientRect(); if (rr.top < line && rr.bottom > line) act = st; }
+    steps.forEach((st) => st.classList.toggle('is-on', st === act));
+    const k = act ? act.dataset.asm || null : null;
+    if (k !== S.stepAsm) { S.stepAsm = k; if (k) S.legendPin = null; }
+    if (scrollY > 40) { S.idleAt = S.clock; if (S.tour) { S.tour = null; } }
+    stage.kick();
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+
+  /* pointer: hover takes it apart, the part under the pointer is selected, drag turns it */
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let pendingPick = null;
+  host.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { S.plateHover = true; setApart(true); wake(); } });
+  host.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { S.plateHover = false; S.hoverAsm = null; if (!S.pinApart) setApart(false); wake(); } });
+  host.addEventListener('pointermove', (e) => {
+    pendingPick = e;
+    if (S.drag && e.pointerId === S.drag.id) {
+      const dx = e.clientX - S.drag.x;
+      if (!S.drag.on && Math.abs(dx) > 5) { S.drag.on = true; host.setPointerCapture(e.pointerId); }
+      if (S.drag.on) S.yawT = clamp(S.drag.yaw + dx * .006, -.62, .62);
+    }
+    wake();
+  });
+  host.addEventListener('pointerdown', (e) => { S.drag = { id: e.pointerId, x: e.clientX, yaw: S.yawT, on: false }; });
+  const endDrag = (e) => {
+    if (!S.drag) return;
+    const was = S.drag.on; S.drag = null;
+    if (!was && e.type === 'pointerup') {
+      const k = pick(e);
+      if (e.pointerType !== 'mouse') {
+        if (k && S.pinApart) S.legendPin = S.legendPin === k ? null : k;
+        else { S.pinApart = !S.pinApart; setApart(S.pinApart); if (!S.pinApart) S.legendPin = null; }
+      } else if (k) { S.legendPin = S.legendPin === k ? null : k; S.pinApart = true; }
+      wake();
+    }
+  };
+  host.addEventListener('pointerup', endDrag); host.addEventListener('pointercancel', endDrag);
+  function pick(e) {
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, cam);
+    const hit = ray.intersectObjects(andon.all, false).find((h) => h.object.userData.asm !== 'board');
+    return hit ? hit.object.userData.asm : null;
+  }
+  /* keyboard: arrows step through the parts, Space toggles apart, Escape closes */
+  host.addEventListener('keydown', (e) => {
+    const cur = S.legendPin ? KEYS.indexOf(S.legendPin) : -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { S.legendPin = KEYS[(cur + 1) % 6]; S.pinApart = true; setApart(true); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { S.legendPin = KEYS[(cur + 5) % 6]; S.pinApart = true; setApart(true); }
+    else if (e.key === ' ' || e.key === 'Enter') { S.pinApart = !S.pinApart; setApart(S.pinApart); if (!S.pinApart) S.legendPin = null; }
+    else if (e.key === 'Escape') { S.pinApart = false; S.legendPin = null; setApart(false); }
+    else if (e.key === 'Home') { S.yawT = 0; }
+    else return;
+    e.preventDefault(); wake();
+  });
+  /* legend buttons in the hero copy */
+  const pbtns = [...document.querySelectorAll('.pbtn')];
+  for (const b of pbtns) {
+    const k = b.dataset.asm;
+    b.addEventListener('mouseenter', () => { S.legendHover = k; setApart(true); wake(); });
+    b.addEventListener('mouseleave', () => { S.legendHover = null; if (!S.pinApart && !S.plateHover) setApart(false); wake(); });
+    b.addEventListener('focus', () => { S.legendHover = k; setApart(true); wake(); });
+    b.addEventListener('blur', () => { S.legendHover = null; if (!S.pinApart) setApart(false); wake(); });
+    b.addEventListener('click', () => { const on = S.legendPin !== k; S.legendPin = on ? k : null; S.pinApart = on; setApart(on); wake(); });
+  }
+
+  /* idle tour: take it apart, light each part in turn, put it back (anatomy: tour after idle) */
+  const TOUR = [[0, 'apart'], [1.0, 'base'], [2.2, 'frame'], [3.4, 'light'], [4.6, 'handle'], [5.8, 'panels'], [7.0, 'cap'], [8.2, null], [8.6, 'close'], [16, 'end']];
+  function runTour(dt) {
+    if (still.matches || coarse) return;
+    const idle = S.clock - S.idleAt;
+    if (!S.tour && idle > 5.2 && S.scrollApart < .01 && !S.plateHover && !S.pinApart && !S.legendHover) S.tour = { t: 0, i: 0 };
+    if (!S.tour) return;
+    S.tour.t += dt;
+    while (S.tour && S.tour.i < TOUR.length && S.tour.t >= TOUR[S.tour.i][0]) {
+      const act = TOUR[S.tour.i][1]; S.tour.i++;
+      if (act === 'apart') setApart(true);
+      else if (act === 'close') { S.tourSel = null; setApart(false); }
+      else if (act === 'end') { S.tour = { t: 0, i: 0 }; }
+      else S.tourSel = act;
+    }
+  }
+
+  function readout(sel, mean, opening) {
+    const top = (A.handle.top + MOVE.handle * A.handle.s.x - .16) * 100;
+    const H = `全高 ${Math.round(top).toLocaleString('ja-JP')} mm`;
+    if (sel) { const a = A[sel]; return `${a.no} ${a.svc} · ${a.part}`; }
+    if (mean < .002) return `組立 · 6 部位 · ${H}`;
+    if (mean > .998) return `分解 · 6 部位 · ${H}`;
+    return `${opening ? '分解中' : '組立中'} · ${H}`;
+  }
+
+  let lastMean = 0;
+  function tick(dt, t) {
+    const calm = still.matches;
+    S.clock += dt;
+    if (pendingPick && pendingPick.pointerType === 'mouse' && !S.drag?.on) { S.hoverAsm = pick(pendingPick); }
+    pendingPick = null;
+    if (!S.introDone && S.clock > .3) { S.introDone = true; if (!S.plateHover && !S.pinApart) setApart(false); }
+    runTour(dt);
+    let moving = false;
+    // pending staggered hover targets
+    for (const k of MOVERS) { const a = A[k]; if (a.pend && S.clock >= a.pend.at) { a.hoverT = a.pend.v; a.pend = null; } if (a.pend) moving = true; }
+    // scroll targets, staggered along the scroll (outer parts leave first)
+    const n = MOVERS.length, st = .15, sp = S.scrollApart;
+    MOVERS.forEach((k, i) => {
+      const a = A[k], sT = clamp(sp * (1 + st * (n - 1)) - st * i);
+      if (spring(a.s, Math.max(sT, a.hoverT), dt, calm)) moving = true;
+    });
+    const mean = MOVERS.reduce((m, k) => m + A[k].s.x, 0) / n;
+    const opening = mean >= lastMean; lastMean = mean;
+    const sel = S.hoverAsm || S.legendHover || S.stepAsm || S.legendPin || S.tourSel || null;
+    if (spring(A.base.dr, sel === 'base' ? 1 : 0, dt, calm, 30, 11)) moving = true;
+    // turning: idle sway, drag holds
+    const sway = calm ? 0 : Math.sin(S.clock * .33) * .16 * smooth(0, 1, (S.clock - S.idleAt) / 4);
+    const yt = S.drag?.on ? S.yawT : (S.clock - S.idleAt > 3.6 ? 0 : S.yawT) + sway;
+    if (!S.drag?.on && S.clock - S.idleAt > 3.6) S.yawT = follow(S.yawT, 0, dt, .8, calm);
+    S.yaw = follow(S.yaw, yt, dt, .14, calm); andon.root.rotation.y = S.yaw;
+    place();
+    // camera eases between the assembled and apart views
+    S.cam = follow(S.cam, smooth(0, 1, mean), dt, .32, calm);
+    const v = S.views, view = { s: mix(v.vA.s, v.vE.s, S.cam), cx: mix(v.vA.cx, v.vE.cx, S.cam), cy: mix(v.vA.cy, v.vE.cy, S.cam) };
+    placeCamera(cam, B, view, S.W, S.H);
+    // light: ignite at load, gentle flicker, washi glow falls with distance from the flame
+    S.light = calm ? 1 : (S.light > 0 || mean < .06 ? Math.min(1, S.light + dt / 1.25) : 0);
+    const L = A.light, ig = smooth(0, 1, S.light);
+    const flick = calm ? 1 : 1 + .05 * Math.sin(t * 9.1) + .035 * Math.sin(t * 23.7 + 1.3) + .025 * Math.sin(t * 5.3);
+    L.fMat.uniforms.uTime.value = t; L.fMat.uniforms.uAmp.value = calm ? 0 : 1; L.fMat.uniforms.uI.value = ig;
+    L.core.material.uniforms.uI.value = ig;
+    L.flame.scale.setScalar(.4 + .6 * ig); L.core.scale.copy(L.flame.scale);
+    L.bulb.intensity = 9 * ig * flick;
+    L.glow.material.opacity = (.36 + .3 * A.light.lit) * ig * flick; L.glow.scale.setScalar(1.1 + .7 * A.light.lit * A.light.s.x);
+    // selection steps the others down a tone; the chosen assembly is the lit accent
+    for (const k of ['board', ...KEYS]) {
+      const a = A[k], dimT = sel && k !== sel && k !== 'board' ? 1 : 0, litT = sel === k ? 1 : 0;
+      a.dim = follow(a.dim, dimT, dt, .18, calm); a.lit = follow(a.lit, litT, dt, .18, calm);
+      if (Math.abs(a.dim - dimT) > 1e-3 || Math.abs(a.lit - litT) > 1e-3) moving = true;
+      for (const { m, c } of a.mats) m.color.copy(c).lerp(GHOST, a.dim * .74);
+      a.lineMat.color.copy(INK).lerp(GOLD, a.lit);
+      const sx = k === 'board' ? 0 : (MOVERS.includes(k) ? A[k].s.x : mean);
+      a.lineMat.opacity = k === 'board' ? .1 : Math.max(.03, .1 + .3 * sx + .65 * a.lit - .12 * a.dim);
+    }
+    const pd = A.panels.dim;
+    for (const sub of A.panels.subs) {
+      const d = sub.g.position.distanceTo(sub.rest);
+      sub.wm.emissiveIntensity = ig * flick * 1.2 / (1 + .5 * d) * (1 - .55 * pd) * (1 - .2 * A.light.s.x);
+    }
+    L.flame.visible = L.core.visible = ig > .01;
+    // plate glow follows the flame on screen (light on paper takes a tint)
+    andon.root.updateMatrixWorld(true);
+    const [gx, gy] = project(_v.copy(L.flameAt).applyMatrix4(L.group.matrixWorld), cam, S.W, S.H);
+    host.style.setProperty('--gx', (gx / S.W * 100).toFixed(1) + '%');
+    host.style.setProperty('--gy', (gy / S.H * 100).toFixed(1) + '%');
+    host.style.setProperty('--glow', (ig * flick * (1 - .35 * mean)).toFixed(3));
+    layoutTags(sel, mean);
+    // readout and selection text, from the same springs that move the parts
+    const rd = readout(sel, mean, opening);
+    if (rd !== S.lastRead) { readEl.textContent = rd; S.lastRead = rd; }
+    if (sel !== S.lastSel) {
+      S.lastSel = sel;
+      if (sel) { specText.textContent = `${A[sel].no} ${A[sel].part} — ${A[sel].desc}`; live.textContent = `${A[sel].no} ${A[sel].svc}、${A[sel].part}。${A[sel].desc}`; }
+      spec.classList.toggle('is-on', !!sel && !S.stepAsm);
+      for (const b of pbtns) b.classList.toggle('is-on', b.dataset.asm === sel);
+      for (const k of KEYS) { tags[k].classList.toggle('is-on', k === sel); grps[k].classList.toggle('is-on', k === sel); }
+    }
+    if (sel && S.stepAsm) spec.classList.remove('is-on'); else if (sel) spec.classList.add('is-on');
+    stage.renderer.render(scene, cam);
+    const settled = !moving && Math.abs(S.cam - smooth(0, 1, mean)) < 1e-3 && S.light >= 1;
+    return !calm || !settled;
+  }
+
+  function layoutTags(sel, mean) {
+    const W = S.W, H = S.H, small = W < 520, tw = small ? 88 : 128, padX = small ? 12 : 20, gap = small ? 34 : 44;
+    const cols = { L: [], R: [] };
+    for (const k of KEYS) {
+      const a = A[k];
+      const [x, y] = project(_v.copy(a.anchor.p).applyMatrix4(a.anchor.obj.matrixWorld), cam, W, H);
+      const vis = smooth(.25, .85, MOVERS.includes(k) ? a.s.x : mean);
+      cols[a.side].push({ k, x, y, vis, ty: y - 10 });
+    }
+    for (const side of ['L', 'R']) {
+      const c = cols[side].sort((p, q) => p.y - q.y);
+      const top = small ? 40 : 52, bot = H - (small ? 60 : 84);
+      for (let i = 0; i < c.length; i++) c[i].ty = Math.max(c[i].ty, i ? c[i - 1].ty + gap : top);
+      for (let i = c.length - 1; i >= 0; i--) c[i].ty = Math.min(c[i].ty, i < c.length - 1 ? c[i + 1].ty - gap : bot - gap * .6);
+      for (const p of c) {
+        const t = tags[p.k], left = side === 'L' ? padX : W - padX - tw;
+        t.style.transform = `translate(${left.toFixed(1)}px, ${p.ty.toFixed(1)}px)`;
+        t.style.opacity = p.vis.toFixed(3); t.style.pointerEvents = p.vis > .5 ? 'auto' : 'none';
+        const ly = p.ty + (small ? 8 : 10), ex = side === 'L' ? left + tw + 8 : left - 8, el = side === 'L' ? ex + 14 : ex - 14;
+        leads[p.k].setAttribute('d', `M${ex.toFixed(1)} ${ly.toFixed(1)}H${el.toFixed(1)}L${p.x.toFixed(1)} ${p.y.toFixed(1)}`);
+        leads[p.k].style.opacity = (p.vis * (sel === p.k ? .95 : .42)).toFixed(3);
+        dots[p.k].setAttribute('cx', p.x.toFixed(1)); dots[p.k].setAttribute('cy', p.y.toFixed(1));
+        dots[p.k].style.opacity = p.vis.toFixed(3);
+      }
+    }
+  }
+
+  // Opening: the andon arrives in pieces and assembles in reverse take-apart order, then it is lit
+  // (anatomy "arming": the action starts only once every spring has arrived).
+  if (!still.matches) { for (const k of MOVERS) { A[k].s.x = 1; A[k].hoverT = 1; } S.cam = 1; }
+  resize();
+  addEventListener('resize', () => { resize(); onScroll(); stage.kick(); });
+  onScroll();
+  stage.kick();
+}
+
+/* ======================= Fig. 2 — SHŌ's chōchin ======================= */
+const ANSWERS = [
+  { parts: ['受診の目的を整理', '過去の検査資料を準備', '医療機関と日程を予約', '渡航前の準備事項を確認'],
+    text: 'まず受診の目的と、これまでの検査結果を整理します。次に医療機関と日程を決め、渡航前の準備事項を確認します。' },
+  { parts: ['4 日間の日程を確認', '検査と施術の予約枠', '同日可否は医療機関へ', '移動・宿泊を調整'],
+    text: '4 日間の中で、検査と美容医療の予約枠を確認します。同じ日程に入れられるかどうかは、医療機関の判断をご確認ください。' },
+  { parts: ['来院から退出まで同席', '医師の説明をその場で通訳', '送迎・移動を手配', '宿泊と日程を調整'],
+    text: '担当者が来院から退出まで同席し、医師の説明を中国語・英語・日本語で通訳します。送迎や宿泊もあわせて調整できます。' },
+];
+
+function setupFig2() {
+  const host = document.getElementById('fig2'), canvas = document.getElementById('c2');
+  const over = document.getElementById('over2'), svg = document.getElementById('lines2'), readEl = document.getElementById('read2');
+  const ansText = document.getElementById('ansText'), ansQ = document.getElementById('ansQ');
+  const qs = [...document.querySelectorAll('.q')];
+  const stage = new Stage(canvas, host, tick);
+  const scene = new THREE.Scene(), cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 200), B = basis(26, 9);
+  lights(scene, stage.renderer, { keyPos: new THREE.Vector3(-2.6, 14, 5), keyI: 2.1, bounds: 6, shadow: 1024 });
+  const ink = new THREE.Color('#44352a');
+  const lineMat = new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: .2, depthWrite: false, toneMapped: false });
+  const all = [], kit = { mats: [] }, M = matKit(kit);
+  const add = (geo, mat, at, parent, edges = true) => {
+    const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; if (at) m.position.set(...at);
+    if (edges) { const l = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 32), lineMat); m.add(l); }
+    parent.add(m); all.push(m); return m;
+  };
+  const root = new THREE.Group(); scene.add(root);
+  /* stand: base on brass feet, post, arm, bracket, hook */
+  const lac = M.lacquer(), lacH = M.lacquer(true), brass = M.brass();
+  add(rbox(2.7, .24, 1.5, .05), lacH, [-.35, .3, 0], root);
+  for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) add(new THREE.CylinderGeometry(.09, .1, .18, 20), brass, [-.35 + sx * 1.15, .09, sz * .55], root);
+  add(rbox(.34, .1, .34, .02), brass, [-1.25, .47, 0], root);
+  add(rbox(.17, 5.5, .17, .025), lac, [-1.25, .42 + 2.75, 0], root);
+  add(rbox(1.75, .13, .13, .02), lacH, [-.43, 5.86, 0], root);
+  add(rbox(.26, .26, .22, .02), brass, [-1.25, 5.86, 0], root);
+  add(new THREE.SphereGeometry(.08, 18, 12), brass, [.46, 5.86, 0], root, false);
+  add(new THREE.CylinderGeometry(.018, .018, .32, 10), brass, [.3, 5.66, 0], root, false);
+  add(new THREE.TorusGeometry(.075, .016, 8, 28), brass, [.3, 5.44, 0], root, false);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), fadingShadow(.14, -.2, 0, 1.6, 3.4)); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; root.add(ground);
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(5, 3.2), new THREE.MeshBasicMaterial({ map: TEX.halo, transparent: true, depthWrite: false, opacity: .45, toneMapped: false }));
+  halo.rotation.x = -Math.PI / 2; halo.position.set(-.35, .003, 0); root.add(halo);
+
+  /* the chōchin hangs from the hook: top ring, 16 rib gaps in four bands, bottom ring with a candle */
+  const hang = new THREE.Group(); hang.position.set(.3, 5.36, 0); root.add(hang);
+  const TOP = -.1, HB = 2.95, N = 16, GAP = .4;
+  const rOf = (t) => .4 + .58 * Math.pow(Math.sin(Math.PI * t), .78);
+  const topCap = new THREE.Group(); hang.add(topCap);
+  add(lathe([[0, 0], [.42, 0], [.43, -.02], [.43, -.2], [.4, -.22], [0, -.22]]), lac, [0, TOP + .22 - .02, 0], topCap);
+  add(new THREE.TorusGeometry(.43, .014, 8, 48), brass, [0, TOP + .0, 0], topCap, false).rotation.x = Math.PI / 2;
+  add(new THREE.TorusGeometry(.06, .012, 8, 20), brass, [0, TOP + .27, 0], topCap, false);
+  const bands = [0, 1, 2, 3].map(() => ({ g: new THREE.Group(), s: { x: 0, v: 0 }, t: 0, ribs: [], segs: [] }));
+  bands.forEach((b) => hang.add(b.g));
+  const ribMat = M.lacquer(); ribMat.color.set(0x5b4938); kit.mats[kit.mats.length - 1].c.copy(ribMat.color);
+  const segMats = [];
+  for (let gi = 0; gi < N; gi++) {
+    const k = Math.floor(gi / 4), t0 = gi / N, t1 = (gi + 1) / N, r0 = rOf(t0), r1 = rOf(t1);
+    const prof = []; for (let j = 0; j <= 8; j++) { const u = j / 8; prof.push([mix(r0, r1, u) + .028 * Math.sin(Math.PI * u), -u]); }
+    const m = M.washi(); m.emissiveMap = TEX.glowBand; m.map = TEX.washi; segMats.push({ m, tm: (t0 + t1) / 2 });
+    const seg = new THREE.Mesh(lathe(prof, 56), m); seg.castShadow = false; seg.receiveShadow = false; bands[k].g.add(seg); bands[k].segs.push({ seg, t0 }); all.push(seg);
+  }
+  for (let k = 0; k < 4; k++) for (let i = k * 4; i <= k * 4 + 4; i++) {
+    const rib = new THREE.Mesh(new THREE.TorusGeometry(rOf(i / N) + .006, .011, 8, 72), ribMat); rib.rotation.x = Math.PI / 2; rib.castShadow = true;
+    bands[k].g.add(rib); bands[k].ribs.push({ rib, t: i / N }); all.push(rib);
+  }
+  const bottom = new THREE.Group(); hang.add(bottom);
+  add(lathe([[0, 0], [.46, 0], [.47, -.02], [.47, -.22], [.44, -.24], [0, -.24]]), lac, [0, 0, 0], bottom);
+  add(new THREE.TorusGeometry(.47, .014, 8, 48), brass, [0, -.24, 0], bottom, false).rotation.x = Math.PI / 2;
+  add(new THREE.CylinderGeometry(.13, .15, .05, 24), brass, [0, .025, 0], bottom);
+  add(new THREE.CylinderGeometry(.072, .062, .5, 24), M.candle(), [0, .3, 0], bottom);
+  const fMat = flameMaterial(); fMat.uniforms.uH.value = .36;
+  const flame = new THREE.Mesh(flameGeo(.36, .06), fMat); flame.position.set(0, .56, 0); flame.renderOrder = 5; bottom.add(flame);
+  const bulb = new THREE.PointLight(0xffab55, 0, 0, 1.6); bulb.position.set(0, .8, 0); bottom.add(bulb);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.spark, color: 0xffb760, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, opacity: .4 }));
+  glow.scale.set(.9, .9, 1); glow.position.set(0, .7, 0); bottom.add(glow);
+
+  /* tags for the four bands */
+  const NS = 'http://www.w3.org/2000/svg', tags = [], leads = [], dots = [];
+  for (let k = 0; k < 4; k++) {
+    const t = document.createElement('div'); t.className = 'tag'; t.dataset.side = 'R';
+    t.innerHTML = `<span class="tag__row"><span class="tag__no">${k + 1} / 4</span></span><span class="tag__svc"></span>`;
+    over.appendChild(t); tags.push(t);
+    const p = document.createElementNS(NS, 'path'); p.setAttribute('class', 'lead');
+    const c = document.createElementNS(NS, 'circle'); c.setAttribute('class', 'ldot'); c.setAttribute('r', '2.6');
+    svg.append(p, c); leads.push(p); dots.push(c);
+  }
+  const S = { e: { x: .62, v: 0 }, q: -1, shown: -1, want: -1, foldUntil: 0, clock: 0, idleAt: -1.6, light: .5, typed: 0, tour: 0, tourT: 0, user: false, W: 0, H: 0, view: null, swing: 0 };
+
+  function pose(e, sArr) {
+    let off = 0;
+    bands.forEach((b, k) => {
+      if (k > 0) off += GAP * sArr[k];
+      for (const { seg, t0 } of b.segs) { seg.position.y = TOP - t0 * HB * e - off; seg.scale.y = HB * e / N; }
+      for (const { rib, t } of b.ribs) rib.position.y = TOP - t * HB * e - off;
+      b.off = off;
+    });
+    bottom.position.y = TOP - HB * e - off;
+  }
+  function resize() {
+    const [W, H] = stage.size(); S.W = W; S.H = H;
+    pose(1, [0, 1, 1, 1]); root.updateMatrixWorld(true);
+    const ext = extents(all.filter((m) => m !== ground && m !== halo), B);
+    const small = W < 520;
+    S.view = fit(ext, W, H, { t: small ? 44 : 58, b: small ? 44 : 56, l: small ? 10 : 34, r: W * (small ? .44 : .4) });
+    host.style.setProperty('--tw', (small ? Math.round(W * .38) : Math.round(W * .32)) + 'px');
+  }
+  function activate(i, user) {
+    if (user) { S.user = true; S.idleAt = S.clock; }
+    if (i === S.want) return;
+    S.want = i; S.foldUntil = S.shown >= 0 ? S.clock + .42 : S.clock;
+    qs.forEach((q, j) => { q.classList.toggle('is-on', j === i); q.setAttribute('aria-pressed', String(j === i)); });
+    stage.kick();
+  }
+  qs.forEach((q, i) => {
+    q.addEventListener('mouseenter', () => activate(i, true));
+    q.addEventListener('focus', () => activate(i, true));
+    q.addEventListener('click', () => activate(i, true));
+    q.addEventListener('mouseleave', () => { S.idleAt = S.clock; S.user = false; });
+  });
+
+  function tick(dt, t) {
+    const calm = still.matches;
+    S.clock += dt;
+    // idle tour: when nobody chooses, SHŌ cycles through the three questions
+    if (!S.user && S.clock - S.idleAt > 1.4) {
+      S.tourT += dt;
+      const slot = calm ? 0 : Math.floor(S.tourT / 7.5) % 3;
+      if (S.want !== slot) activate(slot, false);
+    }
+    // fold between answers: close the bands, swap the words, open again
+    if (S.want >= 0 && S.shown !== S.want && S.clock >= S.foldUntil) {
+      S.shown = S.want; S.typed = 0;
+      const a = ANSWERS[S.shown];
+      tags.forEach((tg, k) => { tg.querySelector('.tag__svc').textContent = a.parts[k]; });
+      ansQ.textContent = `Q${S.shown + 1} · 回答の要点`;
+    }
+    const open = S.shown >= 0 && S.clock >= S.foldUntil;
+    let moving = false;
+    const eT = open ? 1 : (S.shown >= 0 ? .78 : .62 + (calm ? 0 : .04 * Math.sin(S.clock * 1.1)));
+    if (spring(S.e, eT, dt, calm, 30, 10.5)) moving = true;
+    bands.forEach((b, k) => {
+      if (k === 0) return;
+      const at = open ? .18 + k * .16 : 0;
+      b.t = open && S.clock - S.foldUntil >= at ? 1 : 0;
+      if (spring(b.s, b.t, dt, calm, 42, 11.5)) moving = true;
+    });
+    const sArr = bands.map((b) => b.s.x);
+    pose(S.e.x, sArr);
+    // a hanging lantern sways a little about its hook
+    S.swing = calm ? 0 : Math.sin(S.clock * .9) * .022 + Math.sin(S.clock * .37) * .012;
+    hang.rotation.z = S.swing; hang.rotation.y = calm ? 0 : Math.sin(S.clock * .21) * .25;
+    S.light = follow(S.light, open ? 1 : .5, dt, .5, calm);
+    const flick = calm ? 1 : 1 + .05 * Math.sin(t * 9.7) + .03 * Math.sin(t * 21.3 + .7);
+    fMat.uniforms.uTime.value = t; fMat.uniforms.uAmp.value = calm ? 0 : 1; fMat.uniforms.uI.value = .6 + .4 * S.light;
+    bulb.intensity = 6 * S.light * flick; glow.material.opacity = .32 * S.light * flick;
+    for (const { m, tm } of segMats) {
+      const k = Math.min(3, Math.floor(tm * 4)), sep = k ? bands[k].s.x : sArr[1];
+      m.emissiveIntensity = (.42 + .62 * S.light) * flick * (.8 + .2 * Math.sin(Math.PI * tm)) * (1 + .12 * sep);
+    }
+    placeCamera(cam, B, S.view, S.W, S.H);
+    root.updateMatrixWorld(true);
+    // flame tint on the paper of the plate
+    const [gx, gy] = project(_v.set(0, .75, 0).applyMatrix4(bottom.matrixWorld), cam, S.W, S.H);
+    host.style.setProperty('--gx', (gx / S.W * 100).toFixed(1) + '%'); host.style.setProperty('--gy', (gy / S.H * 100 - 8).toFixed(1) + '%');
+    host.style.setProperty('--glow', (S.light * flick).toFixed(3));
+    // tags: one per band, anchored on the band's right-hand rim
+    const W = S.W, H = S.H, small = W < 520, tw = parseFloat(host.style.getPropertyValue('--tw')) || 160, left = W - tw - (small ? 10 : 24);
+    const ys = [];
+    bands.forEach((b, k) => {
+      const tMid = (k * 4 + 2) / N, r = rOf(tMid) + .02;
+      _v.set(0, TOP - tMid * HB * S.e.x - b.off, 0).addScaledVector(B.right, r);
+      hang.localToWorld(_v);
+      const [x, y] = project(_v, cam, W, H);
+      const vis = open && S.shown >= 0 ? smooth(.2, .9, k ? b.s.x : sArr[1]) : 0;
+      let ty = y - 9; if (ys.length) ty = Math.max(ty, ys[ys.length - 1] + (small ? 38 : 44)); ys.push(ty);
+      tags[k].style.transform = `translate(${left.toFixed(1)}px, ${ty.toFixed(1)}px)`; tags[k].style.opacity = vis.toFixed(3);
+      const ly = ty + 9, ex = left - 8, el = ex - 14;
+      leads[k].setAttribute('d', `M${ex.toFixed(1)} ${ly.toFixed(1)}H${el.toFixed(1)}L${x.toFixed(1)} ${y.toFixed(1)}`);
+      leads[k].style.opacity = (vis * .5).toFixed(3);
+      dots[k].setAttribute('cx', x.toFixed(1)); dots[k].setAttribute('cy', y.toFixed(1)); dots[k].style.opacity = vis.toFixed(3);
+    });
+    // the answer is written out as the bands open (the typewriter drain, owner-approved for SHŌ)
+    if (S.shown >= 0) {
+      const full = ANSWERS[S.shown].text;
+      S.typed = calm ? full.length : Math.min(full.length, S.typed + dt * (open ? 34 : 0));
+      const n = Math.floor(S.typed);
+      if (ansText.dataset.n !== String(n) || ansText.dataset.q !== String(S.shown)) {
+        ansText.dataset.n = n; ansText.dataset.q = S.shown;
+        ansText.innerHTML = full.slice(0, n) + (n < full.length ? '<span class="caret"></span>' : '');
+      }
+    }
+    const rd = S.shown >= 0 && open ? `Q${S.shown + 1} · 回答 4 部 · 灯 ${Math.round(S.light * 100)}%` : `待機 · 灯 ${Math.round(S.light * 100)}%`;
+    if (readEl.textContent !== rd) readEl.textContent = rd;
+    stage.renderer.render(scene, cam);
+    return !calm || moving || Math.abs(S.light - (open ? 1 : .5)) > 1e-3;
+  }
+  resize();
+  addEventListener('resize', () => { resize(); stage.kick(); });
+  if (still.matches) activate(0, false);
+  stage.kick();
+}
+
+function hasGL() { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } }
+if (hasGL()) {
+  setupFig1(); setupFig2();
+  // tag widths depend on the web font; re-lay out once it has arrived
+  document.fonts?.ready.then(() => dispatchEvent(new Event('resize')));
+} else {
+  document.querySelectorAll('.plate canvas').forEach((c) => (c.style.display = 'none'));
+}
+</script>
+</body>
+</html>

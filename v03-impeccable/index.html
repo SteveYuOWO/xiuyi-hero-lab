@@ -1,0 +1,933 @@
+<!doctype html>
+<!-- v03 · impeccable (Paul Bakaus) · https://github.com/pbakaus/impeccable
+  Decisions taken from the tool: Persuade mode; "the brief wins" (logo palette, washi beige and mincho kept, so its
+  cream-palette rule is waived as brand-pinned); critique -> bolder -> polish -> audit loop; bolder = amplify what the
+  brand already owns (paper, ink, coffee, mincho) with ONE decisive move, a vertical 縦書き headline hung in live
+  sunlight; one authored motion moment (the komorebi light, real WebGL, not a picture of it) instead of section fades;
+  craft-floor bans honoured: no eyebrow/kicker labels, no 01/02/03 section numbers, no icon tiles, no identical card
+  grids, no glass, no gradient text, no pulsing dots; "prove, don't claim" -> SHŌ is shown answering, labelled as a
+  sample; browser surfaces themed (selection, caret, scrollbar, focus ring, underline offset); reduced motion = a calm
+  still frame; renders pause offscreen and in hidden tabs.
+
+  CRITIQUE of the live page (assets/reference/live-hero.png, live-sho.png), impeccable critique method.
+  DEGRADED: single-context (two screenshots only; the deterministic detector cannot scan a PNG).
+  Nielsen (Persuade; H7 and H10 n/a): status 3 · real world 3 · control 3 · consistency 3 · error prevention 3 ·
+  recognition 3 · aesthetic/minimal 2 · recovery 3 -> 23/32 (72 %, Good, weak where it matters most).
+  Design specificity: FAIL. The bronze Möbius ring and the gold blob are stock "premium 3D" any fintech or skincare
+  brand could ship; nothing in the two largest squares says Japan, care, light, or medicine.
+  [P1] Hero object is category-interchangeable; the strongest area of the page proves nothing. -> /bolder: one
+       authored, Japan-specific visual that owns the whole first viewport.
+  [P1] SHŌ section claims an assistant but shows an orb; a first-time visitor never sees what SHŌ answers.
+       -> show SHŌ at work on the three real questions.
+  [P2] Kicker eyebrows with leading rules above both headings ("—— 東京・美と健康…", "—— AI アシスタント"). -> delete.
+  [P2] Primary and secondary CTA are near-equal (outline vs underline). -> filled coffee primary, quiet secondary.
+  [P2] Japanese wrapping breaks words ("つ/なぎ") and orphans ("さい。"). -> auto-phrase + text-wrap pretty/balance.
+  [P3] One flat beige tone and one pace top to bottom. -> give SHŌ its own rhythm: a peak in the scroll.
+  Personas: Jordan (first-timer) cannot tell what SHŌ does from a blob; Casey (mobile) pays for two heavy renders
+  that carry no meaning; Riley (stress) sees the floating お問い合わせ chip cover body text.
+  AUDIT of this build (impeccable's own in-page detector injected in headless Chrome at 1440 and 390, plus a manual
+  pass): 0 slop findings except cream-palette (brand-pinned beige, waived by "the brief wins"); its low-contrast flags on
+  text over the two WebGL canvases are false positives (it reads the cleared GL buffer / CSS night ground), real
+  rendered pixels measure hero copy 6.7:1, H1 6.2:1, SHŌ answer 8.6:1, muted SHŌ meta 4.7:1 at the worst pixel.
+  A11y 3 · Performance 4 (DPR<=2, 4.4 MP cap, light field at half res, IO + visibility pause) · Theming 3 · Responsive 4 ·
+  Integrity 4 -> 18/20. No-WebGL and reduced-motion paths verified (still frame, full answer, zero console noise).
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜美・健康・暮らしを、日本で再定義する。</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<meta name="theme-color" content="#e6e2db">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;600&family=Shippori+Mincho:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#e6e2db; --paper:#f3f0ea; --white:#ffffff;
+  --coffee:#5b4938; --ink:#44352a; --muted:#6b5946; --gold:#b9a17b; --logo:#7a6a56;
+  --night:#231a14; --night-2:#2d231b; --on-night:#efe7da; --on-night-muted:#c2b29b;
+  --rule:rgba(68,53,42,.16); --rule-strong:rgba(68,53,42,.34); --rule-night:rgba(239,231,218,.16);
+  --sel:#dccbaa;
+  --r-btn:8px; --r-field:8px; --r-card:12px;
+  --f-display:"Shippori Mincho B1","Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --f-body:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --max:1280px;
+  --gutter:clamp(20px,5.6vw,80px);
+  --edge:max(var(--gutter), calc((100vw - var(--max)) / 2));
+  --hd-h:88px;
+  --sec:clamp(96px,11vw,168px);
+  --col-gap:clamp(40px,6vw,104px);
+  --h2:clamp(29px,3vw,44px);
+  --h3:clamp(21px,1.9vw,27px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(var(--hd-h) + 16px);
+  scrollbar-color:var(--gold) var(--beige);scrollbar-width:thin;background:var(--beige)}
+body{margin:0;background:var(--beige);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:2;
+  letter-spacing:.04em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  word-break:auto-phrase;line-break:strict;text-wrap:pretty}
+::selection{background:var(--sel);color:var(--ink)}
+.night ::selection{background:var(--gold);color:var(--night)}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none;text-underline-offset:.34em;text-decoration-thickness:1px}
+button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+input{font:inherit;letter-spacing:inherit;caret-color:var(--coffee)}
+h1,h2,h3{font-family:var(--f-display);font-weight:500;text-wrap:balance;font-feature-settings:"palt" 1;margin:0}
+p{margin:0}
+:focus-visible{outline:2px solid var(--coffee);outline-offset:3px;border-radius:4px}
+.night :focus-visible,.closing :focus-visible{outline-color:var(--on-night)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:fixed;left:16px;top:-80px;z-index:100;background:var(--coffee);color:var(--paper);padding:10px 16px;border-radius:var(--r-btn);transition:top .2s var(--ease)}
+.skip:focus{top:12px}
+.wrap{width:100%;max-width:calc(var(--max) + 2 * var(--gutter));margin-inline:auto;padding-inline:var(--gutter)}
+.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:52px;padding:0 26px;border-radius:var(--r-btn);
+  font-size:15px;line-height:1;letter-spacing:.14em;font-weight:500;white-space:nowrap;border:1px solid transparent;
+  transition:background-color .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease)}
+.btn .i{width:18px;height:18px;transition:transform .35s var(--ease)}
+.btn:hover .i{transform:translateX(4px)}
+.btn-primary{background:var(--coffee);color:var(--paper)}
+.btn-primary:hover{background:var(--ink)}
+.btn-quiet{border-color:rgba(91,73,56,.42);color:var(--coffee)}
+.btn-quiet:hover{border-color:var(--coffee);background:rgba(243,240,234,.6)}
+.btn-light{background:var(--paper);color:var(--ink)}
+.btn-light:hover{background:var(--white)}
+
+/* ---------- header ---------- */
+.hd{position:fixed;inset:0 0 auto;z-index:40;height:var(--hd-h);transition:background-color .35s var(--ease),box-shadow .35s var(--ease)}
+.hd[data-state="solid"]{background:var(--paper);box-shadow:0 1px 0 var(--rule)}
+.hd-in{height:100%;display:flex;align-items:center;gap:32px;padding-inline:var(--edge)}
+.brand{display:inline-flex;align-items:center;gap:14px;flex:none}
+.brand img{width:44px;height:44px}
+.wordmark{font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.34em;color:var(--coffee);line-height:1}
+.hd-nav{display:flex;gap:clamp(24px,3vw,48px);margin-inline:auto;font-size:15px;letter-spacing:.16em}
+.hd-nav a,.hd-tools .t-link{position:relative;padding:8px 0}
+.hd-nav a::after,.hd-tools .t-link::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+.hd-nav a:hover::after,.hd-tools .t-link:hover::after{transform:scaleX(1)}
+.hd-tools{display:flex;align-items:center;gap:26px;font-size:14px;letter-spacing:.14em;flex:none}
+.lang{position:relative}
+.lang-btn,.menu-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px}
+.lang-btn .i{width:14px;height:14px;transition:transform .25s var(--ease)}
+.lang-btn[aria-expanded="true"] .i{transform:rotate(180deg)}
+.lang-list{position:absolute;right:-12px;top:calc(100% + 4px);list-style:none;margin:0;padding:8px;min-width:150px;background:var(--paper);
+  border-radius:var(--r-field);box-shadow:0 12px 32px -12px rgba(35,26,20,.35),0 1px 0 var(--rule)}
+.lang-list a{display:block;padding:8px 12px;border-radius:6px;line-height:1.6}
+.lang-list a:hover{background:var(--beige)}
+.lang-list a[aria-current="true"]{color:var(--coffee);font-weight:500}
+.menu-btn .bars{width:26px;height:20px}
+.menu-btn .bars path{transition:transform .3s var(--ease)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;height:100svh;min-height:640px;max-height:1080px;background:#e5e0d8;isolation:isolate;
+  --h1:clamp(44px,min(6.6vh,4.6vw),66px)}
+.kb{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-title{position:absolute;top:calc(var(--hd-h) + 3.6vh);left:calc(var(--edge) + 4px);writing-mode:vertical-rl;
+  font-size:var(--h1);line-height:1.62;letter-spacing:.12em;color:var(--ink);font-weight:500;font-feature-settings:normal;
+  text-wrap:nowrap;white-space:nowrap}
+.hero-title .col{display:block}
+.hero-title .c2{padding-inline-start:1.6em}
+.hero-copy{position:absolute;left:calc(var(--edge) + 3.24 * var(--h1) + clamp(56px,6vw,104px));bottom:clamp(48px,9.6vh,104px);width:min(26rem,38vw)}
+.hero-copy p{font-size:17px;line-height:2.05;letter-spacing:.06em;color:var(--ink)}
+.actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+
+/* ---------- SHŌ ---------- */
+.night{background:var(--night);color:var(--on-night)}
+.sho{position:relative;padding-block:var(--sec);overflow-x:clip}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(0,1fr);grid-template-areas:"stage intro" "stage ask";column-gap:var(--col-gap);align-items:start}
+.sho-intro{grid-area:intro;align-self:end;padding-top:24px}
+.sho-intro h2{font-size:var(--h2);line-height:1.5;letter-spacing:.06em;color:var(--on-night)}
+.sho-intro .lead{margin-top:26px;color:var(--on-night-muted);font-size:16px;line-height:2.1;letter-spacing:.05em;max-width:31em}
+.sho-ask{grid-area:ask}
+.qs{list-style:none;margin:44px 0 44px;padding:0;border-top:1px solid var(--rule-night)}
+.qs li{border-bottom:1px solid var(--rule-night)}
+.q{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;width:100%;padding:21px 4px;text-align:left;
+  color:var(--on-night-muted);font-size:16px;line-height:1.85;letter-spacing:.05em;transition:color .25s var(--ease)}
+.q .i{transition:transform .35s var(--ease),color .25s var(--ease)}
+.q:hover,.q[aria-pressed="true"]{color:var(--on-night)}
+.q:hover .i{transform:translateX(4px)}
+.q[aria-pressed="true"] .i{color:var(--gold)}
+.sho-stage{grid-area:stage;position:relative;display:flex;flex-direction:column}
+.sho-light{position:relative;height:clamp(540px,44vw,640px)}
+.sho-light canvas{position:absolute;top:-56px;bottom:-56px;left:-88px;right:-88px;width:calc(100% + 176px);height:calc(100% + 112px);display:block}
+.no-gl .sho-light{background:radial-gradient(closest-side,#e9dcc3 70%,var(--night));border-radius:50%}
+.sheet-chat{position:absolute;left:50%;top:13%;transform:translateX(-50%);width:min(440px,74%);color:var(--ink)}
+.chat-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid rgba(68,53,42,.22)}
+.chat-name{font-family:var(--f-display);font-size:19px;font-weight:600;letter-spacing:.16em;color:var(--coffee)}
+.chat-note{font-size:12.5px;letter-spacing:.14em;color:var(--muted)}
+.msg-q{margin-top:20px;padding-left:18%;text-align:right;font-size:14.5px;line-height:1.9;color:var(--muted)}
+.msg-q .who{display:block;font-size:12px;letter-spacing:.18em;margin-bottom:2px}
+.msg-a{margin-top:18px;min-height:10.4em;font-size:16px;line-height:2.05;letter-spacing:.05em;color:var(--ink)}
+.chat-status{margin-top:8px;font-size:12.5px;letter-spacing:.12em;color:var(--muted);min-height:2em;transition:opacity .3s var(--ease)}
+.sho-form{position:relative;z-index:1;display:flex;align-items:center;gap:8px;margin-top:20px;width:min(520px,100%);align-self:center;
+  border:1px solid var(--rule-night);border-radius:var(--r-field);padding:4px 4px 4px 18px;transition:border-color .25s var(--ease)}
+.sho-form:focus-within{border-color:rgba(239,231,218,.5)}
+.sho-form input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:var(--on-night);outline:none;caret-color:var(--gold);font-size:15px}
+.sho-form input::placeholder{color:var(--on-night-muted);opacity:1}
+.sho-form button{width:44px;height:44px;border-radius:6px;display:grid;place-items:center;color:var(--on-night);transition:background-color .25s var(--ease)}
+.sho-form button:hover{background:rgba(239,231,218,.08)}
+
+/* ---------- services ---------- */
+.services{padding-block:var(--sec)}
+.sec-head{display:grid;grid-template-columns:5fr 7fr;column-gap:var(--col-gap);align-items:end;margin-bottom:clamp(40px,5vw,72px)}
+.sec-head h2{font-size:var(--h2);line-height:1.5;letter-spacing:.06em}
+.sec-head p{color:var(--muted);max-width:34em}
+.svc-body{display:grid;grid-template-columns:5fr 7fr;column-gap:var(--col-gap);align-items:start}
+.svc-fig{position:sticky;top:calc(var(--hd-h) + 32px);margin:0;display:grid}
+.svc-fig img{grid-area:1/1;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--r-card);opacity:0;transition:opacity .7s var(--ease)}
+.svc-fig img.on{opacity:1}
+.svc-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule-strong)}
+.svc-list li{border-bottom:1px solid var(--rule)}
+.svc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) 20px;align-items:center;column-gap:28px;padding:27px 4px;transition:color .3s var(--ease)}
+.svc-name{font-family:var(--f-display);font-size:clamp(20px,1.75vw,25px);white-space:nowrap;font-weight:500;letter-spacing:.12em;line-height:1.45;transition:transform .45s var(--ease)}
+.svc-desc{font-size:15px;line-height:1.85;color:var(--muted)}
+.svc .i{color:var(--coffee);opacity:.55;transition:transform .35s var(--ease),opacity .25s var(--ease)}
+.svc:hover .svc-name,.svc.on .svc-name{transform:translateX(6px)}
+.svc:hover .i,.svc.on .i{opacity:1;transform:translateX(3px)}
+
+/* ---------- why ---------- */
+.why{background:var(--paper);padding-block:var(--sec)}
+.why-grid{display:grid;grid-template-columns:7fr 5fr;column-gap:var(--col-gap);align-items:start}
+.why h2{font-size:var(--h2);line-height:1.5;letter-spacing:.06em;margin-bottom:clamp(36px,4.4vw,64px)}
+.reason{padding:38px 0 40px;border-top:1px solid var(--rule)}
+.reason:last-child{border-bottom:1px solid var(--rule)}
+.reason h3{font-size:var(--h3);line-height:1.5;letter-spacing:.1em;margin-bottom:14px}
+.reason p{max-width:36em}
+.why-fig{margin:clamp(40px,8vw,128px) 0 0}
+.why-fig img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--r-card)}
+
+/* ---------- support ---------- */
+.support{padding-block:var(--sec)}
+.sup-fig{margin:0 0 clamp(40px,5vw,72px)}
+.sup-fig img{width:100%;aspect-ratio:21/8;object-fit:cover;object-position:50% 62%;border-radius:var(--r-card)}
+.sup-list{margin:0;border-top:1px solid var(--rule-strong)}
+.sup-row{display:grid;grid-template-columns:5fr 7fr;column-gap:var(--col-gap);padding:30px 0 32px;border-bottom:1px solid var(--rule)}
+.sup-row dt{font-family:var(--f-display);font-size:clamp(19px,1.6vw,23px);font-weight:500;letter-spacing:.1em;line-height:1.6}
+.sup-row dd{margin:0;max-width:36em}
+.note{margin-top:28px;font-size:14px;line-height:1.9;color:var(--muted)}
+
+/* ---------- closing ---------- */
+.closing{position:relative;min-height:clamp(560px,52vw,720px);display:flex;align-items:center;color:var(--on-night);isolation:isolate;background:var(--night)}
+.closing-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 50%;z-index:-2}
+.closing::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(28,21,16,.86) 0%,rgba(28,21,16,.66) 38%,rgba(28,21,16,.08) 72%)}
+.closing-in{padding-block:var(--sec)}
+.closing h2{font-size:clamp(32px,3.6vw,52px);line-height:1.45;letter-spacing:.08em}
+.closing p{margin-top:24px;max-width:27em;color:#e6dccb;font-size:16.5px;line-height:2.1}
+.closing .btn{margin-top:40px}
+
+/* ---------- footer ---------- */
+.ft{padding-block:72px 40px}
+.ft-grid{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:start}
+.ft-brand{display:flex;gap:20px;align-items:flex-start}
+.disc{width:60px;height:60px;border-radius:50%;background:var(--paper);display:grid;place-items:center;flex:none}
+.disc img{width:46px;height:46px}
+.ft-word{font-family:var(--f-display);font-weight:600;letter-spacing:.34em;font-size:17px;color:var(--on-night);line-height:1.6}
+.ft-brand p{color:var(--on-night-muted);font-size:14px;line-height:1.9}
+.ft-nav{justify-self:end;display:flex;flex-wrap:wrap;gap:12px 32px;font-size:14px;letter-spacing:.14em;color:var(--on-night-muted);padding-top:6px}
+.ft-nav a:hover{color:var(--on-night);text-decoration:underline}
+.ft-base{margin-top:64px;padding-top:24px;border-top:1px solid var(--rule-night);font-size:12.5px;letter-spacing:.16em;color:var(--on-night-muted)}
+
+/* ---------- menu sheet ---------- */
+.sheet{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding:0 var(--edge) 40px;
+  opacity:0;transform:translateY(-8px);transition:opacity .3s var(--ease),transform .4s var(--ease);overflow-y:auto}
+.sheet.open{opacity:1;transform:none}
+.sheet[hidden]{display:none}
+.sheet-top{height:var(--hd-h);display:flex;align-items:center;justify-content:space-between;flex:none}
+.sheet-close{display:inline-flex;align-items:center;gap:10px;min-height:44px;font-size:14px;letter-spacing:.14em}
+.sheet-nav{display:flex;flex-direction:column;margin-top:clamp(16px,4vh,48px);border-top:1px solid var(--rule)}
+.sheet-nav a{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-display);font-size:clamp(24px,3vw,34px);letter-spacing:.12em;
+  padding:14px 0;border-bottom:1px solid var(--rule);line-height:1.5}
+.sheet-nav a .i{opacity:.5}
+.sheet-foot{margin-top:auto;padding-top:40px;display:flex;flex-wrap:wrap;gap:20px 28px;align-items:center;font-size:14px;letter-spacing:.14em}
+.sheet-foot .langs{display:flex;gap:18px;color:var(--muted)}
+.sheet-foot .langs [aria-current]{color:var(--ink);text-decoration:underline}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .hd-nav{display:none}
+  .hd-tools{margin-left:auto}
+}
+@media (max-width:860px){
+  :root{--hd-h:64px}
+  .brand img{width:36px;height:36px}
+  .wordmark{font-size:15px}
+  .lang,.hd-tools .t-link{display:none}
+  .menu-btn span{display:none}
+  .hero{--h1:clamp(34px,min(10.4vw,5.3svh),48px);min-height:600px}
+  .hero-title{left:auto;right:var(--gutter);top:calc(var(--hd-h) + 18px)}
+  .hero-copy{left:var(--gutter);right:var(--gutter);width:auto;bottom:max(28px,4svh)}
+  .hero-copy p{font-size:15.5px;line-height:1.95}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+  .actions .btn{padding:0 12px;letter-spacing:.1em}
+  .actions .btn .i{display:none}
+  .sho-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "stage" "ask"}
+  .sho-intro{padding-top:0}
+  .sho-stage{margin-top:40px}
+  .sho-light{height:clamp(600px,158vw,660px);margin-inline:calc(-1 * var(--gutter))}
+  .sho-light canvas{left:0;right:0;width:100%;top:0;bottom:-24px;height:calc(100% + 24px)}
+  .sheet-chat{width:calc(100% - 2 * var(--gutter) - 8px);top:14%}
+  .msg-a{font-size:15.5px;min-height:0}
+  .msg-q{padding-left:8%}
+  .sec-head,.svc-body,.why-grid,.sup-row{grid-template-columns:minmax(0,1fr)}
+  .sec-head p{margin-top:16px}
+  .svc-fig{position:relative;top:0;margin-bottom:28px}
+  .svc-fig img{aspect-ratio:4/3}
+  .svc{grid-template-columns:minmax(0,1fr) 20px;grid-template-areas:"n a" "d a";row-gap:4px;padding:20px 2px}
+  .svc-name{grid-area:n}.svc-desc{grid-area:d}.svc .i{grid-area:a}
+  .why-fig{margin-top:40px}
+  .why-fig img{aspect-ratio:4/3}
+  .sup-fig img{aspect-ratio:4/3}
+  .sup-row{row-gap:10px;padding:24px 0 26px}
+  .closing{min-height:640px;align-items:flex-end}
+  .closing::before{background:linear-gradient(0deg,rgba(28,21,16,.9) 0%,rgba(28,21,16,.72) 46%,rgba(28,21,16,.15) 100%)}
+  .closing-bg{object-position:30% 50%}
+  .ft-grid{grid-template-columns:minmax(0,1fr)}
+  .ft-nav{justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-arr" viewBox="0 0 24 24"><path d="M3.5 12h16.5M14.5 6.5 20 12l-5.5 5.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19.5V5M6 10.5 12 4.5l6 6"/></symbol>
+</svg>
+<a class="skip" href="#main">本文へ移動</a>
+
+<header class="hd" id="hd" data-state="top">
+  <div class="hd-in">
+    <a class="brand" href="#top" aria-label="XIUYI トップへ">
+      <img src="../assets/logo-mark.png" width="44" height="44" alt="">
+      <span class="wordmark" aria-hidden="true">XIUYI</span>
+    </a>
+    <nav class="hd-nav" aria-label="メイン">
+      <a href="#services">サービス</a>
+      <a href="#">コラム</a>
+      <a href="#footer">会社案内</a>
+      <a href="#sho">SHŌ AI</a>
+    </nav>
+    <div class="hd-tools">
+      <div class="lang">
+        <button class="lang-btn" type="button" aria-expanded="false" aria-controls="lang-list">日本語<svg class="i"><use href="#i-chev"/></svg></button>
+        <ul class="lang-list" id="lang-list" hidden>
+          <li><a href="#" aria-current="true">日本語</a></li>
+          <li><a href="#" lang="en">English</a></li>
+          <li><a href="#" lang="zh">中文</a></li>
+        </ul>
+      </div>
+      <a class="t-link" href="#">ログイン</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span>メニュー</span>
+        <svg class="i bars" viewBox="0 0 26 20" aria-hidden="true"><path d="M1 6.5h24M1 13.5h24"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <canvas class="kb" id="kb-hero" aria-hidden="true"></canvas>
+    <h1 class="hero-title" id="hero-title"><span class="col c1">美・健康・暮らしを、</span><span class="col c2">日本で再定義する。</span></h1>
+    <div class="hero-copy">
+      <p>XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#services">サービスを見る<svg class="i"><use href="#i-arr"/></svg></a>
+        <a class="btn btn-quiet" href="#contact">相談を予約<svg class="i"><use href="#i-arr"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sho night" id="sho" aria-labelledby="sho-title">
+    <div class="wrap sho-grid">
+      <div class="sho-intro">
+        <h2 id="sho-title">SHŌでサービス情報を確認</h2>
+        <p class="lead">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+      </div>
+      <div class="sho-stage" id="sho-stage" data-state="idle">
+        <div class="sho-light">
+          <canvas class="kb-pool" id="kb-pool" aria-hidden="true"></canvas>
+          <div class="sheet-chat" role="log" aria-label="SHŌ の応答例">
+            <div class="chat-head"><span class="chat-name">SHŌ</span><span class="chat-note">応答の一例</span></div>
+            <p class="msg-q"><span class="who">ご質問</span><span id="msg-q">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span></p>
+            <p class="msg-a" id="msg-a" aria-hidden="true"></p>
+            <p class="sr-only" id="msg-live" aria-live="polite"></p>
+            <p class="chat-status" id="chat-status" aria-hidden="true">下の質問を選ぶと、SHŌ の答え方をご覧いただけます。</p>
+          </div>
+        </div>
+        <form class="sho-form" id="sho-form" autocomplete="off">
+          <label class="sr-only" for="sho-input">SHŌへの質問</label>
+          <input id="sho-input" name="q" type="text" placeholder="SHŌに質問する" maxlength="120">
+          <button type="submit" aria-label="送信"><svg class="i"><use href="#i-send"/></svg></button>
+        </form>
+      </div>
+      <div class="sho-ask">
+        <ul class="qs" role="list">
+          <li><button class="q" type="button" data-q="0" aria-pressed="false"><span>初めて日本で人間ドックを受けます。何から準備すればよいですか。</span><svg class="i"><use href="#i-arr"/></svg></button></li>
+          <li><button class="q" type="button" data-q="1" aria-pressed="false"><span>滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span><svg class="i"><use href="#i-arr"/></svg></button></li>
+          <li><button class="q" type="button" data-q="2" aria-pressed="false"><span>母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span><svg class="i"><use href="#i-arr"/></svg></button></li>
+        </ul>
+        <a class="btn btn-light" href="#sho-input" id="sho-cta">SHŌに相談<svg class="i"><use href="#i-arr"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="services" id="services" aria-labelledby="svc-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="svc-title">医療サービス</h2>
+        <p>健診から専門医の受診、滞在中の移動まで。ご希望に合わせて、日本の医療機関との連携を支援します。</p>
+      </div>
+      <div class="svc-body">
+        <figure class="svc-fig" aria-hidden="true">
+          <img class="on" data-i="0" src="../assets/photos/service-detail-check.jpg" alt="" loading="lazy" decoding="async">
+          <img data-i="1" src="../assets/photos/why-network.jpg" alt="" loading="lazy" decoding="async">
+          <img data-i="2" src="../assets/photos/regenerative-waiting-area.jpg" alt="" loading="lazy" decoding="async">
+          <img data-i="3" src="../assets/photos/aesthetic-light.jpg" alt="" loading="lazy" decoding="async">
+          <img data-i="4" src="../assets/photos/checkup-arrival.jpg" alt="" loading="lazy" decoding="async">
+          <img data-i="5" src="../assets/photos/ivf-companionship.jpg" alt="" loading="lazy" decoding="async">
+          <img data-i="6" src="../assets/photos/support-transfer.jpg" alt="" loading="lazy" decoding="async">
+        </figure>
+        <ul class="svc-list" role="list">
+          <li><a class="svc on" data-i="0" href="#contact"><span class="svc-name">精密健診</span><span class="svc-desc">人間ドック・精密検査の医療機関選定と予約</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+          <li><a class="svc" data-i="1" href="#contact"><span class="svc-name">医療受診</span><span class="svc-desc">専門医の受診予約と、診療資料の翻訳</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+          <li><a class="svc" data-i="2" href="#contact"><span class="svc-name">再生医療</span><span class="svc-desc">幹細胞・NK 細胞療法を行う医療機関へのご相談</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+          <li><a class="svc" data-i="3" href="#contact"><span class="svc-name">美容医療</span><span class="svc-desc">美容医療・アンチエイジングの医療機関との調整</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+          <li><a class="svc" data-i="4" href="#contact"><span class="svc-name">同行・医療通訳</span><span class="svc-desc">中国語・英語・日本語での受診同行</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+          <li><a class="svc" data-i="5" href="#contact"><span class="svc-name">生殖補助医療</span><span class="svc-desc">体外受精（IVF）を行う医療機関との連携支援</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+          <li><a class="svc" data-i="6" href="#contact"><span class="svc-name">移動・宿泊サポート</span><span class="svc-desc">空港送迎、医療機関間の移動、宿泊の手配</span><svg class="i"><use href="#i-arr"/></svg></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="why" id="why" aria-labelledby="why-title">
+    <div class="wrap why-grid">
+      <div>
+        <h2 id="why-title">XIUYI が選ばれる理由</h2>
+        <article class="reason">
+          <h3>日本の正規医療機関と連携</h3>
+          <p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+        </article>
+        <article class="reason">
+          <h3>専任担当者による一貫した調整</h3>
+          <p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+        </article>
+        <article class="reason">
+          <h3>移動・宿泊のサポート</h3>
+          <p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+        </article>
+      </div>
+      <figure class="why-fig">
+        <img src="../assets/photos/why-concierge.jpg" alt="石のカウンターに置かれた革のファイルと一輪挿し" loading="lazy" decoding="async">
+      </figure>
+    </div>
+  </section>
+
+  <section class="support" id="support" aria-labelledby="sup-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="sup-title">サポート内容</h2>
+        <p>ご相談の整理から受診当日の同行、滞在の手配まで、一人の担当者がつなぎます。</p>
+      </div>
+      <figure class="sup-fig">
+        <img src="../assets/photos/support-stay-ryokan.jpg" alt="障子越しに庭の光が差し込む和室の客室" loading="lazy" decoding="async">
+      </figure>
+      <dl class="sup-list">
+        <div class="sup-row"><dt>医療ニーズの確認と予約調整</dt><dd>既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</dd></div>
+        <div class="sup-row"><dt>中国語・英語・日本語での同行サポート</dt><dd>来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</dd></div>
+        <div class="sup-row"><dt>医療機関・医師とのマッチング</dt><dd>検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</dd></div>
+        <div class="sup-row"><dt>空港送迎と医療機関間の移動</dt><dd>フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</dd></div>
+        <div class="sup-row"><dt>宿泊・滞在日程の調整</dt><dd>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</dd></div>
+      </dl>
+      <p class="note">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+    </div>
+  </section>
+
+  <section class="closing" id="contact" aria-labelledby="cta-title">
+    <img class="closing-bg" src="../assets/photos/home-closing.jpg" alt="" loading="lazy" decoding="async">
+    <div class="wrap closing-in">
+      <h2 id="cta-title">医療相談を予約する</h2>
+      <p>これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+      <a class="btn btn-light" href="#">相談を予約<svg class="i"><use href="#i-arr"/></svg></a>
+    </div>
+  </section>
+</main>
+
+<footer class="ft night" id="footer">
+  <div class="wrap ft-grid">
+    <div class="ft-brand">
+      <span class="disc"><img src="../assets/logo-mark.png" width="46" height="46" alt="XIUYI"></span>
+      <div>
+        <p class="ft-word">XIUYI</p>
+        <p>秀一株式会社</p>
+        <p>東京都渋谷区（代官山）</p>
+      </div>
+    </div>
+    <nav class="ft-nav" aria-label="フッター">
+      <a href="#services">サービス</a><a href="#">コラム</a><a href="#">事例</a><a href="#">医師</a><a href="#footer">会社案内</a><a href="#">プライバシー</a>
+    </nav>
+  </div>
+  <div class="wrap"><p class="ft-base">© XIUYI CO., LTD.</p></div>
+</footer>
+
+<div class="sheet" id="menu" role="dialog" aria-modal="true" aria-label="メニュー" hidden>
+  <div class="sheet-top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" width="44" height="44" alt=""><span class="wordmark">XIUYI</span></a>
+    <button class="sheet-close" type="button">閉じる<svg class="i"><use href="#i-close"/></svg></button>
+  </div>
+  <nav class="sheet-nav" aria-label="メニュー">
+    <a href="#services">サービス<svg class="i"><use href="#i-arr"/></svg></a>
+    <a href="#">コラム<svg class="i"><use href="#i-arr"/></svg></a>
+    <a href="#">事例<svg class="i"><use href="#i-arr"/></svg></a>
+    <a href="#">医師<svg class="i"><use href="#i-arr"/></svg></a>
+    <a href="#footer">会社案内<svg class="i"><use href="#i-arr"/></svg></a>
+    <a href="#sho">SHŌ AI<svg class="i"><use href="#i-arr"/></svg></a>
+  </nav>
+  <div class="sheet-foot">
+    <a class="btn btn-primary" href="#contact">相談を予約<svg class="i"><use href="#i-arr"/></svg></a>
+    <a href="#">ログイン</a>
+    <div class="langs"><a href="#" aria-current="true">日本語</a><a href="#" lang="en">English</a><a href="#" lang="zh">中文</a></div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+/* =====================================================================
+   Komorebi: sunlight through moving leaves on washi, three WebGL passes.
+   1. paper  (once per resize, full res): kozo fibres, chiri flecks, formation
+   2. light  (per frame, ~half CSS res): canopy dapple, pinhole sun spots, maple twig
+   3. composite (per frame, full res): paper x (ambient + sun x T) + warm penumbra
+   ===================================================================== */
+const HEAD = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+vec2 h22(vec2 p){ vec3 p3=fract(vec3(p.xyx)*vec3(.1031,.1030,.0973)); p3+=dot(p3,p3.yzx+33.33); return fract((p3.xx+p3.yz)*p3.zy); }
+float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
+  return mix(mix(h21(i),h21(i+vec2(1.,0.)),u.x), mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),u.x), u.y); }
+float gn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*f*(f*(f*6.-15.)+10.);
+  vec2 ga=h22(i)*2.-1., gb=h22(i+vec2(1.,0.))*2.-1., gc=h22(i+vec2(0.,1.))*2.-1., gd=h22(i+vec2(1.,1.))*2.-1.;
+  float a=dot(ga,f), b=dot(gb,f-vec2(1.,0.)), c=dot(gc,f-vec2(0.,1.)), d=dot(gd,f-vec2(1.,1.));
+  return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }
+float fbm(vec2 p){ float s=0., a=.5; for(int i=0;i<5;i++){ s+=a*vn(p); p=mat2(1.6,1.2,-1.2,1.6)*p+vec2(3.1,1.7); a*=.5; } return s; }
+float fbm3(vec2 p){ float s=0., a=.5; for(int i=0;i<3;i++){ s+=a*vn(p); p=mat2(1.6,1.2,-1.2,1.6)*p+vec2(3.1,1.7); a*=.5; } return s/.875; }
+mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,s,-s,c); }
+`;
+const VS = `attribute vec2 aP; void main(){ gl_Position = vec4(aP, 0., 1.); }`;
+
+const FS_PAPER = HEAD + `
+uniform float uDpr; uniform float uSeed;
+void main(){
+  vec2 px = gl_FragCoord.xy / uDpr + uSeed * 173.0;
+  vec3 alb = vec3(0.947, 0.928, 0.898);
+  float cloud = fbm(px / 260.0);
+  float floc  = fbm(px / 34.0 + 9.0);
+  float m = (cloud - 0.5) * 0.05 + (floc - 0.5) * 0.028;
+  float fib = 0.0;
+  for (int k = 0; k < 4; k++){
+    float fk = float(k);
+    float a = fk * 1.57 + uSeed * 3.0 + h21(vec2(fk, uSeed)) * 1.2;
+    vec2 r = rot(a) * px;
+    vec2 w = vec2(vn(r / 80.0 + fk), vn(r / 80.0 + 5.0 + fk)) - 0.5;
+    vec2 q = r * vec2(1.0/110.0, 1.0/15.0) + w * vec2(0.5, 2.4) + fk * 11.3;
+    float n = gn(q);
+    float line = 1.0 - smoothstep(0.0, 0.05, abs(n));
+    float mask = smoothstep(0.62, 0.86, vn(q * vec2(0.8, 0.25) + 7.0 + fk));
+    fib += line * mask;
+  }
+  vec2 g = px / 46.0; vec2 id = floor(g); vec2 f = fract(g) - 0.5;
+  vec2 rr = h22(id + uSeed * 9.0);
+  float fleck = 0.0;
+  if (rr.x > 0.945){
+    vec2 c = (h22(id + 3.7) - 0.5) * 0.6;
+    vec2 d = rot(rr.y * 6.283) * ((f - c) * 46.0);
+    d.x *= 0.42;
+    fleck = (1.0 - smoothstep(0.4, 1.3, length(d))) * (0.35 + 0.45 * rr.y);
+  }
+  float grain = h21(gl_FragCoord.xy + uSeed * 31.0) - 0.5;
+  vec3 col = alb * (1.0 + m) + fib * 0.0045 + grain * 0.01;
+  col = mix(col, vec3(0.55, 0.46, 0.37), fleck * 0.42);
+  gl_FragColor = vec4(col, clamp(fib, 0.0, 1.0));
+}`;
+
+const FS_LIGHT = HEAD + `
+uniform vec2 uRes; uniform float uAspect, uTime, uGust, uMode, uFocus, uLeafN, uLS, uSeed, uSunIn;
+uniform vec2 uBandDir, uBand, uCanDir, uCan, uA, uC, uB, uPoolC, uPoolR, uHang, uShear;
+vec2 bez(float t){ float u = 1.0 - t; return u*u*uA + 2.0*u*t*uC + t*t*uB; }
+float seg(vec2 p, vec2 a, vec2 b){ vec2 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.); return length(pa-ba*h); }
+float maple(vec2 d, float s){
+  float r = length(d);
+  if (r > s * 1.12) return 0.0;
+  float th = atan(d.x, d.y);
+  float k = clamp(floor(th / 0.78 + 0.5), -3.0, 3.0);
+  float dth = th - k * 0.78;
+  float ak = abs(k);
+  float len = 1.0 - 0.1 * ak - step(2.5, ak) * 0.34;
+  float prof = pow(max(1.0 - abs(dth) / 0.39, 0.0), 0.9);
+  float R = s * (0.30 + (len - 0.30) * prof);
+  R *= 1.0 + 0.05 * prof * sin(th * 44.0);
+  float pen = s * 0.05 + 0.0016;
+  return 1.0 - smoothstep(-pen, pen, r - R);
+}
+float twig(vec2 p, float t){
+  float sway = 0.026 * sin(t * 0.42) + (0.01 + 0.03 * uGust) * sin(t * 1.13 + 0.7) + 0.03 * (vn(vec2(t * 0.22, uSeed)) - 0.5);
+  p = uA + rot(-sway) * (p - uA);
+  float d = 1e3; vec2 prev = uA;
+  for (int i = 1; i <= 7; i++){ float fi = float(i) / 7.0; vec2 cur = bez(fi); d = min(d, seg(p, prev, cur) - mix(0.0052, 0.0018, fi)); prev = cur; }
+  float occ = 1.0 - smoothstep(-0.0016, 0.0028, d);
+  for (int i = 0; i < 12; i++){
+    float fi = float(i);
+    if (fi >= uLeafN) break;
+    float tt = 0.16 + fi * (0.84 / uLeafN);
+    vec2 c0 = bez(tt);
+    vec2 tg = normalize(bez(tt + 0.02) - bez(tt - 0.02) + 1e-5);
+    float side = mod(fi, 2.0) < 1.0 ? 1.0 : -1.0;
+    vec2 dir = normalize(vec2(-tg.y, tg.x) * side * 0.8 + uHang + tg * 0.3);
+    float fl = (0.05 + 0.16 * uGust) * sin(t * (1.3 + 0.21 * fi) + fi * 2.1) + 0.06 * sin(t * 0.47 + fi);
+    dir = rot(fl) * dir;
+    float s = uLS * (0.7 + 0.42 * h21(vec2(fi, 4.0 + uSeed)));
+    vec2 stemEnd = c0 + dir * s * 0.55;
+    occ = max(occ, 1.0 - smoothstep(-0.0012, 0.0024, seg(p, c0, stemEnd) - 0.0014));
+    vec2 lc = stemEnd + dir * s * 0.34;
+    vec2 dd = rot(atan(dir.x, dir.y)) * (p - lc);
+    occ = max(occ, maple(dd, s));
+  }
+  return occ;
+}
+float canopy(vec2 q, float t){
+  vec2 w = vec2(fbm3(q * 2.2 + vec2(t * 0.045, 1.3)), fbm3(q * 2.2 + vec2(4.1, -t * 0.04)));
+  float n = fbm(q * 6.0 + w * 0.9 + vec2(t * 0.012, -t * 0.005) + uSeed);
+  return smoothstep(0.43, 0.57, n);
+}
+float spots(vec2 q, float t){
+  vec2 g = q * 13.0; vec2 id = floor(g); vec2 f = fract(g);
+  float s = 0.0;
+  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++){
+    vec2 o = vec2(float(i), float(j)); vec2 cid = id + o;
+    vec2 r = h22(cid + uSeed);
+    vec2 c = o + 0.2 + 0.6 * r + 0.05 * vec2(sin(t * 0.8 + r.x * 40.0), cos(t * 0.65 + r.y * 40.0));
+    vec2 d = rot(0.6) * (f - c); d.x *= 0.78;
+    float rad = mix(0.16, 0.36, h21(cid * 1.7 + 2.0));
+    float on = smoothstep(0.45, 0.7, vn(vec2(t * (0.5 + 0.4 * uGust) + r.x * 50.0, r.y * 20.0))) * step(0.3, r.y);
+    s = max(s, (1.0 - smoothstep(rad * 0.5, rad, length(d))) * on);
+  }
+  return s;
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec2 q = vec2((uv.x - 0.5) * uAspect, uv.y - 0.5);
+  float t = uTime;
+  float breath = 0.88 + 0.12 * smoothstep(0.25, 0.75, vn(vec2(t * 0.06, 7.0 + uSeed)));
+  float T, S;
+  if (uMode < 0.5){
+    float band = smoothstep(uBand.x, uBand.y, dot(q, uBandDir) + 0.07 * (fbm3(q * 1.4 + 2.0) - 0.5));
+    float cm = smoothstep(uCan.x, uCan.y, dot(q, uCanDir) + 0.1 * (fbm3(q * 2.0 + 5.0) - 0.5));
+    float far = canopy(q, t) * cm;
+    far *= 1.0 - spots(q, t);
+    float near = twig(q, t);
+    T = band * (1.0 - far) * (1.0 - 0.9 * near) * breath * uSunIn;
+    S = band * max(far, near * 0.95);
+  } else {
+    vec2 d = q - uPoolC;
+    d.x -= d.y * uShear.x; d.y -= d.x * uShear.y;
+    float grow = 0.022 * uFocus;
+    vec2 e = uPoolR + grow - abs(d);
+    float soft = clamp(0.5 - 0.5 * d.y / uPoolR.y, 0.0, 1.0);
+    float penX = 0.012 + 0.03 * soft, penY = 0.014 + 0.02 * soft;
+    float wob = 0.008 * (fbm3(q * 5.0 + t * 0.05) - 0.5);
+    float pool = smoothstep(-penX, penX, e.x + wob) * smoothstep(-penY, penY, e.y + wob);
+    float inner = min(e.x / uPoolR.x, e.y / uPoolR.y);
+    float corner = smoothstep(0.45, 1.0, 0.5 * (d.x / uPoolR.x + d.y / uPoolR.y) + 0.3);
+    float edge = corner * (1.0 - smoothstep(0.04, 0.22, inner)) * (1.0 - 0.6 * uFocus);
+    float far = canopy(q, t) * edge;
+    far *= 1.0 - spots(q, t);
+    float near = uLeafN > 0.5 ? twig(q, t) : 0.0;
+    T = pool * (1.0 - far) * (1.0 - 0.92 * near) * (0.88 + 0.12 * uFocus) * mix(breath, 1.0, uFocus) * uSunIn;
+    S = 0.0;
+  }
+  gl_FragColor = vec4(T, S, 0.0, 1.0);
+}`;
+
+const FS_COMP = HEAD + `
+uniform sampler2D uPaper, uLight; uniform vec2 uRes; uniform vec3 uAmb, uSun, uWarm, uBg; uniform float uMode;
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec4 P = texture2D(uPaper, uv);
+  vec2 L = texture2D(uLight, uv).rg;
+  float T = L.r, S = L.g;
+  vec3 col = P.rgb * (uAmb * (1.0 - S * vec3(0.2, 0.225, 0.27)) + uSun * T) + uWarm * (T * (1.0 - T) * 4.0) + P.a * T * 0.005 * vec3(1.0, 0.96, 0.88);
+  if (uMode > 0.5) col = mix(uBg, col, smoothstep(0.0, 0.04, T));
+  else { vec2 v = uv - vec2(0.7, 0.6); col *= 1.0 - 0.05 * dot(v, v); }
+  col += (h21(gl_FragCoord.xy + 0.5) - 0.5) / 255.0;
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+function hex(h){ const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
+function norm(v){ const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; }
+
+class Komorebi {
+  constructor(canvas, opts){
+    this.c = canvas; this.o = opts;
+    this.time = opts.t0 || 8; this.gust = 0.25; this.focus = 0; this.focusTarget = 0;
+    this.sunIn = reduce.matches ? 1 : 0; this.visible = false; this.ok = false;
+    canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); this.ok = false; });
+    canvas.addEventListener('webglcontextrestored', () => { this.init(); this.resize(); this.render(); });
+  }
+  init(){
+    const gl = this.c.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, premultipliedAlpha: false, powerPreference: 'high-performance' });
+    if (!gl) return false;
+    this.gl = gl;
+    const make = (fs) => {
+      const p = gl.createProgram();
+      for (const [type, src] of [[gl.VERTEX_SHADER, VS], [gl.FRAGMENT_SHADER, fs]]){
+        const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS) && !gl.isContextLost()) { console.warn('[komorebi] shader:', gl.getShaderInfoLog(s)); return null; }
+        gl.attachShader(p, s);
+      }
+      gl.bindAttribLocation(p, 0, 'aP'); gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) return null;
+      const u = {}; const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+      for (let i = 0; i < n; i++){ const info = gl.getActiveUniform(p, i); u[info.name] = gl.getUniformLocation(p, info.name); }
+      return { p, u };
+    };
+    this.pPaper = make(FS_PAPER); this.pLight = make(FS_LIGHT); this.pComp = make(FS_COMP);
+    if (!this.pPaper || !this.pLight || !this.pComp) return false;
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    this.maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    this.ok = true; return true;
+  }
+  target(t, w, h){
+    const gl = this.gl;
+    if (!t){ t = { tex: gl.createTexture(), fb: gl.createFramebuffer() }; }
+    gl.bindTexture(gl.TEXTURE_2D, t.tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, t.fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t.tex, 0);
+    t.w = w; t.h = h; return t;
+  }
+  resize(){
+    if (!this.ok) return;
+    const gl = this.gl, r = this.c.getBoundingClientRect();
+    const cw = Math.max(1, r.width), ch = Math.max(1, r.height);
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cap = 4.4e6; if (cw * ch * dpr * dpr > cap) dpr = Math.sqrt(cap / (cw * ch));
+    const w = Math.min(this.maxTex, Math.round(cw * dpr)), h = Math.min(this.maxTex, Math.round(ch * dpr));
+    this.c.width = w; this.c.height = h; this.cw = cw; this.ch = ch; this.dpr = w / cw;
+    this.paper = this.target(this.paper, w, h);
+    const ls = this.o.lightScale;
+    this.light = this.target(this.light, Math.max(2, Math.round(cw * ls)), Math.max(2, Math.round(ch * ls)));
+    this.layout = this.o.layout(cw / ch, cw, ch);
+    const P = this.pPaper; gl.useProgram(P.p);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.paper.fb); gl.viewport(0, 0, w, h);
+    gl.uniform1f(P.u.uDpr, this.dpr); gl.uniform1f(P.u.uSeed, this.o.seed);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  step(dt){
+    this.time += dt * (0.85 + 0.5 * this.gust);
+    this.gust += (0.22 - this.gust) * (1 - Math.exp(-dt * 0.7));
+    this.focus += (this.focusTarget - this.focus) * (1 - Math.exp(-dt * 1.6));
+    this.sunIn += (1 - this.sunIn) * (1 - Math.exp(-dt * this.o.sunRate));
+  }
+  render(){
+    if (!this.ok || !this.paper) return;
+    const gl = this.gl, L = this.pLight, C = this.pComp, y = this.layout, o = this.o;
+    gl.useProgram(L.p);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.light.fb); gl.viewport(0, 0, this.light.w, this.light.h);
+    gl.uniform2f(L.u.uRes, this.light.w, this.light.h);
+    gl.uniform1f(L.u.uAspect, this.cw / this.ch);
+    gl.uniform1f(L.u.uTime, this.time); gl.uniform1f(L.u.uGust, this.gust);
+    gl.uniform1f(L.u.uMode, o.mode); gl.uniform1f(L.u.uFocus, this.focus);
+    gl.uniform1f(L.u.uSeed, o.seed); gl.uniform1f(L.u.uSunIn, this.sunIn);
+    gl.uniform1f(L.u.uLeafN, y.N); gl.uniform1f(L.u.uLS, y.LS);
+    gl.uniform2fv(L.u.uA, y.A); gl.uniform2fv(L.u.uC, y.C); gl.uniform2fv(L.u.uB, y.B);
+    gl.uniform2fv(L.u.uHang, y.hang || [0, -0.5]);
+    if (o.mode === 0){
+      gl.uniform2fv(L.u.uBandDir, norm(y.bandDir)); gl.uniform2fv(L.u.uBand, y.band);
+      gl.uniform2fv(L.u.uCanDir, norm(y.canDir)); gl.uniform2fv(L.u.uCan, y.can);
+    } else {
+      gl.uniform2fv(L.u.uPoolC, y.poolC); gl.uniform2fv(L.u.uPoolR, y.poolR); gl.uniform2fv(L.u.uShear, y.shear);
+    }
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.useProgram(C.p);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, this.c.width, this.c.height);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, this.paper.tex); gl.uniform1i(C.u.uPaper, 0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.light.tex); gl.uniform1i(C.u.uLight, 1);
+    gl.uniform2f(C.u.uRes, this.c.width, this.c.height);
+    gl.uniform3fv(C.u.uAmb, o.amb); gl.uniform3fv(C.u.uSun, o.sun); gl.uniform3fv(C.u.uWarm, o.warm);
+    gl.uniform3fv(C.u.uBg, o.bg); gl.uniform1f(C.u.uMode, o.mode);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+}
+
+const NIGHT = hex('#231a14');
+const ALB = [0.947, 0.928, 0.898];
+const scenes = [];
+function addScene(canvas, opts){
+  if (!canvas) return null;
+  const s = new Komorebi(canvas, opts);
+  if (!s.init()){ canvas.closest('section')?.classList.add('no-gl'); canvas.style.display = 'none'; return null; }
+  s.resize(); s.render();
+  scenes.push(s);
+  new IntersectionObserver((es) => { for (const e of es) s.visible = e.isIntersecting; kick(); }, { rootMargin: '80px 0px' }).observe(canvas);
+  let pending = 0;
+  new ResizeObserver(() => { cancelAnimationFrame(pending); pending = requestAnimationFrame(() => { s.resize(); s.render(); }); }).observe(canvas);
+  return s;
+}
+
+const hero = addScene($('#kb-hero'), {
+  mode: 0, seed: 0.37, t0: 14, lightScale: 0.5, sunRate: 0.9,
+  amb: [0.958, 0.955, 0.952], sun: [0.098, 0.084, 0.06], warm: [0.026, 0.012, -0.004], bg: NIGHT,
+  layout(a){
+    if (a >= 1) return {
+      bandDir: [0.94, 0.3], band: [-0.5, 0.08], canDir: [0.62, 0.78], can: [0.0, 0.5],
+      A: [a * 0.5 + 0.16, 0.44], C: [a * 0.2, 0.4], B: [-a * 0.07, 0.06], LS: 0.088, N: 12 };
+    return {
+      bandDir: [-0.25, 0.97], band: [-0.5, 0.02], canDir: [-0.5, 0.87], can: [0.16, 0.48],
+      A: [-a * 0.5 - 0.08, 0.6], C: [-a * 0.08, 0.44], B: [a * 0.14, 0.18], LS: 0.06, N: 9 };
+  }
+});
+const pool = addScene($('#kb-pool'), {
+  mode: 1, seed: 0.81, t0: 30, lightScale: 0.6, sunRate: 2.2,
+  amb: [NIGHT[0] / ALB[0], NIGHT[1] / ALB[1], NIGHT[2] / ALB[2]], sun: [0.95, 0.925, 0.88], warm: [0.1, 0.05, 0.0], bg: NIGHT,
+  layout(a){
+    if (a >= 1) return { poolC: [-0.022, 0.035], poolR: [0.41, 0.37], shear: [0.16, 0.0],
+      A: [a * 0.5 + 0.05, 0.27], C: [0.47, 0.31], B: [0.4, 0.36], hang: [0.15, 0.45], LS: 0.042, N: 4 };
+    return { poolC: [0.0, 0.02], poolR: [a * 0.5 + 0.06, 0.42], shear: [0.0, 0.1],
+      A: [0, 0], C: [0, 0], B: [0, 0], LS: 0.03, N: 0 };
+  }
+});
+
+let raf = 0, last = 0;
+function frame(now){
+  raf = 0;
+  const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+  let live = false;
+  for (const s of scenes){ if (s.visible && s.ok){ s.step(dt); s.render(); live = true; } }
+  if (live && !document.hidden && !reduce.matches) raf = requestAnimationFrame(frame);
+}
+function kick(){
+  if (reduce.matches){ for (const s of scenes){ s.sunIn = 1; s.focus = s.focusTarget; s.render(); } return; }
+  if (!raf && !document.hidden){ last = performance.now(); raf = requestAnimationFrame(frame); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+reduce.addEventListener?.('change', kick);
+if (hero){
+  let px = null, py = null;
+  $('#top').addEventListener('pointermove', (e) => {
+    if (px !== null){ const v = Math.hypot(e.clientX - px, e.clientY - py); hero.gust = Math.min(1, hero.gust + v * 0.0012); }
+    px = e.clientX; py = e.clientY;
+  }, { passive: true });
+}
+
+/* =====================================================================
+   SHŌ sample conversation. The answers stay inside what XIUYI states it does;
+   the light gathers while SHŌ prepares, and relaxes when the answer is written.
+   ===================================================================== */
+const QA = [
+  { q: '初めて日本で人間ドックを受けます。何から準備すればよいですか。',
+    a: 'まず、受診の目的と、これまでの検査結果や既往歴をお知らせください。専任の担当者が内容を整理し、ご希望に合う医療機関と検査内容の候補、予約までの流れをご案内します。前日の食事など当日の準備は、予約先の医療機関の案内に沿ってお伝えします。' },
+  { q: '滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。',
+    a: '同じ滞在中に組み合わせられるかは、検査の内容や施術の種類、医療機関の予約状況によって変わります。ご希望と滞在日程を伺い、担当者が各医療機関と日程を調整して、可能な組み合わせをご提案します。施術の可否は医師が判断します。' },
+  { q: '母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。',
+    a: '来院から退出まで担当者が同席し、医師の説明を中国語・英語・日本語で通訳します。空港送迎や医療機関間の移動、宿泊先の手配も付帯サービスとしてご相談いただけます。費用は正式なお見積りでご確認ください。' }
+];
+const FREE = 'このページは表示用のサンプルのため、ここでは定型の応答のみ表示しています。実際のご質問は SHŌ の相談画面からお送りください。担当者がご要望を伺います。';
+const stage = $('#sho-stage'), elQ = $('#msg-q'), elA = $('#msg-a'), elLive = $('#msg-live'), elStatus = $('#chat-status');
+const qButtons = $$('.q');
+let run = 0, played = false;
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+async function ask(i, custom){
+  const id = ++run; played = true;
+  qButtons.forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
+  const qText = custom || QA[i].q, aText = custom ? FREE : QA[i].a;
+  elQ.textContent = qText; elA.textContent = '';
+  stage.dataset.state = 'thinking'; elStatus.textContent = 'SHŌ が回答を準備しています';
+  if (pool) { pool.focusTarget = 1; kick(); }
+  await wait(reduce.matches ? 0 : 1000);
+  if (id !== run) return;
+  stage.dataset.state = 'answering'; elStatus.textContent = '回答しています';
+  elLive.textContent = aText;
+  const done = () => { stage.dataset.state = 'idle'; elStatus.textContent = '表示は応答の一例です。'; if (pool) { pool.focusTarget = 0.3; kick(); } };
+  if (reduce.matches){ elA.textContent = aText; done(); return; }
+  let k = 0, budget = 0, prev = performance.now();
+  const tick = (now) => {
+    if (id !== run) return;
+    budget += now - prev; prev = now;
+    while (budget > 0 && k < aText.length){ const ch = aText[k++]; budget -= '、。'.includes(ch) ? 210 : 36; }
+    elA.textContent = aText.slice(0, k);
+    if (k < aText.length) requestAnimationFrame(tick); else done();
+  };
+  requestAnimationFrame(tick);
+}
+qButtons.forEach((b) => b.addEventListener('click', () => ask(Number(b.dataset.q))));
+$('#sho-form').addEventListener('submit', (e) => {
+  e.preventDefault(); const v = $('#sho-input').value.trim(); if (!v) { $('#sho-input').focus(); return; }
+  ask(-1, v); $('#sho-input').value = '';
+});
+$('#sho-cta').addEventListener('click', (e) => { e.preventDefault(); $('#sho-input').focus({ preventScroll: true }); $('#sho-form').scrollIntoView({ block: 'center', behavior: reduce.matches ? 'auto' : 'smooth' }); });
+new IntersectionObserver((es, ob) => { for (const e of es) if (e.isIntersecting && !played){ ask(0); ob.disconnect(); } }, { threshold: 0.35 }).observe(stage);
+
+/* ---------- services: the photo follows the row you point at ---------- */
+const svcImgs = $$('.svc-fig img'), svcRows = $$('.svc');
+const setSvc = (i) => { svcImgs.forEach((im) => im.classList.toggle('on', im.dataset.i === i)); svcRows.forEach((r) => r.classList.toggle('on', r.dataset.i === i)); };
+svcRows.forEach((r) => { r.addEventListener('pointerenter', () => setSvc(r.dataset.i)); r.addEventListener('focus', () => setSvc(r.dataset.i)); });
+
+/* ---------- header, language, menu ---------- */
+const hd = $('#hd');
+const onScroll = () => { hd.dataset.state = window.scrollY > 24 ? 'solid' : 'top'; };
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+const langBtn = $('.lang-btn'), langList = $('#lang-list');
+const setLang = (open) => { langBtn.setAttribute('aria-expanded', String(open)); langList.hidden = !open; };
+langBtn.addEventListener('click', (e) => { e.stopPropagation(); setLang(langList.hidden); });
+document.addEventListener('click', (e) => { if (!langList.hidden && !e.target.closest('.lang')) setLang(false); });
+
+const menu = $('#menu'), menuBtn = $('.menu-btn');
+function openMenu(){
+  menu.hidden = false; menuBtn.setAttribute('aria-expanded', 'true'); document.documentElement.style.overflow = 'hidden';
+  requestAnimationFrame(() => menu.classList.add('open')); $('.sheet-close').focus();
+}
+function closeMenu(focusBack = true){
+  menu.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); document.documentElement.style.overflow = '';
+  setTimeout(() => { menu.hidden = true; }, reduce.matches ? 0 : 320);
+  if (focusBack) menuBtn.focus();
+}
+menuBtn.addEventListener('click', openMenu);
+$('.sheet-close').addEventListener('click', () => closeMenu());
+$$('#menu a').forEach((a) => a.addEventListener('click', () => closeMenu(false)));
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!menu.hidden) closeMenu();
+  if (!langList.hidden){ setLang(false); langBtn.focus(); }
+});
+menu.addEventListener('keydown', (e) => {
+  if (e.key !== 'Tab') return;
+  const f = $$('a, button', menu); const first = f[0], lastEl = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first){ e.preventDefault(); lastEl.focus(); }
+  else if (!e.shiftKey && document.activeElement === lastEl){ e.preventDefault(); first.focus(); }
+});
+kick();
+})();
+</script>
+</body>
+</html>

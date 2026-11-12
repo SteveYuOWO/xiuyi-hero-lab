@@ -1,0 +1,1444 @@
+<!doctype html>
+<!-- v13 · tool: claude animated shorts (cartoon-3d-short skill) · repo: https://github.com/mromidev/claude-animated-shorts · decisions taken from the tool: the hero is a 20 s three.js "short" planned as story beats (到着 → 送迎 → 出迎え → 同行) on a shot table; camera grammar from story.ts (symmetric smootherstep glides between keys, every hold creeps a push-in, no hand-held float); the world uses shade.ts two-tone lighting (albedo × mix(shade, lit, shadow-map visibility × soft N·L terminator), golden preset = low warm key with violet-mauve shade); fog = horizon colour (depth.md aerial perspective); ink.ts screen-space outlines from a normal + depth pass (only the near side of depth jumps, creases from 35°) as their own pass BEFORE lens blur; lensblur.ts thin-lens CoC = cInf·|1 − focus/depth| for the tilt-shift miniature; bloom only on HDR emissives (threshold 1.0); grade.ts split-tone + vignette last. Reinterpreted for XIUYI: coffee ink at ~1.2 px instead of black 5 px, architectural scale figures instead of bean-head cards, paper/coffee/champagne albedos, gold-leaf suyari-gasumi clouds as the yamato-e framing device. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI — 代官山、午後四時</title>
+<meta name="description" content="XIUYI（秀一株式会社）は東京・代官山の医療コンシェルジュ。日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#e6e2db; --paper:#f3f0ea; --white:#fff;
+  --coffee:#5b4938; --ink:#44352a; --muted:#6b5946; --gold:#b9a17b; --logo:#7a6a56;
+  --line:rgba(68,53,42,.16); --line-strong:rgba(68,53,42,.32);
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --latin:"Cormorant Garamond","Shippori Mincho",serif;
+  --wrap:1280px; --gut:clamp(20px,4.4vw,64px);
+  --r-btn:8px; --r-card:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:var(--page);color:var(--ink);font-family:var(--serif);font-size:15px;line-height:2;letter-spacing:.04em;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;word-break:auto-phrase;line-break:strict}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1.5px solid var(--coffee);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--gut)}
+.latin{font-family:var(--latin)}
+h1,h2,h3{font-weight:500;text-wrap:balance;font-feature-settings:"palt";letter-spacing:.08em}
+.label{display:inline-flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.32em;color:var(--muted);font-feature-settings:"palt"}
+.label::before{content:"";width:36px;height:1px;background:var(--gold)}
+.arrow{width:22px;height:8px;flex:none;fill:none;stroke:currentColor;stroke-width:1}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:18px;height:52px;padding:0 26px;border-radius:var(--r-btn);font-size:13px;letter-spacing:.2em;
+  transition:background-color .25s,color .25s,border-color .25s;white-space:nowrap;font-feature-settings:"palt"}
+.btn .arrow{transition:transform .25s}
+.btn:hover .arrow{transform:translateX(4px)}
+.btn-primary{background:var(--coffee);color:var(--paper);border:1px solid var(--coffee)}
+.btn-primary:hover{background:var(--ink)}
+.btn-ghost{border:1px solid var(--line-strong);color:var(--ink);background:rgba(243,240,234,.55)}
+.btn-ghost:hover{border-color:var(--ink);background:var(--paper)}
+
+/* header */
+.hdr{position:fixed;inset:0 0 auto 0;z-index:40;transition:background-color .35s,box-shadow .35s}
+.hdr.scrolled{background:rgba(230,226,219,.92);box-shadow:0 1px 0 var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.hdr-in{display:flex;align-items:center;height:84px;gap:32px}
+.brand{display:flex;align-items:center;gap:14px;flex:none}
+.brand img{width:44px;height:44px}
+.brand span{font-family:var(--latin);font-weight:500;font-size:21px;letter-spacing:.34em;color:var(--coffee)}
+.nav{display:flex;gap:44px;margin:0 auto;font-size:14px;letter-spacing:.22em}
+.nav a{position:relative;padding:6px 0}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav a:hover::after{transform:scaleX(1)}
+.nav .sho{font-family:var(--latin);font-weight:600;font-size:16px;letter-spacing:.14em}
+.hdr-r{display:flex;align-items:center;gap:26px;font-size:13px;letter-spacing:.16em;flex:none}
+.lang{display:flex;align-items:center;gap:6px}
+.lang svg{width:10px;height:6px}
+.lang svg path,.menu-btn path{fill:none;stroke:currentColor;stroke-width:1.1}
+.login{padding:8px 16px;border:1px solid var(--line-strong);border-radius:var(--r-btn)}
+.menu-btn{display:flex;align-items:center;gap:12px;height:40px}
+.menu-btn svg{width:26px;height:12px}
+
+/* drawer */
+.drawer{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding:0 var(--gut) 40px;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.drawer.open{opacity:1;visibility:visible}
+.drawer-top{display:flex;align-items:center;justify-content:space-between;height:84px}
+.drawer nav{display:flex;flex-direction:column;margin-top:4vh}
+.drawer nav a{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line);font-size:22px;letter-spacing:.14em}
+.drawer nav a small{font-family:var(--latin);font-size:13px;letter-spacing:.2em;color:var(--muted)}
+.drawer-foot{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap}
+.close-x{width:40px;height:40px;display:grid;place-items:center}
+.close-x svg{width:20px;height:20px}
+.close-x path{stroke:currentColor;stroke-width:1.1}
+
+/* hero */
+.hero{position:relative;height:100vh;height:100svh;min-height:680px;max-height:1080px;overflow:hidden;background:var(--page)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-veil{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(230,226,219,.97) 0%,rgba(230,226,219,.92) 28%,rgba(230,226,219,.62) 41%,rgba(230,226,219,.18) 51%,rgba(230,226,219,0) 58%),
+             linear-gradient(180deg,rgba(230,226,219,.6) 0,rgba(230,226,219,0) 140px)}
+.hero-copy{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding-top:40px}
+.hero-copy .inner{max-width:560px}
+.hero h1{font-size:clamp(34px,3.55vw,54px);line-height:1.56;margin:26px 0 26px;color:var(--ink)}
+.hero h1 .br{display:block}
+.hero .sub{font-size:15px;line-height:2.1;color:var(--muted);max-width:460px}
+.hero .ctas{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap}
+
+/* film chrome */
+.reel{position:absolute;z-index:3;left:0;right:0;bottom:30px}
+.reel .wrap{display:flex;align-items:flex-end;gap:28px}
+.reel-title{flex:none;display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.18em;color:var(--muted)}
+.reel-title b{font-family:var(--latin);font-weight:500;font-size:13px;letter-spacing:.26em;color:var(--ink)}
+.play{width:34px;height:34px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;background:rgba(243,240,234,.6);transition:border-color .25s}
+.play:hover{border-color:var(--ink)}
+.play svg{width:10px;height:10px}
+.play .ic-play{display:none}
+.play[aria-pressed="false"] .ic-play{display:block}
+.play[aria-pressed="false"] .ic-pause{display:none}
+.beats{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-left:auto;max-width:640px;list-style:none}
+.beat{font-size:12px;letter-spacing:.14em;color:var(--muted);line-height:1.6;transition:color .4s}
+.beat .bar{height:1px;background:var(--line-strong);margin-bottom:10px;position:relative;overflow:hidden}
+.beat .bar i{position:absolute;inset:0;background:var(--coffee);transform:scaleX(0);transform-origin:left}
+.beat .no{font-family:var(--latin);font-size:13px;letter-spacing:.12em;margin-right:8px}
+.beat .ttl{color:var(--ink)}
+.beat .cap{display:block;font-size:11px;letter-spacing:.1em;opacity:.0;transition:opacity .5s}
+.beat.on .cap{opacity:1}
+.beat.on{color:var(--ink)}
+.scroll-cue{position:absolute;right:var(--gut);top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center;font-family:var(--latin);font-size:12px;letter-spacing:.3em;color:var(--muted);z-index:2;display:none}
+
+/* section scaffolding */
+section{position:relative}
+.sec{padding:clamp(88px,10vw,150px) 0}
+.sec-head h2{font-size:clamp(28px,2.6vw,40px);line-height:1.6;margin-top:20px}
+.lead{font-size:15px;line-height:2.1;color:var(--muted);margin-top:22px}
+
+/* SHŌ */
+.sho-sec{background:var(--paper)}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:center}
+.stage{position:relative;aspect-ratio:5/5.4;border-radius:var(--r-card);overflow:hidden;background:#2c231d}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage-tag{position:absolute;left:22px;top:20px;z-index:2;font-family:var(--latin);font-size:12px;letter-spacing:.3em;color:rgba(243,240,234,.78)}
+.reply{position:absolute;left:18px;right:18px;bottom:18px;z-index:2;background:rgba(243,240,234,.94);border-radius:10px;padding:18px 20px 16px;
+  box-shadow:0 18px 40px -24px rgba(30,20,12,.6);min-height:132px}
+.reply-h{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;color:var(--muted)}
+.reply-h b{font-family:var(--latin);font-weight:600;font-size:14px;letter-spacing:.16em;color:var(--ink)}
+.reply-h .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(185,161,123,.6)}
+.reply.speaking .dot{animation:pulse 1.1s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(185,161,123,.7)}100%{box-shadow:0 0 0 9px rgba(185,161,123,0)}}
+.reply-q{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7}
+.reply-a{font-size:14px;line-height:1.95;margin-top:6px;color:var(--ink);min-height:3.9em}
+.reply-a .caret{display:inline-block;width:1px;height:1em;background:var(--ink);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.qs{list-style:none;margin-top:44px;border-top:1px solid var(--line)}
+.q{display:flex;align-items:center;gap:20px;padding:24px 4px;border-bottom:1px solid var(--line);font-size:15px;line-height:1.85;cursor:pointer;transition:padding .3s,color .3s}
+.q .n{font-family:var(--latin);font-size:13px;color:var(--gold);letter-spacing:.1em;flex:none;width:22px}
+.q .t{flex:1}
+.q .arrow{transition:transform .3s;color:var(--muted)}
+.q:hover,.q.active{padding-left:12px}
+.q:hover .arrow,.q.active .arrow{transform:translateX(6px);color:var(--ink)}
+.q.active .t{color:var(--coffee)}
+.sho-note{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.8}
+.sho-cta{margin-top:34px}
+
+/* services */
+.svc{background:var(--page)}
+.svc-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(40px,7vw,120px)}
+.svc-aside{position:sticky;top:120px;align-self:start}
+.svc-photo{margin-top:40px;aspect-ratio:4/3.3;border-radius:var(--r-card);overflow:hidden;position:relative;background:#cfc6b8}
+.svc-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease}
+.svc-photo img.on{opacity:1}
+.svc-list{list-style:none;border-top:1px solid var(--line-strong)}
+.svc-list a{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:8px 20px;padding:26px 0;border-bottom:1px solid var(--line)}
+.svc-list .no{font-family:var(--latin);font-size:15px;color:var(--gold);letter-spacing:.08em}
+.svc-list .nm{font-size:clamp(20px,1.7vw,24px);letter-spacing:.12em;line-height:1.5;font-feature-settings:"palt"}
+.svc-list .en{display:block;font-family:var(--latin);font-size:13px;letter-spacing:.14em;color:var(--muted);margin-top:2px}
+.svc-list .ds{grid-column:2/3;font-size:13px;color:var(--muted);line-height:1.8}
+.svc-list .arrow{grid-row:1/3;grid-column:3;color:var(--muted);transition:transform .3s}
+.svc-list a:hover .arrow,.svc-list a.on .arrow{transform:translateX(6px);color:var(--ink)}
+.svc-list a:hover .nm,.svc-list a.on .nm{color:var(--coffee)}
+
+/* why */
+.why{background:var(--paper)}
+.why-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.why-head .lead{max-width:420px;margin:0}
+.why-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.4vw,36px);margin-top:64px}
+.why-card figure{aspect-ratio:4/3;border-radius:var(--r-card);overflow:hidden}
+.why-card img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease}
+.why-card:hover img{transform:scale(1.03)}
+.why-card .no{display:block;font-family:var(--latin);font-size:40px;line-height:1;color:var(--gold);margin:28px 0 14px;letter-spacing:.04em}
+.why-card h3{font-size:20px;line-height:1.6;letter-spacing:.1em}
+.why-card p{font-size:14px;line-height:2;color:var(--muted);margin-top:12px}
+
+/* support: e-konte (storyboard sheet) */
+.konte-sec{background:var(--page)}
+.konte{margin-top:56px;background:var(--paper);border-radius:var(--r-card);padding:clamp(18px,2.4vw,34px);border:1px solid var(--line)}
+.konte-meta{display:flex;justify-content:space-between;gap:20px;font-size:12px;letter-spacing:.16em;color:var(--muted);padding-bottom:14px;border-bottom:1px solid var(--line-strong)}
+.konte-meta b{font-family:var(--latin);font-weight:500;letter-spacing:.24em;color:var(--ink)}
+.k-head,.k-row{display:grid;grid-template-columns:72px minmax(0,300px) minmax(0,1fr) minmax(0,190px);gap:0}
+.k-head{font-size:11px;letter-spacing:.3em;color:var(--muted);border-bottom:1px solid var(--line)}
+.k-head span{padding:10px 18px}
+.k-row{border-bottom:1px solid var(--line)}
+.k-row:last-child{border-bottom:0}
+.k-row>*{padding:20px 18px}
+.k-row>*+*,.k-head>*+*{border-left:1px solid var(--line)}
+.k-cut{font-family:var(--latin);font-size:30px;line-height:1;color:var(--gold);text-align:center;padding-top:24px}
+.k-pic figure{aspect-ratio:16/9;border-radius:6px;overflow:hidden;outline:1px solid var(--line-strong);outline-offset:3px}
+.k-pic img{width:100%;height:100%;object-fit:cover}
+.k-act h3{font-size:18px;line-height:1.6;letter-spacing:.08em}
+.k-act p{font-size:14px;line-height:1.95;color:var(--muted);margin-top:8px}
+.k-note{font-size:12px;line-height:1.9;color:var(--muted)}
+.k-note b{display:block;font-weight:500;color:var(--ink);letter-spacing:.14em;margin-bottom:4px}
+.konte-foot{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.8}
+
+/* closing */
+.closing{padding:clamp(64px,8vw,120px) 0;background:var(--paper)}
+.close-card{position:relative;border-radius:var(--r-card);overflow:hidden;min-height:520px;display:flex;align-items:center}
+.close-card>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.close-card::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(243,240,234,.97) 0%,rgba(243,240,234,.92) 38%,rgba(243,240,234,0) 66%)}
+.close-in{position:relative;z-index:2;max-width:520px;padding:clamp(32px,5vw,72px)}
+.close-in h2{font-size:clamp(28px,2.6vw,40px);line-height:1.6;margin-top:20px}
+.close-in p{font-size:15px;line-height:2.1;color:var(--muted);margin-top:22px}
+.close-in .btn{margin-top:36px}
+
+/* footer */
+.ftr{background:var(--ink);color:rgba(243,240,234,.86);padding:72px 0 36px;font-size:13px}
+.ftr-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:44px;border-bottom:1px solid rgba(243,240,234,.16)}
+.ftr-brand{display:flex;align-items:center;gap:16px}
+.ftr-brand .disc{width:54px;height:54px;border-radius:50%;background:var(--paper);display:grid;place-items:center}
+.ftr-brand .disc img{width:44px;height:44px}
+.ftr-brand b{display:block;font-family:var(--latin);font-weight:500;font-size:22px;letter-spacing:.34em;color:var(--paper)}
+.ftr-brand small{display:block;font-size:12px;letter-spacing:.16em;margin-top:2px}
+.ftr-links{display:flex;flex-wrap:wrap;gap:14px 34px;align-items:center;letter-spacing:.16em}
+.ftr-links a:hover{color:var(--paper);text-decoration:underline;text-underline-offset:6px}
+.ftr-bot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:26px;font-size:12px;letter-spacing:.12em;color:rgba(243,240,234,.6)}
+.ftr-bot .latin{font-size:13px;letter-spacing:.2em}
+
+/* floating contact */
+.fab{position:fixed;right:22px;bottom:22px;z-index:30;display:flex;align-items:center;gap:10px;height:48px;padding:0 18px 0 16px;border-radius:24px;
+  background:var(--coffee);color:var(--paper);font-size:13px;letter-spacing:.14em;box-shadow:0 14px 30px -14px rgba(40,28,18,.55);transition:background-color .25s,opacity .3s}
+.fab:hover{background:var(--ink)}
+.fab.away{opacity:0;pointer-events:none}
+.fab svg{width:18px;height:18px}
+.fab svg path{fill:none;stroke:currentColor;stroke-width:1.2}
+
+/* responsive */
+@media (max-width:1180px){
+  .nav{gap:28px}
+  .hdr-r .login{display:none}
+}
+@media (max-width:980px){
+  .nav,.hdr-r .lang,.hdr-r .login{display:none}
+  .hdr-r{margin-left:auto}
+  .sho-grid,.svc-grid{grid-template-columns:1fr}
+  .svc-aside{position:static}
+  .why-cards{grid-template-columns:1fr}
+  .why-head{flex-direction:column;align-items:flex-start}
+  .k-head{display:none}
+  .k-row{grid-template-columns:56px 1fr;grid-template-areas:"cut pic" "cut act" "cut note"}
+  .k-row>*+*{border-left:0}
+  .k-cut{grid-area:cut;border-right:1px solid var(--line)}
+  .k-pic{grid-area:pic;padding-bottom:4px}.k-act{grid-area:act;padding-top:8px;padding-bottom:6px}.k-note{grid-area:note;padding-top:0}
+}
+@media (max-width:760px){
+  body{font-size:14px}
+  .hdr-in{height:68px}
+  .brand img{width:40px;height:40px}
+  .brand span{font-size:18px}
+  .menu-btn span{display:none}
+  .hero{height:auto;min-height:0;max-height:none;padding-top:0}
+  .hero canvas{position:relative;height:58svh;min-height:430px;max-height:560px}
+  .hero-veil{background:linear-gradient(180deg,rgba(230,226,219,.75) 0,rgba(230,226,219,0) 110px),
+     linear-gradient(0deg,rgba(230,226,219,1) 0,rgba(230,226,219,1) calc(100% - 58svh + 10px),rgba(230,226,219,0) calc(100% - 58svh + 120px))}
+  .hero-copy{height:auto;padding-top:0;padding-bottom:128px;margin-top:-34px}
+  .hero h1{font-size:30px;line-height:1.62;margin:16px 0 18px}
+  .hero h1 .br{display:inline}
+  .hero .sub{font-size:14px}
+  .hero .ctas{margin-top:28px;gap:10px}
+  .hero .ctas .btn{flex:1;justify-content:center;padding:0 14px;gap:12px;letter-spacing:.14em}
+  .reel{bottom:28px}
+  .reel .wrap{flex-direction:column;align-items:stretch;gap:14px}
+  .reel-title{display:none}
+  .beats{gap:10px;max-width:none;margin:0}
+  .beat .cap{display:none}
+  .beat{font-size:11px;letter-spacing:.08em}
+  .beat .no{margin-right:4px}
+  .stage{aspect-ratio:4/5.3}
+  .reply{left:12px;right:12px;bottom:12px;padding:13px 15px 12px;min-height:0}
+  .reply-a{font-size:13px;line-height:1.85;min-height:0}
+  .reply-q{display:none}
+  .q{padding:20px 2px;font-size:14px;gap:14px}
+  .svc-list a{grid-template-columns:40px 1fr auto;padding:22px 0}
+  .why-cards{margin-top:44px}
+  .close-card{min-height:0;flex-direction:column;align-items:stretch}
+  .close-card>img{position:relative;height:240px}
+  .close-card::before{display:none}
+  .close-in{padding:30px 24px 36px;background:var(--white)}
+  .fab span{display:none}
+  .fab{width:48px;padding:0;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important}
+  .reply.speaking .dot,.reply-a .caret{animation:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="arr" viewBox="0 0 22 8"><path d="M0 4h21M17.5 .5 21 4l-3.5 3.5"/></symbol>
+</svg>
+
+<header class="hdr" id="hdr">
+  <div class="wrap hdr-in">
+    <a class="brand" href="#top" aria-label="XIUYI ホーム"><img src="../assets/logo-mark.png" alt="" width="44" height="44"><span>XIUYI</span></a>
+    <nav class="nav" aria-label="メイン">
+      <a href="#services">サービス</a><a href="#why">コラム</a><a href="#support">会社案内</a><a class="sho" href="#sho">SHŌ AI</a>
+    </nav>
+    <div class="hdr-r">
+      <a class="lang" href="#top">日本語 <svg viewBox="0 0 10 6"><path d="M.5.5 5 5 9.5.5"/></svg></a>
+      <a class="login" href="#closing">ログイン</a>
+      <button class="menu-btn" id="menuOpen" aria-expanded="false" aria-controls="drawer"><span>メニュー</span><svg viewBox="0 0 26 12"><path d="M0 1h26M0 11h26"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="drawer-top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" alt="" width="40" height="40"><span>XIUYI</span></a>
+    <button class="close-x" id="menuClose" aria-label="閉じる"><svg viewBox="0 0 20 20"><path d="M2 2l16 16M18 2 2 18"/></svg></button>
+  </div>
+  <nav aria-label="モバイル">
+    <a href="#services">サービス<small>Services</small></a>
+    <a href="#why">コラム<small>Journal</small></a>
+    <a href="#support">会社案内<small>About</small></a>
+    <a href="#sho">SHŌ AI<small>Assistant</small></a>
+  </nav>
+  <div class="drawer-foot">
+    <a class="btn btn-primary" href="#closing">相談を予約<svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a>
+    <a class="btn btn-ghost" href="#closing">ログイン</a>
+    <a class="btn btn-ghost" href="#top">日本語 / EN / 中文</a>
+  </div>
+</div>
+
+<main id="top">
+<section class="hero" id="hero" aria-label="XIUYI">
+  <canvas id="heroCanvas" aria-label="代官山の街角を描いた20秒の3Dアニメーション。羽田からの便が街の上を横切り、コーヒー色の車が医療機関の前に着くと、専任担当者がお迎えし、ご一緒に館内へ向かいます。" role="img"></canvas>
+  <div class="hero-veil"></div>
+  <div class="wrap hero-copy">
+    <div class="inner">
+      <p class="label">東京・美と健康のライフスタイル</p>
+      <h1><span class="br">美・健康・暮らしを、</span><span class="br">日本で再定義する。</span></h1>
+      <p class="sub">XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#services">サービスを見る<svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a>
+        <a class="btn btn-ghost" href="#closing">相談を予約<svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="reel">
+    <div class="wrap">
+      <div class="reel-title">
+        <button class="play" id="play" aria-pressed="true" aria-label="アニメーションを一時停止">
+          <svg class="ic-pause" viewBox="0 0 10 10"><path d="M2.5 1v8M7.5 1v8" stroke="currentColor" stroke-width="1.3"/></svg>
+          <svg class="ic-play" viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg>
+        </button>
+        <span><b>XIUYI SHORT</b>　代官山、午後四時</span>
+      </div>
+      <ol class="beats" id="beats">
+        <li class="beat"><div class="bar"><i></i></div><span class="no">01</span><span class="ttl">到着</span><span class="cap">東京の空へ</span></li>
+        <li class="beat"><div class="bar"><i></i></div><span class="no">02</span><span class="ttl">送迎</span><span class="cap">空港から医療機関へ</span></li>
+        <li class="beat"><div class="bar"><i></i></div><span class="no">03</span><span class="ttl">出迎え</span><span class="cap">専任担当者がお待ちします</span></li>
+        <li class="beat"><div class="bar"><i></i></div><span class="no">04</span><span class="ttl">同行</span><span class="cap">中国語・英語・日本語で</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec sho-sec" id="sho">
+  <div class="wrap sho-grid">
+    <div class="stage" id="stage">
+      <canvas id="shoCanvas" role="img" aria-label="和紙の行灯として描かれたAIアシスタントSHŌ。質問を選ぶと灯りが強まり、答えます。"></canvas>
+      <span class="stage-tag">SHŌ — 灯</span>
+      <div class="reply" id="reply" aria-live="polite">
+        <div class="reply-h"><span class="dot"></span><b>SHŌ</b><span id="replyState">質問を選ぶと、灯りが答えます</span></div>
+        <p class="reply-q" id="replyQ">渡航前の準備、検査資料、よくあるご質問を整理します。</p>
+        <p class="reply-a" id="replyA">右の質問にカーソルを合わせてください。</p>
+      </div>
+    </div>
+    <div>
+      <p class="label">AI アシスタント</p>
+      <div class="sec-head"><h2>SHŌでサービス情報を確認</h2></div>
+      <p class="lead">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+      <ul class="qs" id="qs">
+        <li><a class="q" href="#sho" data-q="0"><span class="n">01</span><span class="t">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a></li>
+        <li><a class="q" href="#sho" data-q="1"><span class="n">02</span><span class="t">滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a></li>
+        <li><a class="q" href="#sho" data-q="2"><span class="n">03</span><span class="t">母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a></li>
+      </ul>
+      <p class="sho-note">※ 表示される回答はご案内の一例です。</p>
+      <div class="sho-cta"><a class="btn btn-primary" href="#closing">SHŌに相談<svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec svc" id="services">
+  <div class="wrap svc-grid">
+    <div class="svc-aside">
+      <p class="label">SERVICES</p>
+      <div class="sec-head"><h2>医療サービス</h2></div>
+      <p class="lead">ご希望に応じて、日本の正規医療機関と専任担当者がご一緒します。</p>
+      <div class="svc-photo" id="svcPhoto">
+        <img class="on" src="../assets/photos/checkup-arrival.jpg" alt="明るい医療機関の廊下" loading="lazy">
+        <img src="../assets/photos/support-consult.jpg" alt="医師による説明" loading="lazy">
+        <img src="../assets/photos/regenerative-waiting-area.jpg" alt="再生医療クリニックの待合" loading="lazy">
+        <img src="../assets/photos/aesthetic-light.jpg" alt="光の入る美容医療の室内" loading="lazy">
+        <img src="../assets/photos/support-attend.jpg" alt="受診に同行する担当者" loading="lazy">
+        <img src="../assets/photos/ivf-companionship.jpg" alt="庭に面した静かな待合" loading="lazy">
+        <img src="../assets/photos/support-transfer.jpg" alt="送迎車両" loading="lazy">
+      </div>
+    </div>
+    <ul class="svc-list" id="svcList">
+      <li><a href="#closing" data-i="0" class="on"><span class="no">01</span><span class="nm">精密健診<span class="en">Health check-ups</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">人間ドック・各種検査の予約と当日の同行</span></a></li>
+      <li><a href="#closing" data-i="1"><span class="no">02</span><span class="nm">医療受診<span class="en">Specialist visits</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">専門医への受診と資料提出の調整</span></a></li>
+      <li><a href="#closing" data-i="2"><span class="no">03</span><span class="nm">再生医療<span class="en">Regenerative medicine</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">幹細胞・NK 細胞療法を行う医療機関との連携</span></a></li>
+      <li><a href="#closing" data-i="3"><span class="no">04</span><span class="nm">美容医療<span class="en">Aesthetic &amp; anti-aging</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">美容・アンチエイジングのご相談と予約</span></a></li>
+      <li><a href="#closing" data-i="4"><span class="no">05</span><span class="nm">同行・医療通訳<span class="en">Escort &amp; interpreting</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">中国語・英語・日本語で来院から退出まで</span></a></li>
+      <li><a href="#closing" data-i="5"><span class="no">06</span><span class="nm">生殖補助医療<span class="en">IVF</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">医療機関・医師とのマッチングと日程調整</span></a></li>
+      <li><a href="#closing" data-i="6"><span class="no">07</span><span class="nm">移動・宿泊サポート<span class="en">Transfers &amp; stays</span></span><svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg><span class="ds">空港送迎、医療機関間の移動、宿泊の手配</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec why" id="why">
+  <div class="wrap">
+    <div class="why-head">
+      <div><p class="label">WHY XIUYI</p><div class="sec-head"><h2>XIUYI が選ばれる理由</h2></div></div>
+      <p class="lead">初回のご相談から受診後のご連絡まで、ひとつの窓口で。</p>
+    </div>
+    <div class="why-cards">
+      <article class="why-card">
+        <figure><img src="../assets/photos/why-network.jpg" alt="医療機関の格子戸のエントランス" loading="lazy"></figure>
+        <span class="no">01</span><h3>日本の正規医療機関と連携</h3>
+        <p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+      </article>
+      <article class="why-card">
+        <figure><img src="../assets/photos/why-concierge.jpg" alt="受付カウンターに置かれた革の書類ケース" loading="lazy"></figure>
+        <span class="no">02</span><h3>専任担当者による一貫した調整</h3>
+        <p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+      </article>
+      <article class="why-card">
+        <figure><img src="../assets/photos/why-hospitality.jpg" alt="東京タワーを望む客室" loading="lazy"></figure>
+        <span class="no">03</span><h3>移動・宿泊のサポート</h3>
+        <p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec konte-sec" id="support">
+  <div class="wrap">
+    <p class="label">SUPPORT</p>
+    <div class="sec-head"><h2>サポート内容</h2></div>
+    <p class="lead">ご滞在をひとつの物語として、場面ごとに準備します。</p>
+    <div class="konte" role="table" aria-label="サポート内容">
+      <div class="konte-meta"><span><b>XIUYI</b>　受診の流れ — 絵コンテ</span><span>代官山・東京</span></div>
+      <div class="k-head" role="row"><span role="columnheader">CUT</span><span role="columnheader">画面</span><span role="columnheader">内容</span><span role="columnheader">担当</span></div>
+      <div class="k-row" role="row">
+        <div class="k-cut">01</div>
+        <div class="k-pic"><figure><img src="../assets/photos/about-plan.jpg" alt="地図と書類が置かれた机" loading="lazy"></figure></div>
+        <div class="k-act"><h3>医療ニーズの確認と予約調整</h3><p>既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p></div>
+        <div class="k-note"><b>渡航前</b>専任担当者</div>
+      </div>
+      <div class="k-row" role="row">
+        <div class="k-cut">02</div>
+        <div class="k-pic"><figure><img src="../assets/photos/checkup-equipment.jpg" alt="検査機器" loading="lazy"></figure></div>
+        <div class="k-act"><h3>医療機関・医師とのマッチング</h3><p>検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p></div>
+        <div class="k-note"><b>渡航前</b>専任担当者・提携医療機関</div>
+      </div>
+      <div class="k-row" role="row">
+        <div class="k-cut">03</div>
+        <div class="k-pic"><figure><img src="../assets/photos/support-transfer.jpg" alt="送迎車両" loading="lazy"></figure></div>
+        <div class="k-act"><h3>空港送迎と医療機関間の移動</h3><p>フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p></div>
+        <div class="k-note"><b>到着日</b>付帯サービス</div>
+      </div>
+      <div class="k-row" role="row">
+        <div class="k-cut">04</div>
+        <div class="k-pic"><figure><img src="../assets/photos/support-attend.jpg" alt="にこやかに説明する担当者" loading="lazy"></figure></div>
+        <div class="k-act"><h3>中国語・英語・日本語での同行サポート</h3><p>来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p></div>
+        <div class="k-note"><b>受診日</b>専任担当者</div>
+      </div>
+      <div class="k-row" role="row">
+        <div class="k-cut">05</div>
+        <div class="k-pic"><figure><img src="../assets/photos/support-stay-ryokan.jpg" alt="庭に面した和の客室" loading="lazy"></figure></div>
+        <div class="k-act"><h3>宿泊・滞在日程の調整</h3><p>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></div>
+        <div class="k-note"><b>滞在中</b>付帯サービス</div>
+      </div>
+    </div>
+    <p class="konte-foot">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+  </div>
+</section>
+
+<section class="closing" id="closing">
+  <div class="wrap">
+    <div class="close-card">
+      <img src="../assets/photos/home-closing.jpg" alt="夕暮れの中庭に面したラウンジ" loading="lazy">
+      <div class="close-in">
+        <p class="label">CONSULTATION</p>
+        <h2>医療相談を予約する</h2>
+        <p>これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+        <a class="btn btn-primary" href="#closing">相談を予約<svg class="arrow" viewBox="0 0 22 8"><use href="#arr"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr-top">
+      <div class="ftr-brand"><span class="disc"><img src="../assets/logo-mark.png" alt="" width="44" height="44"></span><div><b>XIUYI</b><small>秀一株式会社　東京都渋谷区（代官山）</small></div></div>
+      <nav class="ftr-links" aria-label="フッター"><a href="#services">サービス</a><a href="#why">コラム</a><a href="#support">事例</a><a href="#support">医師</a><a href="#why">会社案内</a><a href="#top">プライバシー</a></nav>
+    </div>
+    <div class="ftr-bot"><span class="latin">© XIUYI CO., LTD.</span><span>診断・治療は提携医療機関の医師が行います。</span></div>
+  </div>
+</footer>
+
+<a class="fab" href="#closing" aria-label="お問い合わせ"><svg viewBox="0 0 18 18"><path d="M3 3.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H8l-3.5 3v-3H3a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/></svg><span>お問い合わせ</span></a>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const QS = new URLSearchParams(location.search);
+const FIXED_T = QS.has('t') ? parseFloat(QS.get('t')) : null;   // ?t=10 renders one frame of the short (stills, like bridge-stills.mjs)
+
+/* ------------------------------------------------------------------ helpers (story.ts camera grammar) */
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+const smooth = (x) => { const u = clamp01(x); return u * u * (3 - 2 * u); };
+const glide = (x) => { const u = clamp01(x); return u * u * u * (u * (6 * u - 15) + 10); }; // symmetric smootherstep
+const lerp = (a, b, k) => a + (b - a) * k;
+const seg = (t, a, b) => clamp01((t - a) / (b - a));
+function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+/* ------------------------------------------------------------------ shade.ts: two-tone lighting
+   albedo × mix(shadeCol, litCol, sunVis × soft N·L terminator); point lights (the lantern) are kept on top. */
+let LFB = THREE.ShaderChunk.lights_fragment_begin
+  .replace('directLight.color *= ( directLight.visible && receiveShadow ) ? getShadow( directionalShadowMap[ i ]',
+    'sunVis = ( directLight.visible && receiveShadow ) ? getShadow( directionalShadowMap[ i ]')
+  .replace('vDirectionalShadowCoord[ i ] ) : 1.0;', 'vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\tdirectLight.color *= sunVis;')
+  .replace('#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )', 'vec3 pointDiffuse = reflectedLight.directDiffuse;\n#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )');
+const TT_OK = LFB.includes('directLight.color *= sunVis') && LFB.includes('vec3 pointDiffuse');
+const TWO_TONE = `
+#if NUM_DIR_LIGHTS > 0
+{
+  vec3 sunV = directionalLights[ 0 ].direction;
+  vec3 upV = normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
+  float ndl = max( dot( geometryNormal, sunV ), 0.0 );
+  float sunTerm = sunVis * smoothstep( 0.0, uTerm, ndl );
+  float skyK = mix( uSideK, 1.0, 0.5 + 0.5 * dot( geometryNormal, upV ) );
+  vec3 lit = uLitCol * mix( 1.0, ndl, uLambert );
+  vec3 alb = max( mix( vec3( dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) ) ), diffuseColor.rgb, uSat ), 0.0 );
+  reflectedLight.directDiffuse = alb * mix( uShadeCol, lit, sunTerm ) * skyK + uShadeLift * ( 1.0 - sunTerm ) + pointDiffuse * uPointK;
+  reflectedLight.indirectDiffuse = vec3( 0.0 );
+}
+#endif
+`;
+const DECL = '#include <common>\nuniform vec3 uLitCol; uniform vec3 uShadeCol; uniform vec3 uShadeLift; uniform float uLambert; uniform float uSideK; uniform float uTerm; uniform float uSat; uniform float uPointK;';
+function makeTone(o) {
+  return { uLitCol: { value: new THREE.Vector3(...o.lit) }, uShadeCol: { value: new THREE.Vector3(...o.shade) },
+    uShadeLift: { value: new THREE.Vector3(...o.lift) }, uLambert: { value: o.lambert }, uSideK: { value: o.sideK },
+    uTerm: { value: o.term }, uSat: { value: o.sat }, uPointK: { value: o.pointK ?? 1 } };
+}
+function twoTone(m, T, key) {
+  if (!TT_OK) return m;  // three changed its light chunk: fall back to plain Lambert instead of failing
+  m.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, T);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', DECL)
+      .replace('#include <lights_fragment_begin>', 'float sunVis = 1.0;\n' + LFB)
+      .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + TWO_TONE);
+  };
+  m.customProgramCacheKey = () => 'tt7_' + key;
+  return m;
+}
+
+/* ------------------------------------------------------------------ static batcher: one draw call per bucket */
+class Batch {
+  constructor() { this.b = {}; }
+  add(bucket, geo, color, m) {
+    let g = geo.index ? geo.toNonIndexed() : geo.clone();
+    for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
+    if (m) g.applyMatrix4(m);
+    const c = new THREE.Color(color), n = g.attributes.position.count, a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(a, 3));
+    (this.b[bucket] ||= []).push(g);
+  }
+  mesh(bucket, mat) { const l = this.b[bucket]; if (!l) return null; const g = mergeGeometries(l, false); l.forEach((x) => x.dispose()); return new THREE.Mesh(g, mat); }
+}
+const M4 = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), V = new THREE.Vector3(), S = new THREE.Vector3();
+const TR = (x, y, z, ry = 0, sx = 1, sy = 1, sz = 1, rx = 0, rz = 0) => M4.compose(V.set(x, y, z), Q.setFromEuler(E.set(rx, ry, rz)), S.set(sx, sy, sz)).clone();
+const BOX = new THREE.BoxGeometry(1, 1, 1);
+let CANOPY_S = null; // set by the hero world, reused by the SHŌ room
+const box = (B, bucket, col, x, y, z, w, h, d, ry = 0) => B.add(bucket, BOX, col, TR(x, y + h / 2, z, ry, w, h, d));
+
+/* ------------------------------------------------------------------ post: ink.ts + lensblur.ts + bloom + grade.ts */
+const FSQ = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const ND_V = `#include <common>
+varying vec3 vN; varying float vIZ;
+void main(){
+  #include <beginnormal_vertex>
+  #include <defaultnormal_vertex>
+  vN = normalize(transformedNormal);
+  #include <begin_vertex>
+  #include <project_vertex>
+  vIZ = 1.0 / max(-mvPosition.z, 1e-3);
+}`;
+const ND_F = 'uniform float uInk; varying vec3 vN; varying float vIZ; void main(){ vec3 n = normalize(vN) * (gl_FrontFacing ? 1.0 : -1.0); gl_FragColor = vec4(n * uInk, vIZ); }';
+const MASK_F = `uniform sampler2D tND; uniform vec2 texel; uniform float uW; uniform vec2 uDT; uniform vec2 uAT; uniform float uCrease; varying vec2 vUv;
+bool inked(vec4 c){ return dot(c.rgb, c.rgb) > 0.25; }
+void main(){
+  vec4 c = texture2D(tND, vUv);
+  if (!inked(c)) { gl_FragColor = vec4(0.0); return; }
+  float iz0 = c.a, e = 0.0;
+  for (int i = 0; i < 4; i++) {
+    vec2 d = i == 0 ? vec2(1.0, 0.0) : i == 1 ? vec2(0.0, 1.0) : i == 2 ? vec2(0.7071, 0.7071) : vec2(0.7071, -0.7071);
+    vec2 o = d * texel * uW;
+    vec4 a = texture2D(tND, vUv + o), b = texture2D(tND, vUv - o);
+    float dd = (2.0 * iz0 - a.a - b.a) / iz0;
+    e = max(e, smoothstep(uDT.x, uDT.y, dd));
+    float na = (inked(a) && abs(a.a - iz0) < iz0 * 0.025) ? 1.0 - dot(c.rgb, a.rgb) : 0.0;
+    float nb = (inked(b) && abs(b.a - iz0) < iz0 * 0.025) ? 1.0 - dot(c.rgb, b.rgb) : 0.0;
+    e = max(e, smoothstep(uAT.x, uAT.y, max(na, nb)) * uCrease);
+  }
+  gl_FragColor = vec4(e);
+}`;
+const COMP_F = `uniform sampler2D tColor; uniform sampler2D tMask; uniform sampler2D tND; uniform vec2 texel; uniform vec3 uInk; uniform float uInkA; uniform vec3 uFogCol; uniform vec2 uFog; varying vec2 vUv;
+void main(){
+  float m = texture2D(tMask, vUv).r * 4.0;
+  m += (texture2D(tMask, vUv + vec2(texel.x, 0.0)).r + texture2D(tMask, vUv - vec2(texel.x, 0.0)).r + texture2D(tMask, vUv + vec2(0.0, texel.y)).r + texture2D(tMask, vUv - vec2(0.0, texel.y)).r) * 2.0;
+  m += texture2D(tMask, vUv + texel).r + texture2D(tMask, vUv - texel).r + texture2D(tMask, vUv + vec2(texel.x, -texel.y)).r + texture2D(tMask, vUv - vec2(texel.x, -texel.y)).r;
+  m = clamp(m / 16.0 * 1.7, 0.0, 1.0);
+  float iz = texture2D(tND, vUv).a; float z = 1.0 / max(iz, 1e-5);
+  float f = clamp((z - uFog.x) / (uFog.y - uFog.x), 0.0, 1.0);
+  vec3 ink = mix(uInk, uFogCol, f * 0.9);
+  vec3 col = texture2D(tColor, vUv).rgb;
+  gl_FragColor = vec4(mix(col, ink, m * uInkA * (1.0 - f * 0.75)), 1.0);
+}`;
+const BRIGHT_F = `uniform sampler2D tIn; uniform vec2 texel; uniform float uThr; varying vec2 vUv;
+void main(){
+  vec3 c = (texture2D(tIn, vUv + texel * vec2(-1.0, -1.0)).rgb + texture2D(tIn, vUv + texel * vec2(1.0, -1.0)).rgb + texture2D(tIn, vUv + texel * vec2(-1.0, 1.0)).rgb + texture2D(tIn, vUv + texel).rgb) * 0.25;
+  float l = max(c.r, max(c.g, c.b));
+  float k = smoothstep(uThr, uThr + 0.6, l);
+  gl_FragColor = vec4(c * k, 1.0);
+}`;
+const BLUR_F = `uniform sampler2D tIn; uniform vec2 dir; varying vec2 vUv;
+void main(){
+  vec3 c = texture2D(tIn, vUv).rgb * 0.1964825501511404;
+  c += (texture2D(tIn, vUv + dir * 1.411764705882353).rgb + texture2D(tIn, vUv - dir * 1.411764705882353).rgb) * 0.2969069646728344;
+  c += (texture2D(tIn, vUv + dir * 3.2941176470588234).rgb + texture2D(tIn, vUv - dir * 3.2941176470588234).rgb) * 0.09447039785044732;
+  c += (texture2D(tIn, vUv + dir * 5.176470588235294).rgb + texture2D(tIn, vUv - dir * 5.176470588235294).rgb) * 0.010381362401148057;
+  gl_FragColor = vec4(c, 1.0);
+}`;
+const FINAL_F = `uniform sampler2D tCol; uniform sampler2D tND; uniform sampler2D tBloom; uniform vec2 texel;
+uniform float uFocus; uniform float uCInf; uniform float uNear; uniform float uMax; uniform float uBloomK;
+uniform vec3 uLift; uniform vec3 uTintS; uniform vec3 uTintH; uniform float uSat; uniform float uVig; uniform float uExpo; uniform float uSeed; uniform vec2 uBand;
+varying vec2 vUv;
+#define GOLDEN 2.39996323
+float coc(float iz, float y){
+  float c = uCInf * (1.0 - uFocus * iz);
+  if (c < 0.0) c *= uNear;
+  float band = uBand.x * smoothstep(uBand.y, 1.0, abs(y * 2.0 - 1.0));
+  c = sign(c + 1e-4) * max(abs(c), band);
+  return clamp(c, -uMax, uMax);
+}
+vec3 neutral(vec3 color){
+  float x = min(color.r, min(color.g, color.b));
+  float off = x < 0.08 ? x - 6.25 * x * x : 0.04;
+  color -= off;
+  float peak = max(color.r, max(color.g, color.b));
+  if (peak < 0.76) return color;
+  float d = 0.24; float np = 1.0 - d * d / (peak + d - 0.76);
+  color *= np / peak;
+  float g = 1.0 - 1.0 / (0.15 * (peak - np) + 1.0);
+  return mix(color, vec3(np), g);
+}
+vec3 toSRGB(vec3 c){ c = clamp(c, 0.0, 1.0); return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(vec3(0.0031308), c)); }
+float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)) + uSeed) * 43758.5453); }
+void main(){
+  float iz0 = texture2D(tND, vUv).a;
+  float r0 = abs(coc(iz0, vUv.y));
+  vec3 col = texture2D(tCol, vUv).rgb; float ws = 1.0;
+  if (r0 > 0.5) {
+    for (int i = 0; i < 24; i++) {
+      float rr = sqrt((float(i) + 0.5) / 24.0) * r0;
+      float a = float(i) * GOLDEN;
+      vec2 suv = vUv + vec2(cos(a), sin(a)) * rr * texel;
+      float izs = texture2D(tND, suv).a;
+      float rs = abs(coc(izs, suv.y));
+      if (izs < iz0) rs = min(rs, r0);
+      float w = clamp(rs - rr + 0.5, 0.0, 1.0);
+      col += texture2D(tCol, suv).rgb * w; ws += w;
+    }
+  }
+  col /= ws;
+  vec3 fg = vec3(0.0); float fw = 0.0;
+  for (int i = 0; i < 12; i++) {
+    float rr = sqrt((float(i) + 0.5) / 12.0) * uMax;
+    if (rr <= r0) continue;
+    float a = float(i) * GOLDEN + 1.0;
+    vec2 suv = vUv + vec2(cos(a), sin(a)) * rr * texel;
+    float izs = texture2D(tND, suv).a;
+    if (izs <= iz0 * 1.03) continue;
+    float rs = -coc(izs, suv.y);
+    float w = clamp(rs - rr + 0.5, 0.0, 1.0);
+    fg += texture2D(tCol, suv).rgb * w; fw += w;
+  }
+  if (fw > 0.0) col = mix(col, fg / fw, clamp(fw / 12.0 * 2.2, 0.0, 1.0));
+  col += texture2D(tBloom, vUv).rgb * uBloomK;
+  col = neutral(col * uExpo);
+  vec3 c = toSRGB(col);
+  float y = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = mix(vec3(y), c, uSat);
+  c += (1.0 - y) * (1.0 - y) * uTintS + y * y * uTintH;
+  c = uLift + c * (1.0 - uLift);
+  vec2 p = (vUv - 0.5) * vec2(1.0, 0.85);
+  c *= 1.0 - uVig * smoothstep(0.35, 0.85, length(p) * 1.414);
+  c += (hash(gl_FragCoord.xy) - 0.5) / 255.0;
+  gl_FragColor = vec4(c, 1.0);
+}`;
+
+function makeND(ink) { return new THREE.ShaderMaterial({ vertexShader: ND_V, fragmentShader: ND_F, uniforms: { uInk: { value: ink } }, side: THREE.DoubleSide }); }
+const fsq = (frag, uniforms) => new THREE.ShaderMaterial({ vertexShader: FSQ, fragmentShader: frag, uniforms, depthTest: false, depthWrite: false });
+
+class Stage {
+  constructor(canvas, o) {
+    this.canvas = canvas; this.o = o; this.scene = o.scene; this.camera = o.camera;
+    const r = this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, stencil: false, powerPreference: 'high-performance' });
+    r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.qs = new THREE.Scene(); this.qc = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    this.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2)); this.quad.frustumCulled = false; this.qs.add(this.quad);
+    this.nd1 = makeND(1); this.nd0 = makeND(0);
+    const P = o.post;
+    this.mMask = fsq(MASK_F, { tND: { value: null }, texel: { value: new THREE.Vector2() }, uW: { value: 1 }, uDT: { value: new THREE.Vector2(0.012, 0.035) }, uAT: { value: new THREE.Vector2(0.18, 0.36) }, uCrease: { value: P.crease ?? 0.85 } });
+    this.mComp = fsq(COMP_F, { tColor: { value: null }, tMask: { value: null }, tND: { value: null }, texel: { value: new THREE.Vector2() }, uInk: { value: new THREE.Color(P.ink) }, uInkA: { value: P.inkA ?? 0.8 }, uFogCol: { value: new THREE.Color(P.fogCol) }, uFog: { value: new THREE.Vector2(...P.fog) } });
+    this.mBright = fsq(BRIGHT_F, { tIn: { value: null }, texel: { value: new THREE.Vector2() }, uThr: { value: P.bloomThr ?? 1.0 } });
+    this.mBlur = fsq(BLUR_F, { tIn: { value: null }, dir: { value: new THREE.Vector2() } });
+    this.mFinal = fsq(FINAL_F, { tCol: { value: null }, tND: { value: null }, tBloom: { value: null }, texel: { value: new THREE.Vector2() },
+      uFocus: { value: 50 }, uCInf: { value: 0 }, uNear: { value: P.near ?? 1.4 }, uMax: { value: 10 }, uBloomK: { value: P.bloom ?? 0.6 },
+      uLift: { value: new THREE.Vector3(...P.lift) }, uTintS: { value: new THREE.Vector3(...P.tintS) }, uTintH: { value: new THREE.Vector3(...P.tintH) },
+      uSat: { value: P.sat ?? 1 }, uVig: { value: P.vig ?? 0.1 }, uExpo: { value: P.expo ?? 1 }, uSeed: { value: 0 }, uBand: { value: new THREE.Vector2(...(P.band || [0, 1])) } });
+    this.dpr = Math.min(window.devicePixelRatio || 1, o.maxDpr || 2);
+    this.time = 0; this.playing = !REDUCED; this.onscreen = true; this.dirty = true;
+    this.ndList = [];
+    this.resize();
+    new ResizeObserver(() => { this.resize(); this.dirty = true; }).observe(canvas);
+    new IntersectionObserver((es) => { this.onscreen = es[0].isIntersecting; }, { rootMargin: '80px' }).observe(canvas);
+  }
+  collect() { this.ndList = []; this.scene.traverse((m) => { if (m.isMesh || m.isPoints || m.isLine) this.ndList.push(m); }); }
+  rt(w, h, o = {}) { return new THREE.WebGLRenderTarget(Math.max(1, w), Math.max(1, h), { type: THREE.HalfFloatType, depthBuffer: false, ...o }); }
+  resize() {
+    const w = Math.max(1, this.canvas.clientWidth), h = Math.max(1, this.canvas.clientHeight);
+    this.cssW = w; this.cssH = h;
+    this.renderer.setPixelRatio(this.dpr); this.renderer.setSize(w, h, false);
+    const W = Math.round(w * this.dpr), H = Math.round(h * this.dpr); this.W = W; this.H = H;
+    [this.rS, this.rN, this.rM, this.rI, this.rB1, this.rB2].forEach((t) => t && t.dispose());
+    this.rS = this.rt(W, H, { depthBuffer: true, samples: 4 });
+    this.rN = this.rt(W, H, { depthBuffer: true, type: THREE.FloatType, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
+    this.rM = this.rt(W, H, { type: THREE.UnsignedByteType });
+    this.rI = this.rt(W, H);
+    this.rB1 = this.rt(W >> 2, H >> 2); this.rB2 = this.rt(W >> 2, H >> 2);
+    if (this.o.onResize) this.o.onResize(w, h, W, H);
+  }
+  pass(mat, target) { this.quad.material = mat; this.renderer.setRenderTarget(target); this.renderer.render(this.qs, this.qc); }
+  render() {
+    const r = this.renderer, s = this.scene, c = this.camera, P = this.o.post, d = this.dpr;
+    r.shadowMap.autoUpdate = true;
+    r.setRenderTarget(this.rS); r.setClearColor(0x000000, 1); r.clear(); r.render(s, c);
+    // world-only normal + inverse-depth pass (ink.ts step 1); NOINK things keep depth for the lens but no lines
+    r.shadowMap.autoUpdate = false;
+    const saved = [];
+    for (const m of this.ndList) {
+      const k = m.userData.nd || 'ink';
+      saved.push(m.material, m.visible);
+      if (k === 'skip' || m.isPoints || m.isLine) m.visible = false; else m.material = k === 'noink' ? this.nd0 : this.nd1;
+    }
+    const fog = s.fog; s.fog = null;
+    r.setRenderTarget(this.rN); r.setClearColor(0x000000, 0); r.clear(); r.render(s, c);
+    s.fog = fog;
+    this.ndList.forEach((m, i) => { m.material = saved[i * 2]; m.visible = saved[i * 2 + 1]; });
+    const tx = new THREE.Vector2(1 / this.W, 1 / this.H);
+    this.mMask.uniforms.tND.value = this.rN.texture; this.mMask.uniforms.texel.value.copy(tx); this.mMask.uniforms.uW.value = Math.max(1, (P.inkW ?? 1.1) * d);
+    this.pass(this.mMask, this.rM);
+    const cu = this.mComp.uniforms;
+    cu.tColor.value = this.rS.texture; cu.tMask.value = this.rM.texture; cu.tND.value = this.rN.texture; cu.texel.value.copy(tx);
+    this.pass(this.mComp, this.rI);
+    const bt = new THREE.Vector2(1 / this.rB1.width, 1 / this.rB1.height);
+    this.mBright.uniforms.tIn.value = this.rI.texture; this.mBright.uniforms.texel.value.set(1 / this.W, 1 / this.H); this.pass(this.mBright, this.rB1);
+    this.mBlur.uniforms.tIn.value = this.rB1.texture; this.mBlur.uniforms.dir.value.set(bt.x, 0); this.pass(this.mBlur, this.rB2);
+    this.mBlur.uniforms.tIn.value = this.rB2.texture; this.mBlur.uniforms.dir.value.set(0, bt.y); this.pass(this.mBlur, this.rB1);
+    const fu = this.mFinal.uniforms;
+    fu.tCol.value = this.rI.texture; fu.tND.value = this.rN.texture; fu.tBloom.value = this.rB1.texture; fu.texel.value.copy(tx);
+    fu.uFocus.value = this.focus || 50; fu.uCInf.value = (this.cInf ?? P.cInf) * d; fu.uMax.value = (P.maxCoC ?? 10) * d; fu.uSeed.value = (fu.uSeed.value + 0.37) % 7;
+    this.pass(this.mFinal, null);
+  }
+}
+
+/* ================================================================== HERO SHORT: 「代官山、午後四時」
+   Shot plan (story.ts SHOTS/CAMS reinterpreted as one continuous 20 s loop, no cuts):
+   beat 01 到着 0–4.6 s   wide on the ginkgo avenue, a plane crosses the haze, slow push-in
+   beat 02 送迎 4.6–8.6 s  glide down to the clinic as the coffee car arrives and pulls to the kerb
+   beat 03 出迎え 8.6–13.6 s hold (creeping push) — the coordinator walks out, bows, greets the guest
+   beat 04 同行 13.6–20 s  both walk in, the car leaves past the lens, glide back up to the opening frame */
+const LOOP = 20;
+const BEATS = [0, 4.6, 8.6, 13.6, 20];
+const hero = {};
+{
+const scene = new THREE.Scene();
+const HT = makeTone({ lit: [1.40, 1.15, 0.88], shade: [0.66, 0.58, 0.6], lift: [0.02, 0.018, 0.03], lambert: 0.35, sideK: 0.86, term: 0.16, sat: 1.0 });
+const FOGC = new THREE.Color('#ead4b8');
+scene.fog = new THREE.Fog(FOGC, 75, 470);
+const paper = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true }), HT, 'hv');
+const flat = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), HT, 'hf');
+const glow = new THREE.MeshBasicMaterial({ vertexColors: true });
+const B = new Batch();
+const R = rng(1311);
+const C = (hex, k = 1) => new THREE.Color(hex).multiplyScalar(k);
+const PAL = { white: '#f2ede5', white2: '#ece5da', white3: '#e5ddd0', stone: '#dcd1c0', roof: '#73675f', roof2: '#7d7068', wood: '#7b5c45', glass: '#4c4644', glass2: '#7a726d',
+  road: '#a39a90', walk: '#e3dacb', curb: '#efe9e0', land: '#d8cdbc', trunk: '#5b4938', gold: '#b9a17b' };
+const WARM = (k) => C('#ffcf96', k);
+
+/* ---- sun: low golden key from the far left of the avenue (lights.ts golden, side-back) */
+const SUN = new THREE.Vector3(-0.46, 0.33, -0.82).normalize();
+const sun = new THREE.DirectionalLight(0xfff0dc, 1.0);
+sun.target.position.set(6, 0, -12); sun.position.copy(SUN).multiplyScalar(180).add(sun.target.position);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -78, right: 78, top: 70, bottom: -70, near: 20, far: 420 });
+sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.05;
+scene.add(sun, sun.target);
+
+/* ---- sky: horizon peach → page beige, glow toward the sun (depth.md sky stops; +0.04 pre-inverts the Neutral toe) */
+const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 48, 24), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, fog: false,
+  uniforms: { uSun: { value: SUN.clone().setY(0.06).normalize() }, cH: { value: C('#f0cfa6') }, cM: { value: C('#efdcc4') }, cT: { value: C('#e6e1d9') }, cG: { value: C('#ffd9a8') } },
+  vertexShader: 'varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform vec3 uSun; uniform vec3 cH; uniform vec3 cM; uniform vec3 cT; uniform vec3 cG; varying vec3 vD;
+    void main(){ vec3 d = normalize(vD); float e = d.y;
+      vec3 c = mix(cH, cM, smoothstep(0.0, 0.08, e)); c = mix(c, cT, smoothstep(0.08, 0.42, e));
+      float s = max(dot(d, uSun), 0.0); c += cG * (pow(s, 6.0) * 0.28 + pow(s, 60.0) * 0.5) * (1.0 - smoothstep(0.0, 0.5, e));
+      gl_FragColor = vec4(c + 0.04, 1.0); }`,
+}));
+sky.userData.nd = 'skip'; sky.renderOrder = -10; scene.add(sky);
+
+/* ---- land, avenue, side street, crossings */
+const PLANE = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+B.add('paper', PLANE, PAL.land, TR(0, 0, -260, 0, 900, 1, 900));
+box(B, 'paper', PAL.road, 0, 0, -230, 10, 0.04, 760);
+for (const sx of [-1, 1]) {
+  box(B, 'paper', PAL.curb, sx * 4.72, 0.04, -230, 0.14, 0.012, 760);
+  for (const [a, b] of [[-610, 16], [28, 150]]) {
+    box(B, 'paper', PAL.walk, sx * 6.8, 0, (a + b) / 2, 3.6, 0.16, b - a);
+    box(B, 'paper', PAL.curb, sx * 5.06, 0, (a + b) / 2, 0.16, 0.19, b - a);
+  }
+  box(B, 'paper', PAL.road, sx * 70, 0, 22, 123, 0.04, 12);
+  box(B, 'paper', PAL.curb, sx * 70, 0.04, 22, 123, 0.012, 0.12);
+}
+for (let z = -400; z < 140; z += 8) box(B, 'paper', PAL.curb, 0, 0.04, z, 0.13, 0.012, 3.2);
+for (let k = 0; k < 11; k++) box(B, 'paper', PAL.curb, -4.5 + 0.45 + k * 0.82, 0.04, 31.4, 0.42, 0.014, 3.6);
+for (let k = 0; k < 7; k++) { box(B, 'paper', PAL.curb, 10.4, 0.04, 17.4 + k * 0.82 + 0.4, 3.4, 0.014, 0.42); box(B, 'paper', PAL.curb, -10.4, 0.04, 17.4 + k * 0.82 + 0.4, 3.4, 0.014, 0.42); }
+
+/* ---- builders (build.ts in spirit: plinth, parapet, window bands, glow bands) */
+const ROOF_HIP = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4, 1).rotateY(Math.PI / 4).translate(0, 0.5, 0);
+const GABLE = (() => { const s = new THREE.Shape([new THREE.Vector2(-0.5, 0), new THREE.Vector2(0.5, 0), new THREE.Vector2(0, 1)]); return new THREE.ExtrudeGeometry(s, { depth: 1, bevelEnabled: false }).translate(0, 0, -0.5); })();
+// a facade band of windows on the face of a box: face = 'x' (normal ±x at fx) or 'z' (normal +z at fz)
+function bands(face, fpos, sgn, a0, a1, y0, h, opt = {}) {
+  const lit = opt.lit ?? 0.4, seg = opt.seg ?? 3.2, out = 0.06 * sgn;
+  for (let a = a0; a < a1 - 0.2; a += seg) {
+    const w = Math.min(seg - 0.35, a1 - a), c = (a + w / 2), on = R() < lit;
+    const col = on ? WARM(1.05 + R() * 1.1) : (R() < 0.5 ? PAL.glass : PAL.glass2);
+    const bucket = on ? 'glow' : 'paper';
+    if (face === 'x') box(B, bucket, col, fpos + out, y0, c, 0.12, h, w); else box(B, bucket, col, c, y0, fpos + out, w, h, 0.12);
+  }
+}
+function modern(x0, x1, z0, z1, h, o = {}) {
+  const col = o.col ?? (R() < 0.5 ? PAL.white : PAL.white2), cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = x1 - x0, d = z1 - z0;
+  const road = cx > 0 ? x0 : x1, sg = cx > 0 ? -1 : 1, base = o.base ?? 0;
+  box(B, 'paper', col, cx, base, cz, w, h, d);
+  // parapet rim
+  for (const [px, pz, pw, pd] of [[cx, z0 + 0.15, w, 0.3], [cx, z1 - 0.15, w, 0.3], [x0 + 0.15, cz, 0.3, d], [x1 - 0.15, cz, 0.3, d]]) box(B, 'paper', col, px, base + h, pz, pw, 0.45, pd);
+  const floors = Math.max(1, Math.floor((h - 0.8) / 3.3));
+  for (let f = 0; f < floors; f++) {
+    const y = base + 1.0 + f * 3.3, bh = f === 0 && o.shop ? 2.4 : 1.35, yy = f === 0 && o.shop ? base + 0.2 : y;
+    const litK = f === 0 && o.shop ? 0.75 : (o.lit ?? 0.35);
+    bands('x', road, sg, z0 + 0.7, z1 - 0.7, yy, bh, { lit: litK, seg: o.seg ?? 3.4 });
+    bands('z', z1, 1, x0 + 0.7, x1 - 0.7, yy, bh, { lit: litK, seg: o.seg ?? 3.4 });
+  }
+}
+function house(x0, x1, z0, z1, h, o = {}) {
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = x1 - x0, d = z1 - z0, base = o.base ?? 0;
+  box(B, 'paper', o.col ?? PAL.white2, cx, base, cz, w, h, d);
+  box(B, 'paper', PAL.wood, cx, base, cz, w + 0.05, 0.5, d + 0.05);
+  const road = cx > 0 ? x0 : x1, sg = cx > 0 ? -1 : 1;
+  bands('x', road, sg, z0 + 1, z1 - 1, base + h * 0.42, 1.2, { lit: 0.45, seg: 2.6 });
+  if (o.gable) B.add('paper', GABLE, o.roof ?? PAL.roof, TR(cx, base + h, cz, o.ridgeX ? Math.PI / 2 : 0, (o.ridgeX ? d : w) + 1.1, o.rh ?? 2.6, (o.ridgeX ? w : d) + 1.1));
+  else B.add('paper', ROOF_HIP, o.roof ?? PAL.roof, TR(cx, base + h, cz, 0, w + 1.2, o.rh ?? 2.4, d + 1.2));
+}
+/* ginkgo canopies: a jittered, tapered icosphere, flat shaded (low-poly), hash-coherent so facets never crack */
+function canopyGeo(seed) {
+  const g = new THREE.IcosahedronGeometry(1, 1), p = g.attributes.position, r2 = rng(seed), cache = new Map();
+  for (let i = 0; i < p.count; i++) {
+    const k = p.getX(i).toFixed(3) + p.getY(i).toFixed(3) + p.getZ(i).toFixed(3);
+    if (!cache.has(k)) cache.set(k, [(r2() - 0.5) * 0.22, (r2() - 0.5) * 0.18, (r2() - 0.5) * 0.22]);
+    const j = cache.get(k), y = p.getY(i), taper = 1 - 0.32 * Math.max(0, y);
+    p.setXYZ(i, (p.getX(i) + j[0]) * taper, y + j[1], (p.getZ(i) + j[2]) * taper);
+  }
+  g.computeVertexNormals(); return g;
+}
+const CANOPY = [canopyGeo(3), canopyGeo(7), canopyGeo(11)];
+CANOPY_S = canopyGeo;
+const TRUNK = new THREE.CylinderGeometry(0.13, 0.2, 1, 6).translate(0, 0.5, 0);
+const GINKGO = ['#d8b45e', '#cfa752', '#ddbf74', '#c99c4a'];
+function tree(x, z, s = 1, col) {
+  const h = (8.6 + R() * 2.2) * s, r = (2.0 + R() * 0.5) * s;
+  B.add('paper', TRUNK, PAL.trunk, TR(x, 0.16, z, 0, 1, h * 0.55, 1));
+  B.add('flat', CANOPY[(R() * 3) | 0], col ?? GINKGO[(R() * GINKGO.length) | 0], TR(x, h * 0.62, z, R() * 6.28, r, h * 0.44, r));
+}
+function lamp(x, z) {
+  B.add('paper', TRUNK, '#4d3f34', TR(x, 0.16, z, 0, 0.45, 5.2, 0.45));
+  box(B, 'paper', '#4d3f34', x + (x > 0 ? -0.35 : 0.35), 5.2, z, 0.8, 0.12, 0.22);
+  box(B, 'glow', WARM(2.6), x + (x > 0 ? -0.6 : 0.6), 5.08, z, 0.3, 0.1, 0.18);
+}
+
+/* ---- the clinic (right side, z -12..8): white volume over a glowing recessed ground floor, coffee louvres */
+{
+  const x0 = 10.5, x1 = 26, z0 = -12, z1 = 8;
+  box(B, 'paper', PAL.stone, 9.55, 0, -2, 1.9, 0.19, 20);                       // forecourt
+  box(B, 'paper', PAL.white, (x0 + x1) / 2, 3.9, (z0 + z1) / 2, x1 - x0, 7.7, z1 - z0); // upper mass
+  box(B, 'paper', PAL.white, 19.5, 0, -2, 13, 3.9, 18.6);                        // ground core (recessed)
+  for (const [px, pz, pw, pd] of [[(x0 + x1) / 2, z0 + 0.15, x1 - x0, 0.3], [(x0 + x1) / 2, z1 - 0.15, x1 - x0, 0.3], [x0 + 0.15, (z0 + z1) / 2, 0.3, z1 - z0]]) box(B, 'paper', PAL.white, px, 11.6, pz, pw, 0.5, pd);
+  box(B, 'paper', PAL.white2, 20.5, 11.6, -4, 8, 2.6, 10);                       // roof pavilion
+  // ground-floor glass: warm interior glow with slender mullions, the entrance brighter
+  box(B, 'glow', WARM(1.25), 12.95, 0.19, -2, 0.1, 3.6, 18.4);
+  box(B, 'glow', WARM(2.1), 12.9, 0.19, -1, 0.12, 2.9, 2.4);
+  box(B, 'glow', WARM(1.0), 19.5, 0.19, 7.32, 13, 3.6, 0.1);
+  for (let z = -10.6; z <= 6.8; z += 1.55) box(B, 'paper', PAL.white, 12.85, 0.19, z, 0.14, 3.7, 0.12);
+  box(B, 'paper', PAL.wood, 12.84, 0.19, -1, 0.16, 3.0, 0.1); box(B, 'paper', PAL.wood, 12.84, 3.0, -1, 0.16, 0.12, 2.5);
+  for (const pz of [z0 + 0.35, z1 - 0.35]) box(B, 'paper', PAL.white, x0 + 0.4, 0, pz, 0.7, 3.9, 0.7);  // corner piers
+  box(B, 'paper', PAL.white, 9.75, 3.55, -1, 1.7, 0.16, 4.6);                    // thin canopy
+  // upper floors: ribbon windows, then a coffee louvre screen over the left half (why-network lattice)
+  for (const y of [4.9, 8.3]) { bands('x', x0, -1, -2.2, 7.4, y, 2.0, { lit: 0.55, seg: 3.1 }); }
+  bands('z', z1, 1, 11.2, 25.4, 4.9, 2.0, { lit: 0.5, seg: 3.4 }); bands('z', z1, 1, 11.2, 25.4, 8.3, 2.0, { lit: 0.3, seg: 3.4 });
+  box(B, 'glow', WARM(1.3), x0 - 0.05, 4.6, -7, 0.1, 6.6, 9.2);
+  for (let z = -11.4; z < -2.6; z += 0.46) box(B, 'paper', PAL.wood, x0 - 0.3, 4.3, z, 0.34, 7.1, 0.13);
+  box(B, 'paper', PAL.wood, x0 - 0.3, 11.35, -7, 0.36, 0.14, 9.0); box(B, 'paper', PAL.wood, x0 - 0.3, 4.2, -7, 0.36, 0.14, 9.0);
+  box(B, 'paper', PAL.gold, 10.42, 1.7, 2.9, 0.06, 0.55, 1.1);                   // brass name plate
+  // the lantern by the door (the SHŌ lantern of the next section, seen from the street)
+  B.add('paper', TRUNK, PAL.wood, TR(10.0, 0.19, 2.4, 0, 0.35, 0.5, 0.35));
+  B.add('glow', new THREE.SphereGeometry(0.3, 14, 10), WARM(2.4), TR(10.0, 0.95, 2.4, 0, 1, 1.35, 1));
+  // planter + small maple
+  box(B, 'paper', PAL.stone, 9.7, 0.19, -7.6, 1.2, 0.55, 2.6);
+  B.add('flat', CANOPY[1], '#9a5a45', TR(9.7, 2.25, -7.6, 1, 1.45, 1.05, 1.45));
+  B.add('paper', TRUNK, PAL.trunk, TR(9.7, 0.7, -7.6, 0, 0.5, 1.2, 0.5));
+}
+
+/* ---- right side of the avenue */
+house(9.5, 19, 30, 40, 5.2, { gable: true, ridgeX: true });
+modern(12, 24, 44, 60, 3.9, { shop: true });
+modern(10.2, 22, -30, -15, 8.8, { shop: true });
+house(9.8, 18, -44, -33, 5.8, {});
+modern(10.5, 30, -66, -47, 13.5, { lit: 0.3 });
+modern(9.5, 20, -86, -69, 7.2, { shop: true });
+house(9.5, 17, -100, -89, 5.4, { gable: true });
+modern(10.5, 28, -128, -103, 15.5, {});
+for (let z = -134; z > -420; z -= 14 + R() * 10) { const d = 9 + R() * 8, h = 6 + R() * 14; R() < 0.3 ? house(9.5, 9.5 + d, z - d, z, h * 0.5, {}) : modern(9.5, 9.5 + 8 + R() * 12, z - d, z, h, {}); }
+// second row behind the clinic (seen over its roof)
+modern(30, 46, -14, 2, 15.5, { lit: 0.25 }); house(29, 40, 6, 15, 6.5, { gable: true }); modern(30, 52, -40, -20, 19, {});
+modern(48, 62, -6, 14, 10, {}); modern(28, 44, 30, 46, 9, { shop: true });
+
+/* ---- left side (mostly behind the copy on desktop: calm, in shade) */
+modern(-24, -9.6, -6, 12, 4.3, { shop: true });
+box(B, 'paper', '#6b5546', -9.1, 2.6, 3, 1.2, 0.08, 8);                        // café awning
+house(-19, -9.5, -20, -8.5, 5.8, { gable: true, ridgeX: true });
+modern(-30, -9.8, -46, -23, 11.5, {});
+house(-21, -9.6, 46, 58, 4.6, {});
+modern(-28, -10, -72, -50, 16, { lit: 0.3 });
+for (let z = -76; z > -420; z -= 14 + R() * 10) { const d = 9 + R() * 8, h = 6 + R() * 14; R() < 0.3 ? house(-9.5 - d, -9.5, z - d, z, h * 0.5, {}) : modern(-9.5 - 8 - R() * 12, -9.5, z - d, z, h, {}); }
+modern(-50, -32, -10, 10, 13, {}); modern(-48, -30, -40, -18, 9, {});
+
+/* ---- ginkgo rows, kept clear of the clinic door and of the sight line through the side street */
+for (let z = -330; z < 70; z += 8.5) {
+  const zr = z + 2.5;
+  if (!(zr > -10.5 && zr < 34) && zr < 34) tree(6.95, zr, 1);
+  if (z < -14) tree(-6.95, z, 1);
+}
+for (let z = -300; z < 60; z += 25.5) { if (!(z > -14 && z < 34)) lamp(5.55, z + 6); lamp(-5.55, z); }
+lamp(5.55, -7.5);
+
+/* ---- distance: layered paper silhouettes (fog = horizon colour, done as flat cut-outs) and the tower */
+const far = new Batch();
+const FAR = ['#e3cbb0', '#e8d3bb', '#ecdac6'];
+for (let i = 0; i < 70; i++) {
+  const layer = i % 3, z = -470 - layer * 70 - R() * 40, x = (R() - 0.5) * 900, w = 14 + R() * 30, h = 22 + R() * (layer === 0 ? 40 : 70);
+  if (Math.abs(x) < 26) continue;
+  box(far, 'f' + layer, FAR[layer], x, 0, z, w, h, w * 0.8);
+}
+{ // a tokyo-tower-like lattice cone far right, in the haze
+  const tx = 92, tz = -640, col = '#ebcbb6';
+  const leg = new THREE.CylinderGeometry(0.01, 1, 1, 4, 1).rotateY(Math.PI / 4).translate(0, 0.5, 0);
+  far.add('f3', leg, col, TR(tx, 0, tz, 0, 26, 48, 26)); far.add('f3', leg, col, TR(tx, 27, tz, 0, 10, 58, 10));
+  box(far, 'f3', '#eed8c8', tx, 22, tz, 11, 3, 11); box(far, 'f3', '#eed8c8', tx, 48, tz, 5, 2.4, 5);
+}
+for (const k of ['f0', 'f1', 'f2', 'f3']) { const m = far.mesh(k, new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); m.userData.nd = 'noink'; scene.add(m); }
+
+/* ---- merge the world into three draw calls */
+const mPaper = B.mesh('paper', paper), mFlat = B.mesh('flat', flat), mGlow = B.mesh('glow', glow);
+mPaper.castShadow = mPaper.receiveShadow = true; mFlat.castShadow = mFlat.receiveShadow = true;
+scene.add(mPaper, mFlat, mGlow);
+
+/* ---- suyari-gasumi: champagne gold-leaf cloud bands (the yamato-e framing device) */
+function leafTexture() {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d'), r2 = rng(5);
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
+    const l = 0.86 + r2() * 0.16, w = r2() * 0.06;
+    g.fillStyle = `rgb(${Math.round(232 * l)},${Math.round(214 * (l - w * 0.4))},${Math.round(176 * (l - w))})`; g.fillRect(x * 64, y * 64, 64, 64);
+    for (let k = 0; k < 40; k++) { g.fillStyle = `rgba(255,248,230,${r2() * 0.18})`; g.fillRect(x * 64 + r2() * 64, y * 64 + r2() * 64, 1 + r2() * 3, 1); }
+  }
+  g.strokeStyle = 'rgba(150,120,80,0.35)'; g.lineWidth = 1.2;
+  for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64 + 1, 256); g.stroke(); g.beginPath(); g.moveTo(0, i * 64); g.lineTo(256, i * 64 + 1); g.stroke(); }
+  const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+const LEAF = leafTexture();
+function cloudShape(caps) { // union of rounded bands (cx, cy, length, height): stepped suyari-gasumi
+  let x0 = 1e9, x1 = -1e9; for (const [cx, , L] of caps) { x0 = Math.min(x0, cx - L / 2); x1 = Math.max(x1, cx + L / 2); }
+  const at = (x, up) => { let v = up ? -1e9 : 1e9; for (const [cx, cy, L, H] of caps) { const r = H / 2, a = cx - L / 2, b = cx + L / 2; if (x < a || x > b) continue;
+      const e = x < a + r ? Math.sqrt(Math.max(0, r * r - (a + r - x) ** 2)) : x > b - r ? Math.sqrt(Math.max(0, r * r - (x - b + r) ** 2)) : r;
+      v = up ? Math.max(v, cy + e) : Math.min(v, cy - e); } return v; };
+  const pts = [], N = 120;
+  for (let i = 0; i <= N; i++) { const x = x0 + (i / N) * (x1 - x0); pts.push(new THREE.Vector2(x, at(x, true))); }
+  for (let i = N; i >= 0; i--) { const x = x0 + (i / N) * (x1 - x0); pts.push(new THREE.Vector2(x, at(x, false))); }
+  return new THREE.Shape(pts);
+}
+const cloudMat = new THREE.ShaderMaterial({
+  fog: true, side: THREE.DoubleSide,
+  uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { tLeaf: { value: null }, uSun: { value: SUN }, uGold: { value: C('#e2c896') }, uSweep: { value: -1 }, uRes: { value: new THREE.Vector2(1, 1) } }]),
+  vertexShader: `#include <common>
+    #include <fog_pars_vertex>
+    varying vec2 vUv; varying vec3 vNw;
+    void main(){ vUv = uv; vNw = normalize(mat3(modelMatrix) * normal); vec4 mvPosition = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mvPosition;
+      #include <fog_vertex>
+    }`,
+  fragmentShader: `uniform sampler2D tLeaf; uniform vec3 uSun; uniform vec3 uGold; uniform float uSweep; uniform vec2 uRes; varying vec2 vUv; varying vec3 vNw;
+    #include <common>
+    #include <fog_pars_fragment>
+    void main(){
+      vec3 leaf = texture2D(tLeaf, vUv * 0.16).rgb;
+      vec3 n = normalize(vNw); float ndl = dot(n, uSun);
+      vec3 col = leaf * uGold * mix(0.66, 1.18, smoothstep(-0.25, 0.5, ndl)) * mix(0.9, 1.06, smoothstep(-0.2, 0.8, n.y));
+      float sx = gl_FragCoord.x / uRes.x + gl_FragCoord.y / uRes.y * 0.55;
+      col += uGold * leaf * 0.5 * exp(-pow((sx - uSweep) * 7.0, 2.0));
+      float fogF = smoothstep(fogNear, fogFar, vFogDepth) * 0.42;
+      gl_FragColor = vec4(mix(col, fogColor, fogF), 1.0);
+    }`,
+});
+cloudMat.uniforms.tLeaf.value = LEAF;
+const clouds = [];
+for (const [x, y, z, caps, ph] of [
+  [44, 17, -235, [[0, 0, 150, 6], [26, 4.6, 70, 5], [-38, -3.6, 52, 4.2]], 0.3],
+  [-70, 25, -300, [[0, 0, 190, 7], [-30, 5.4, 90, 5.5], [44, -4.4, 60, 4.6]], 1.9],
+  [96, 30, -330, [[0, 0, 120, 5.6], [-18, 4.6, 54, 4.4]], 3.1],
+  [-8, 9.5, -170, [[0, 0, 64, 3.4], [12, 2.6, 30, 2.6]], 4.2],
+  [150, 21, -205, [[0, 0, 110, 5.2], [20, 4.2, 56, 4.2], [-30, -3.8, 40, 3.6]], 2.4],
+  [236, 33, -170, [[0, 0, 120, 6], [-26, 4.8, 60, 4.6]], 5.6],
+]) {
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(cloudShape(caps), 3), cloudMat); m.position.set(x, y, z); m.userData.base = [x, y, z, ph];
+  scene.add(m); clouds.push(m);
+}
+
+/* ---- the coffee car: an extruded minivan profile with bevelled edges */
+const car = new THREE.Group();
+{
+  const prof = new THREE.Shape([[-2.42, 0.34], [2.42, 0.34], [2.46, 0.92], [2.0, 1.12], [1.32, 1.86], [-2.32, 1.9], [-2.44, 1.7]].map(([x, y]) => new THREE.Vector2(x, y)));
+  const body = new THREE.ExtrudeGeometry(prof, { depth: 1.62, bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.1, bevelSegments: 3, curveSegments: 4 }).translate(0, 0, -0.81);
+  const paint = twoTone(new THREE.MeshPhongMaterial({ color: '#7d624d', specular: '#b8a690', shininess: 60, side: THREE.DoubleSide }), HT, 'car');
+  const dark = twoTone(new THREE.MeshLambertMaterial({ color: '#262020', side: THREE.DoubleSide }), HT, 'car2');
+  const mb = new THREE.Mesh(body, paint); mb.castShadow = true; mb.receiveShadow = false; car.add(mb);
+  const glass = (x, y, z, w, h, d, rz = 0) => { const g = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), dark); g.position.set(x, y, z); g.rotation.z = rz; car.add(g); };
+  for (const zz of [0.93, -0.93]) { glass(-0.55, 1.48, zz, 3.3, 0.52, 0.04); glass(1.32, 1.42, zz, 0.62, 0.42, 0.04); }
+  glass(-2.47, 1.46, 0, 0.04, 0.5, 1.4);
+  glass(1.69, 1.52, 0, 0.92, 0.04, 1.5, Math.atan2(-0.74, 0.68));
+  const chrome = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.035, 1.9), new THREE.MeshBasicMaterial({ color: C('#d8c4a0', 1.0) })); chrome.position.set(-0.3, 1.2, 0); car.add(chrome);
+  const wheel = new THREE.CylinderGeometry(0.36, 0.36, 0.28, 14).rotateX(Math.PI / 2);
+  car.userData.wheels = [];
+  for (const [x, z] of [[1.55, 0.86], [1.55, -0.86], [-1.6, 0.86], [-1.6, -0.86]]) { const w = new THREE.Mesh(wheel, dark); w.position.set(x, 0.36, z); w.castShadow = true; car.add(w); car.userData.wheels.push(w); }
+  const lamps = (col) => new THREE.MeshBasicMaterial({ color: col });
+  car.userData.head = lamps(C('#fff1dc', 2.2)); car.userData.tail = lamps(C('#b4493a', 1)); car.userData.haz = lamps(C('#e0a24a', 1));
+  for (const z of [0.62, -0.62]) {
+    const h = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.42), car.userData.head); h.position.set(2.5, 0.86, z); car.add(h);
+    const t = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.32, 0.16), car.userData.tail); t.position.set(-2.5, 1.2, z * 1.22); car.add(t);
+    const a = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.2), car.userData.haz); a.position.set(2.46, 0.7, z * 1.32); car.add(a);
+  }
+  scene.add(car);
+}
+
+/* ---- architectural scale figures (instead of bean-head cards): legs swing, upper body bows */
+const CAP = new THREE.CapsuleGeometry(0.075, 0.66, 3, 8).translate(0, -0.4, 0);
+const ARM = new THREE.CapsuleGeometry(0.05, 0.52, 3, 6).translate(0, -0.3, 0);
+const TORSO = new THREE.CylinderGeometry(0.17, 0.15, 0.6, 10).translate(0, 0.3, 0);
+const SKIRT = new THREE.CylinderGeometry(0.155, 0.23, 0.55, 10).translate(0, -0.2, 0);
+const HEAD = new THREE.SphereGeometry(0.115, 12, 10);
+function figure(coat, legs, opt = {}) {
+  const mk = (c) => twoTone(new THREE.MeshLambertMaterial({ color: c, transparent: false }), HT, 'fig');
+  const mc = mk(coat), ml = mk(legs), mh = mk(opt.head ?? '#e9ddcc');
+  const g = new THREE.Group(), hips = new THREE.Group(), up = new THREE.Group();
+  hips.position.y = 0.86; g.add(hips); hips.add(up);
+  const L = new THREE.Mesh(CAP, ml), Rr = new THREE.Mesh(CAP, ml); L.position.x = 0.085; Rr.position.x = -0.085; hips.add(L, Rr);
+  up.add(new THREE.Mesh(TORSO, mc));
+  if (opt.coat) hips.add(new THREE.Mesh(SKIRT, mc));
+  const h = new THREE.Mesh(HEAD, mh); h.position.y = 0.76; up.add(h);
+  const aL = new THREE.Mesh(ARM, mc), aR = new THREE.Mesh(ARM, mc); aL.position.set(0.2, 0.56, 0); aR.position.set(-0.2, 0.56, 0); up.add(aL, aR);
+  if (opt.scarf) { const s = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.035, 6, 12).rotateX(Math.PI / 2), mk(opt.scarf)); s.position.y = 0.6; up.add(s); }
+  g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+  g.userData = { L, R: Rr, aL, aR, up, hips, mats: [mc, ml, mh] };
+  scene.add(g); return g;
+}
+function pose(f, x, z, face, walk, bow = 0, alpha = 1) {
+  const u = f.userData;
+  f.position.set(x, 0.19, z); f.rotation.y = face; f.visible = alpha > 0.02;
+  const sw = Math.sin(walk * Math.PI * 2), amp = walk === null ? 0 : 0.42;
+  const s = walk === null ? 0 : sw;
+  u.L.rotation.x = s * amp; u.R.rotation.x = -s * amp; u.aL.rotation.x = -s * amp * 0.6; u.aR.rotation.x = s * amp * 0.6;
+  u.hips.position.y = 0.86 + (walk === null ? 0 : Math.abs(Math.cos(walk * Math.PI * 2)) * 0.03);
+  u.up.rotation.x = bow;
+  for (const m of u.mats) { m.opacity = alpha; m.transparent = alpha < 0.999; }
+  f.traverse((m) => { if (m.isMesh) m.userData.nd = alpha < 0.6 ? 'skip' : 'ink'; });
+}
+const coord = figure('#3d3028', '#3d3028', { coat: true, scarf: '#cdb284' });
+const guest = figure('#d9ccb8', '#8b7a69', { coat: true });
+const suit = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.52, 0.22).translate(0, 0.3, 0), twoTone(new THREE.MeshLambertMaterial({ color: '#b9a17b' }), HT, 'fig'));
+suit.castShadow = true; scene.add(suit);
+const walkers = [
+  { f: figure('#8c7b6b', '#5b4938'), a: [-6.4, 26], b: [-6.4, 0], t0: 0, d: 19 },
+  { f: figure('#ece6dc', '#7a6a56', { coat: true }), a: [-7.4, -36], b: [-7.4, -12], t0: 6, d: 18 },
+  { f: figure('#6b5946', '#44352a'), a: [6.5, -44], b: [6.5, -16], t0: 3, d: 19 },
+  { f: figure('#c8bba8', '#6b5946', { coat: true }), a: [-6.5, 31.4], b: [6.2, 31.4], t0: 1.5, d: 10 },
+  { f: figure('#a39282', '#4d3f34'), a: [6.6, 40], b: [6.6, 60], t0: 9, d: 16 },
+];
+const stand = [figure('#7a6a56', '#44352a'), figure('#e3d8c6', '#7a6a56', { coat: true })];
+
+/* ---- the plane crossing the haze, with a fading contrail */
+const plane = new THREE.Group();
+{
+  const pm = new THREE.MeshBasicMaterial({ color: C('#8d7f75'), fog: false });
+  const fus = new THREE.CapsuleGeometry(0.75, 12, 4, 10).rotateZ(Math.PI / 2);
+  plane.add(new THREE.Mesh(fus, pm));
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.18, 16), pm); wing.position.x = 0.6; wing.rotation.y = 0.0; plane.add(wing);
+  const tail = new THREE.Mesh(new THREE.BoxGeometry(1.8, 2.6, 0.18), pm); tail.position.set(5.9, 1.3, 0); plane.add(tail);
+  const stab = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.14, 5.2), pm); stab.position.set(6, 0.3, 0); plane.add(stab);
+  plane.traverse((m) => { m.userData.nd = 'noink'; }); plane.scale.setScalar(1.5);
+  scene.add(plane);
+}
+const trailMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, fog: false, uniforms: { uA: { value: 0 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: 'uniform float uA; varying vec2 vUv; void main(){ float a = smoothstep(1.0, 0.0, vUv.x) * smoothstep(0.0, 0.04, vUv.x) * (1.0 - abs(vUv.y - 0.5) * 2.0); gl_FragColor = vec4(vec3(1.0, 0.98, 0.94) * 1.25, a * uA * 0.9); }' });
+const trail = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).translate(0.5, 0, 0), trailMat); trail.userData.nd = 'skip'; scene.add(trail);
+
+/* ---- falling ginkgo leaves (instanced fans), loop-exact: 13 m of fall per 20 s */
+const fan = (() => { const s = new THREE.Shape(); s.moveTo(0, 0); s.lineTo(-0.5, 0.62); s.quadraticCurveTo(-0.15, 0.86, -0.03, 0.72); s.lineTo(0, 0.6); s.lineTo(0.03, 0.72); s.quadraticCurveTo(0.15, 0.86, 0.5, 0.62); s.lineTo(0, 0); return new THREE.ShapeGeometry(s, 3).translate(0, -0.4, 0); })();
+const NLEAF = 110, leafMat = twoTone(new THREE.MeshLambertMaterial({ color: '#e0bd62', side: THREE.DoubleSide }), HT, 'leaf');
+const leaves = new THREE.InstancedMesh(fan, leafMat, NLEAF); leaves.userData.nd = 'noink'; leaves.frustumCulled = false; scene.add(leaves);
+const LD = []; { const r2 = rng(99); for (let i = 0; i < NLEAF; i++) LD.push({ x: -8 + r2() * 26, z: -16 + r2() * 66, y: r2() * 13, ph: r2() * 6.28, k: 1 + ((r2() * 4) | 0), s: 0.34 + r2() * 0.2, ax: new THREE.Vector3(r2() - 0.5, r2() - 0.5, r2() - 0.5).normalize() }); }
+
+/* ---- camera keys (CAMS): every segment is a smootherstep glide; "holds" are slow push-ins, never static */
+const K = {
+  out:   { p: [-3.0, 16.0, 80], l: [6.0, 3.5, -10] },
+  wide:  { p: [-3.4, 14.4, 70], l: [6.4, 3.0, -7] },
+  close: { p: [-15.6, 11.6, 30.5], l: [6.2, 2.3, -1.8] },
+  push:  { p: [-13.8, 10.7, 27.0], l: [6.4, 2.2, -1.6] },
+  back:  { p: [-4.2, 15.6, 76], l: [6.0, 3.4, -9] },
+};
+const SEGS = [[0, 4.6, 'out', 'wide'], [4.6, 8.6, 'wide', 'close'], [8.6, 13.6, 'close', 'push'], [13.6, 18.8, 'push', 'back'], [18.8, 20, 'back', 'out']];
+const camera = new THREE.PerspectiveCamera(30, 1.6, 0.5, 1400);
+let shift = [-0.2, 0.1], portrait = false;
+const look = new THREE.Vector3();
+function camAt(t) {
+  const s = SEGS.find((q) => t >= q[0] && t < q[1]) || SEGS[0];
+  const k = glide((t - s[0]) / (s[1] - s[0])), A = K[s[2]], Bk = K[s[3]];
+  const p = A.p.map((v, i) => lerp(v, Bk.p[i], k)), l = A.l.map((v, i) => lerp(v, Bk.l[i], k));
+  if (portrait) { const d = [p[0] - l[0], p[1] - l[1], p[2] - l[2]]; for (let i = 0; i < 3; i++) p[i] = l[i] + d[i] * 1.18; l[0] -= 0.6; }
+  camera.position.set(...p); look.set(...l); camera.lookAt(look);
+  camera.rotateZ(0.016 * bump(t, 4.6, 8.6) - 0.012 * bump(t, 13.6, 18.8)); // emphasis rolls, ~1° (motion.md rolls, scaled for calm)
+  camera.updateProjectionMatrix();
+  camera.projectionMatrix.elements[8] = shift[0]; camera.projectionMatrix.elements[9] = shift[1];
+  camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+  sky.position.copy(camera.position);
+}
+
+/* ---- story state per time (story.ts physics) */
+const STOP_Z = -1.8, LANE = 2.2, KERB = 3.6;
+function carZ(t) { if (t < 8.6) return STOP_Z - 235 * Math.pow(1 - t / 8.6, 2.5); if (t < 14.8) return STOP_Z; const u = seg(t, 14.8, 20); return STOP_Z + 115 * u * u; }
+function carX(t) { if (t < 8.6) return lerp(LANE, KERB, smooth(seg(t, 6.0, 8.5))); if (t < 14.8) return KERB; return lerp(KERB, LANE, smooth(seg(t, 15.0, 17.0))); }
+const W0 = [9.6, 1.4], M0 = [6.5, -0.4], G0 = [5.35, -2.1], DOOR = [11.2, -1.0], IN = [12.8, -1.0], DOOR2 = [11.2, -2.0], IN2 = [12.8, -2.0];
+const path = (pts, u) => { // piecewise-linear walk along points, u 0..1 by length
+  const L = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); L.push(d); tot += d; }
+  let s = clamp01(u) * tot; for (let i = 0; i < L.length; i++) { if (s <= L[i] || i === L.length - 1) { const k = L[i] ? s / L[i] : 0; return [lerp(pts[i][0], pts[i + 1][0], k), lerp(pts[i][1], pts[i + 1][1], k), Math.atan2(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]), tot]; } s -= L[i]; }
+};
+const bump = (t, a, b) => (t < a || t > b ? 0 : Math.sin(Math.PI * (t - a) / (b - a)) ** 2);
+let lastWheel = 0;
+function update(t) {
+  camAt(t);
+  stage.focus = camera.position.distanceTo(look) * 1.0;
+  // car
+  const z = carZ(t), x = carX(t), dz = carZ(Math.min(t + 0.05, 19.99)) - z, dx = carX(Math.min(t + 0.05, 19.99)) - x;
+  car.position.set(x, 0, z); car.rotation.y = -Math.PI / 2 + (Math.abs(dz) > 1e-4 ? Math.atan2(dx, dz) : 0);
+  car.visible = z > -260 && z < 74;
+  for (const w of car.userData.wheels) w.rotation.z = -z / 0.36;
+  const braking = t > 6.2 && t < 15.0, haz = t > 8.8 && t < 14.6 && (t * 1.6) % 1 < 0.5;
+  car.userData.tail.color.copy(C('#b4493a', braking ? 2.6 : 1.0)); car.userData.haz.color.copy(C('#e0a24a', haz ? 3.0 : 0.8));
+  // coordinator
+  if (t < 8.7) pose(coord, W0[0], W0[1], -Math.PI / 2 + Math.sin(t * 0.7) * 0.05, null);
+  else if (t < 10.0) { const [px, pz, a] = path([W0, M0], seg(t, 8.7, 10.0)); pose(coord, px, pz, a, (t - 8.7) * 1.9); }
+  else if (t < 11.5) { const a = Math.atan2(G0[0] - M0[0], G0[1] - M0[1]); pose(coord, M0[0], M0[1], a, null, bump(t, 10.15, 11.35) * 0.42); }
+  else if (t < 14.8) { const u = seg(t, 11.5, 14.8), [px, pz, a] = path([M0, DOOR, IN], u); pose(coord, px, pz, a, (t - 11.5) * 1.8, 0, 1 - seg(t, 14.1, 14.8)); }
+  else if (t < 16.6) pose(coord, IN[0], IN[1], 0, null, 0, 0);
+  else if (t < 19.0) { const [px, pz, a] = path([IN, DOOR, W0], seg(t, 16.6, 19.0)); pose(coord, px, pz, a, (t - 16.6) * 1.8, 0, seg(t, 16.6, 17.2)); }
+  else pose(coord, W0[0], W0[1], lerp(Math.atan2(W0[0] - DOOR[0], W0[1] - DOOR[1]), -Math.PI / 2, smooth(seg(t, 19.0, 19.8))), null);
+  // guest + suitcase
+  if (t < 9.5 || t > 14.8) { pose(guest, G0[0], G0[1], 0, null, 0, 0); suit.visible = false; }
+  else if (t < 11.5) { const k = seg(t, 9.5, 10.1), gx = lerp(4.75, G0[0], k); const a = t < 10.1 ? Math.PI / 2 : Math.atan2(M0[0] - G0[0], M0[1] - G0[1]);
+    pose(guest, gx, G0[1], a, t < 10.1 ? (t - 9.5) * 1.8 : null, bump(t, 10.35, 11.2) * 0.2, seg(t, 9.5, 9.8)); suit.visible = t > 9.9; suit.position.set(gx - 0.05, 0.19, G0[1] - 0.42); suit.rotation.y = 0; }
+  else { const u = seg(t, 11.5, 14.8), [px, pz, a] = path([G0, DOOR2, IN2], u), al = 1 - seg(t, 14.1, 14.8);
+    pose(guest, px, pz, a, (t - 11.5) * 1.8, 0, al); suit.visible = al > 0.5; suit.position.set(px - Math.sin(a) * 0.5 + Math.cos(a) * 0.2, 0.19, pz - Math.cos(a) * 0.5 - Math.sin(a) * 0.2); suit.rotation.y = a; }
+  // passers-by (fade at the ends of their paths so the loop never pops)
+  for (const w of walkers) {
+    const u = (((t - w.t0) % LOOP) + LOOP) % LOOP / w.d;
+    if (u > 1) { w.f.visible = false; continue; }
+    const px = lerp(w.a[0], w.b[0], u), pz = lerp(w.a[1], w.b[1], u), a = Math.atan2(w.b[0] - w.a[0], w.b[1] - w.a[1]);
+    pose(w.f, px, pz, a, u * w.d * 1.75, 0, Math.min(1, u / 0.06, (1 - u) / 0.06));
+  }
+  pose(stand[0], -8.4, 4.6, Math.PI / 2 + 0.5, null, Math.sin(t * 1.3) * 0.03); pose(stand[1], -7.6, 5.3, -Math.PI / 2 - 0.9 + 0.3, null, 0.04 + Math.sin(t * 1.1 + 1) * 0.03);
+  // plane + contrail (beat 01)
+  const pu = seg(t, 0.2, 9.2);
+  plane.visible = pu > 0 && pu < 1; plane.position.set(lerp(300, -320, pu), 47 + pu * 6, -390); plane.rotation.set(0, 0, 0.04);
+  trail.position.copy(plane.position).add(new THREE.Vector3(11, 0.3, 0)); trail.scale.set(Math.max(0.01, Math.min(300, (300 - plane.position.x) * 0.85)), 0.8, 1);
+  trailMat.uniforms.uA.value = plane.visible ? 1 - seg(t, 7.5, 9.2) : 0;
+  // leaves
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+  for (let i = 0; i < NLEAF; i++) {
+    const d = LD[i], y = 13 - (((d.y + 0.65 * t) % 13) + 13) % 13, a = 2 * Math.PI * t / LOOP;
+    ps.set(d.x + Math.sin(a * d.k + d.ph) * 0.9 + Math.sin(a * 2 + d.ph) * 0.3, y, d.z + Math.cos(a * d.k + d.ph) * 0.6);
+    q.setFromAxisAngle(d.ax, d.ph + a * d.k * 2);
+    const s = d.s * Math.min(1, y / 0.8, (13 - y) / 1.2); sc.set(s, s, s);
+    leaves.setMatrixAt(i, m4.compose(ps, q, sc));
+  }
+  leaves.instanceMatrix.needsUpdate = true;
+  // clouds drift + gold-leaf glint sweep
+  for (const c of clouds) { const [x, y, z, ph] = c.userData.base; c.position.set(x + Math.sin(2 * Math.PI * t / LOOP + ph) * 2.2, y + Math.sin(2 * Math.PI * t / LOOP * 2 + ph) * 0.25, z); }
+  cloudMat.uniforms.uSweep.value = -0.6 + 2.4 * ((t % 10) / 10);
+}
+const stage = new Stage(document.getElementById('heroCanvas'), {
+  scene, camera, maxDpr: 1.5,
+  post: { ink: '#4a382b', inkA: 0.78, inkW: 1.05, crease: 0.8, fogCol: '#ead4b8', fog: [75, 520], cInf: 5.5, near: 1.5, maxCoC: 9, band: [2.2, 0.62],
+    bloom: 0.55, bloomThr: 1.0, lift: [0.035, 0.03, 0.03], tintS: [0.004, -0.004, 0.018], tintH: [0.012, 0.004, -0.012], sat: 0.96, vig: 0.08, expo: 1.0 },
+  onResize(w, h, W, H) {
+    camera.aspect = w / h; portrait = w / h < 1.15;
+    camera.fov = portrait ? 38 : (w / h > 1.9 ? 26 : 30);
+    shift = portrait ? [0, 0.1] : [-0.3, 0.1];
+    cloudMat.uniforms.uRes.value.set(W, H);
+  },
+});
+stage.cInf = 5.5;
+stage.collect();
+hero.stage = stage; hero.update = update; hero.cloudMat = cloudMat;
+}
+
+/* ================================================================== SHŌ: 灯 — the lantern by the clinic door, seen from inside at dusk.
+   Same world, same two-tone/ink/lens pipeline. Hovering a question makes it "speak": the light swells in a voice rhythm,
+   gold motes rise, the evening sun through the koshi lattice dims so the lantern carries the room. */
+const sho = {};
+{
+const scene = new THREE.Scene();
+const T = makeTone({ lit: [1.55, 1.12, 0.78], shade: [0.26, 0.19, 0.15], lift: [0.012, 0.008, 0.006], lambert: 0.4, sideK: 0.8, term: 0.12, sat: 1.0, pointK: 1.0 });
+const C = (hex, k = 1) => new THREE.Color(hex).multiplyScalar(k);
+const paper = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true }), T, 'sv');
+const flat = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), T, 'sf');
+const B = new Batch();
+// room: tatami with coffee borders, plaster walls, a koshi lattice window in the back wall facing the evening sun
+B.add('paper', new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), '#dccfae', TR(0, 0, 0, 0, 9, 1, 9));
+for (const x of [-1.85, 0.05, 1.95]) box(B, 'paper', '#4a3a2e', x, 0.004, 0, 0.07, 0.01, 9);
+box(B, 'paper', '#4a3a2e', 0, 0.004, 0.75, 9, 0.01, 0.07);
+const WALL = '#ece4d7', WZ = -2.2, O0 = -0.25, O1 = 1.95, OY0 = 0.6, OY1 = 2.3;
+box(B, 'paper', WALL, (-4.5 + O0) / 2, 0, WZ, O0 + 4.5, 3.2, 0.18); box(B, 'paper', WALL, (O1 + 4.5) / 2, 0, WZ, 4.5 - O1, 3.2, 0.18);
+box(B, 'paper', WALL, (O0 + O1) / 2, 0, WZ, O1 - O0, OY0, 0.18); box(B, 'paper', WALL, (O0 + O1) / 2, OY1, WZ, O1 - O0, 3.2 - OY1, 0.18);
+box(B, 'paper', '#e8dfd1', -2.7, 0, 0, 0.18, 3.2, 9); box(B, 'paper', '#e8dfd1', 2.9, 0, 0, 0.18, 3.2, 9);
+box(B, 'paper', '#5b4938', 0, 0, WZ + 0.1, 9, 0.1, 0.04);
+for (let x = O0 + 0.07; x < O1 - 0.04; x += 0.13) box(B, 'paper', '#5e4636', x, OY0, WZ + 0.02, 0.045, OY1 - OY0, 0.07);
+for (const y of [OY0, OY0 + 0.86, OY1 - 0.05]) box(B, 'paper', '#5e4636', (O0 + O1) / 2, y, WZ + 0.02, O1 - O0, 0.05, 0.09);
+box(B, 'paper', '#5e4636', (O0 + O1) / 2, OY0 - 0.06, WZ + 0.1, O1 - O0 + 0.2, 0.06, 0.3);
+// outside the lattice: the avenue's ginkgo crowns in the haze (same world)
+B.add('flat', CANOPY_S(4), '#d4ae5c', TR(0.4, 1.5, -6.5, 0.5, 1.4, 2.2, 1.4)); B.add('flat', CANOPY_S(9), '#c9a050', TR(2.6, 1.2, -8, 1, 1.6, 2.6, 1.6));
+// a vase with a ginkgo branch in the corner
+B.add('paper', new THREE.CylinderGeometry(0.09, 0.13, 0.4, 14), '#3f332b', TR(2.2, 0.2, -1.75));
+B.add('paper', new THREE.CylinderGeometry(0.007, 0.011, 1, 5).translate(0, 0.5, 0), '#5b4938', TR(2.2, 0.38, -1.75, 0, 1, 1.15, 1, 0.1, 0.32));
+{ const r2 = rng(42), fanG = new THREE.CircleGeometry(0.065, 6, 0, Math.PI * 0.9);
+  for (let i = 0; i < 22; i++) { const k = 0.4 + r2() * 0.65; B.add('flat', fanG, ['#d9b45c', '#cfa553', '#e0c27a'][i % 3], TR(2.2 - Math.sin(0.32) * k * 1.15 + (r2() - 0.5) * 0.28, 0.38 + k * 1.1 + (r2() - 0.5) * 0.18, -1.75 + 0.1 * k + (r2() - 0.5) * 0.22, r2() * 6, 1, 1, 1, r2() * 3, r2() * 3)); } }
+// a low tray with a folded document
+box(B, 'paper', '#5b4938', 0.9, 0, -0.2, 0.84, 0.05, 0.5); box(B, 'paper', '#f2ede4', 0.9, 0.05, -0.2, 0.46, 0.02, 0.33);
+const mP = B.mesh('paper', paper), mF = B.mesh('flat', flat);
+mP.castShadow = mP.receiveShadow = true; mF.castShadow = true; scene.add(mP, mF);
+
+// the lantern: a washi ovoid on a lathe, bamboo ribs, three slender legs
+const LX = -0.95, LZ = -1.15;
+const lantern = new THREE.Group(); lantern.position.set(LX, 0, LZ); lantern.scale.setScalar(1.3); scene.add(lantern);
+const prof = []; for (let i = 0; i <= 24; i++) { const v = i / 24, y = 0.36 + v * 0.62; prof.push(new THREE.Vector2(0.03 + 0.24 * Math.sin(Math.PI * Math.pow(v, 0.92)) + (v > 0.97 ? 0.0 : 0), y)); }
+const washiTex = (() => { const cv = document.createElement('canvas'); cv.width = 64; cv.height = 512; const g = cv.getContext('2d'), r2 = rng(8);
+  g.fillStyle = '#fff6e6'; g.fillRect(0, 0, 64, 512);
+  for (let i = 0; i < 260; i++) { g.strokeStyle = `rgba(214,190,150,${r2() * 0.25})`; g.beginPath(); const x = r2() * 64, y = r2() * 512; g.moveTo(x, y); g.lineTo(x + (r2() - 0.5) * 10, y + 8 + r2() * 30); g.stroke(); }
+  for (let k = 1; k < 12; k++) { g.fillStyle = 'rgba(120,84,52,0.55)'; g.fillRect(0, k * 512 / 12 - 2, 64, 4); }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; return t; })();
+const washi = new THREE.MeshBasicMaterial({ map: washiTex, color: C('#ffd9a6', 1.6), side: THREE.DoubleSide });
+const globe = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), washi); lantern.add(globe);
+const wood = twoTone(new THREE.MeshLambertMaterial({ color: '#4d3a2c' }), T, 'sw');
+for (const [y, r] of [[0.37, 0.06], [0.975, 0.045]]) { const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.012, 6, 24).rotateX(Math.PI / 2), wood); ring.position.y = y; lantern.add(ring); }
+for (let i = 0; i < 3; i++) { const a = i * 2.094; const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.42, 6), wood); leg.position.set(Math.cos(a) * 0.12, 0.2, Math.sin(a) * 0.12); leg.rotation.set(Math.sin(a) * 0.28, 0, -Math.cos(a) * 0.28); lantern.add(leg); }
+const foot = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.012, 6, 30).rotateX(Math.PI / 2), wood); foot.position.y = 0.012; lantern.add(foot);
+lantern.traverse((m) => { if (m.isMesh && m !== globe) m.castShadow = true; });
+const bulb = new THREE.PointLight(0xffc98a, 2.4, 0, 2); bulb.position.set(LX, 0.9, LZ); scene.add(bulb);
+// a floor halo (additive) to read the light pool under the lantern
+const halo = new THREE.Mesh(new THREE.CircleGeometry(1.2, 48).rotateX(-Math.PI / 2), new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uK: { value: 0.3 } }, vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+  fragmentShader: 'uniform float uK; varying vec2 vUv; void main(){ float d = length(vUv - 0.5) * 2.0; gl_FragColor = vec4(vec3(1.0, 0.72, 0.42) * uK * pow(1.0 - clamp(d, 0.0, 1.0), 2.2), 1.0); }' }));
+halo.position.set(LX, 0.01, LZ); halo.userData.nd = 'skip'; scene.add(halo);
+// evening sun through the lattice
+const sunDir = new THREE.Vector3(0.22, 0.34, -0.91).normalize();
+const sun = new THREE.DirectionalLight(0xffffff, 1); sun.position.copy(sunDir).multiplyScalar(10); sun.target.position.set(0, 0, 0);
+sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 30 });
+sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.02; scene.add(sun, sun.target);
+// outside the lattice: warm haze
+const out = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), new THREE.ShaderMaterial({ uniforms: {}, vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }', fragmentShader: 'varying vec2 vUv; void main(){ vec3 a = vec3(1.0, 0.70, 0.42) * 1.5, b = vec3(0.98, 0.86, 0.7) * 1.1; gl_FragColor = vec4(mix(a, b, smoothstep(0.25, 0.75, vUv.y)), 1.0); }' })); out.position.set(1, 2, -10); out.userData.nd = 'skip'; scene.add(out);
+// motes: dust in the beam, gold sparks when SHŌ speaks
+const NM = 44, mg = new THREE.BufferGeometry(), mpos = new Float32Array(NM * 3), mseed = [];
+{ const r2 = rng(17); for (let i = 0; i < NM; i++) mseed.push([r2(), r2(), r2(), r2()]); }
+mg.setAttribute('position', new THREE.BufferAttribute(mpos, 3));
+const motes = new THREE.Points(mg, new THREE.PointsMaterial({ color: C('#ffd79a', 1.6), size: 0.016, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending }));
+scene.add(motes);
+
+const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 40);
+let speak = 0, speakT = 0, target = 0, shiftY = -0.2;
+function update(t, dt) {
+  speak += (target - speak) * Math.min(1, dt * 3.2);
+  // creeping push-in (no static hold), a slow sway around the lantern
+  const a = Math.sin(t * 0.11) * 0.1;
+  camera.position.set(-0.55 + Math.sin(a) * 2.6, 1.22 - speak * 0.04, 2.9 - speak * 0.3);
+  camera.lookAt(-0.3, 0.95, -1.4);
+  camera.updateProjectionMatrix(); camera.projectionMatrix.elements[9] = shiftY; camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+  const breathe = 0.88 + 0.07 * Math.sin(t * 1.4);
+  const voice = speakT > 0 ? 0.18 * (Math.sin(t * 13.0) * 0.5 + Math.sin(t * 7.3 + 1.0) * 0.35 + Math.sin(t * 21.0) * 0.15) : 0;
+  const k = breathe + speak * 0.32 + voice;
+  washi.color.copy(C('#ffd9a6', 1.12 * k));
+  bulb.intensity = 2.3 * k * k;
+  halo.material.uniforms.uK.value = 0.16 * k;
+  T.uLitCol.value.set(1.55, 1.12, 0.78).multiplyScalar(1 - speak * 0.32);
+  lantern.rotation.y = t * 0.08;
+  for (let i = 0; i < NM; i++) {
+    const s = mseed[i], gold = i < 14;
+    if (gold) { const life = ((t * (0.16 + s[3] * 0.1) + s[0]) % 1); const r = 0.1 + life * 0.28 * (0.5 + speak);
+      mpos[i * 3] = LX + Math.cos(s[1] * 6.28 + t * 0.5) * r; mpos[i * 3 + 1] = 1.3 + life * (0.3 + speak * 0.9); mpos[i * 3 + 2] = LZ + Math.sin(s[1] * 6.28 + t * 0.5) * r; }
+    else { mpos[i * 3] = O0 + s[0] * (O1 - O0) + s[2] * 0.6; mpos[i * 3 + 1] = 0.5 + ((s[1] * 1.8 + t * 0.025 * (s[2] + 0.5)) % 1.8); mpos[i * 3 + 2] = WZ + 0.3 + s[2] * 3.0 + Math.sin(t * 0.3 + s[3] * 6) * 0.08; }
+  }
+  mg.attributes.position.needsUpdate = true;
+  motes.material.opacity = 0.55 + speak * 0.4;
+  stage.focus = camera.position.distanceTo(lantern.position.clone().setY(0.9));
+  out.position.x = 1 + camera.position.x * 0.4;
+}
+const stage = new Stage(document.getElementById('shoCanvas'), {
+  scene, camera, maxDpr: 1.75,
+  post: { ink: '#2a1f18', inkA: 0.7, inkW: 1.0, crease: 0.75, fogCol: '#2c231d', fog: [40, 80], cInf: 7, near: 1.4, maxCoC: 10, band: [0, 1],
+    bloom: 0.9, bloomThr: 0.95, lift: [0.03, 0.022, 0.018], tintS: [0.01, 0.0, 0.012], tintH: [0.014, 0.004, -0.014], sat: 0.98, vig: 0.22, expo: 1.06 },
+  onResize(w, h) { camera.aspect = w / h; camera.fov = w / h < 0.9 ? 46 : 40; shiftY = w / h < 0.9 ? -0.3 : -0.2; },
+});
+stage.collect();
+sho.stage = stage; sho.update = update;
+sho.say = (on) => { target = on ? 1 : 0; speakT = on ? 1 : 0; };
+sho.quiet = () => { speakT = 0; };
+}
+
+/* ================================================================== page wiring */
+const hdr = document.getElementById('hdr');
+const onScroll = () => hdr.classList.toggle('scrolled', scrollY > 40);
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+const drawer = document.getElementById('drawer'), mOpen = document.getElementById('menuOpen'), mClose = document.getElementById('menuClose');
+const setMenu = (o) => { drawer.classList.toggle('open', o); mOpen.setAttribute('aria-expanded', String(o)); document.body.style.overflow = o ? 'hidden' : ''; if (o) mClose.focus(); else mOpen.focus(); };
+mOpen.addEventListener('click', () => setMenu(true)); mClose.addEventListener('click', () => setMenu(false));
+drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.classList.contains('open')) setMenu(false); });
+
+// the floating contact button waits until the short has scrolled away (it would sit on the film chrome)
+const fab = document.querySelector('.fab'); fab.classList.add('away');
+new IntersectionObserver((es) => fab.classList.toggle('away', es[0].isIntersecting), { threshold: 0.35 }).observe(document.getElementById('hero'));
+
+// services: hover swaps the photo
+const svcImgs = [...document.querySelectorAll('#svcPhoto img')], svcLinks = [...document.querySelectorAll('#svcList a')];
+svcLinks.forEach((a) => { const on = () => { svcLinks.forEach((x) => x.classList.toggle('on', x === a)); svcImgs.forEach((im, i) => im.classList.toggle('on', i === +a.dataset.i)); }; a.addEventListener('mouseenter', on); a.addEventListener('focus', on); });
+
+// SHŌ answers (process only — no medical judgement; taken from the support copy)
+const ANSWERS = [
+  'まずは、これまでの検査結果と今回の受診目的をお知らせください。専任担当者がご希望を整理し、医療機関の選定と予約の流れをご案内します。',
+  '受診場所と予約日時に合わせて、滞在日程の調整をお手伝いします。同じ日程に入れられるかは、医療機関の判断と予約状況を確認してからご案内します。',
+  '来院から退出まで担当者が同席し、医師の説明はその場で中国語・英語・日本語に通訳します。空港送迎や医療機関間の移動もご相談いただけます。',
+];
+if (matchMedia('(max-width: 980px)').matches) document.getElementById('replyA').textContent = '下の質問をタップしてください。';
+const qs = [...document.querySelectorAll('#qs .q')], reply = document.getElementById('reply'), rA = document.getElementById('replyA'), rQ = document.getElementById('replyQ'), rS = document.getElementById('replyState');
+let typing = null, current = -1;
+function ask(i) {
+  if (i === current) return; current = i;
+  qs.forEach((q, k) => q.classList.toggle('active', k === i));
+  rQ.textContent = qs[i].querySelector('.t').textContent;
+  rS.textContent = '回答しています'; reply.classList.add('speaking'); sho.say(true);
+  clearInterval(typing);
+  const text = ANSWERS[i];
+  if (REDUCED) { rA.textContent = text; done(); return; }
+  let n = 0; rA.innerHTML = '<span class="caret"></span>';
+  typing = setInterval(() => { n += 2; rA.innerHTML = text.slice(0, n) + '<span class="caret"></span>'; if (n >= text.length) { clearInterval(typing); rA.textContent = text; done(); } }, 42);
+  function done() { reply.classList.remove('speaking'); rS.textContent = '回答例'; sho.quiet(); }
+}
+qs.forEach((q, i) => { q.addEventListener('mouseenter', () => ask(i)); q.addEventListener('focus', () => ask(i)); q.addEventListener('click', (e) => { e.preventDefault(); ask(i); }); });
+document.getElementById('qs').addEventListener('mouseleave', () => sho.say(false));
+
+// film chrome: beat bars + play/pause
+const beatEls = [...document.querySelectorAll('#beats .beat')], playBtn = document.getElementById('play');
+function beatsAt(t) {
+  beatEls.forEach((el, i) => { const k = clamp01((t - BEATS[i]) / (BEATS[i + 1] - BEATS[i])); el.querySelector('i').style.transform = `scaleX(${t >= BEATS[i + 1] ? 1 : k})`; el.classList.toggle('on', t >= BEATS[i] && t < BEATS[i + 1]); });
+}
+const HS = hero.stage, SS = sho.stage;
+HS.time = FIXED_T ?? (REDUCED ? 10.6 : 0); if (FIXED_T !== null) HS.playing = false;
+if (REDUCED) { playBtn.setAttribute('aria-pressed', 'false'); playBtn.setAttribute('aria-label', 'アニメーションを再生'); }
+playBtn.addEventListener('click', () => { HS.playing = !HS.playing; playBtn.setAttribute('aria-pressed', String(HS.playing)); playBtn.setAttribute('aria-label', HS.playing ? 'アニメーションを一時停止' : 'アニメーションを再生'); HS.dirty = true; });
+SS.time = 2; SS.playing = !REDUCED;
+
+let last = performance.now(), ema = 16, count = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (document.hidden) return;
+  let drew = false;
+  for (const [st, up, loop] of [[HS, hero.update, LOOP], [SS, sho.update, 0]]) {
+    if (!st.onscreen) continue;
+    if (st.playing) st.time = loop ? (st.time + dt) % loop : st.time + dt;
+    else if (!st.dirty && !(st === SS && REDUCED && st.needs)) continue;
+    up(st.time, dt); st.render(); st.dirty = false; st.needs = false; drew = true;
+    if (st === HS) beatsAt(st.time);
+  }
+  if (drew) { ema = ema * 0.95 + (dt * 1000) * 0.05; count++;
+    if (count > 120 && ema > 21) { for (const st of [HS, SS]) if (st.dpr > 1) { st.dpr = Math.max(1, st.dpr - 0.25); st.resize(); } ema = 16; count = 60; } }
+}
+// reduced motion: still let the lantern answer, but by stepping its light, not animating
+if (REDUCED) qs.forEach((q) => { const f = () => { SS.dirty = true; setTimeout(() => { SS.dirty = true; }, 400); }; q.addEventListener('mouseenter', f); q.addEventListener('focus', f); });
+if (QS.has('ask')) setTimeout(() => ask(+QS.get('ask')), 300);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

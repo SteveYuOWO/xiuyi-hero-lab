@@ -1,0 +1,11 @@
+{
+  "id": "v08",
+  "slug": "guizang-ppt",
+  "tool": "guizang-ppt-skill（歸藏 · 杂志风 × 瑞士风网页 PPT）",
+  "repo": "https://github.com/op7418/guizang-ppt-skill",
+  "title": "杂志跨页·动态排版",
+  "concept": "首页按杂志的六个「跨页」排版：首屏是封面——12 栏网格细线逐列落下，东京塔客房照片在带裁切标记的精确矩形里像幕布一样从一条细线展开，超大明朝体标题逐字从基线升起，之后字重像光一样扫过字符、鼠标附近笔画变粗，下方服务名滚动。SHŌ 区是一篇「访谈」跨页：问题用巨号明朝体逐字浮现，SHŌ 的回答作为正文逐字排出（新字先带香槟色再沉为正文色），三个问题可点选切换并自动轮播。",
+  "fromTool": "取自该 skill 的杂志风/瑞士风规则：每屏一个 spread、chrome 页眉 + 页码 NN / 06、标题衬线 / 正文无衬线 / 元数据等宽的分工、12 栏网格与发丝线、「越大越细」的字重阶梯与 min(vw,vh) 双约束字号、亮暗主题交替节奏、每页一个语义化动效 recipe（cascade / quote / pipeline）与其 EASE 曲线，以及瑞士模板的 B 键低功耗开关；品牌主题用仓库自带的 gz-theme.mjs 由 logo 咖啡色 #5b4938 推导。",
+  "tech": "原生 HTML/CSS + Web Animations API + Canvas 2D（点阵）+ 可变字重 Noto Serif JP + Intl.Segmenter 分词",
+  "is3d": false
+}

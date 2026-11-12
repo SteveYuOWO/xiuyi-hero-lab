@@ -1,0 +1,11 @@
+{
+  "id": "v12",
+  "slug": "remotion",
+  "tool": "Remotion skills",
+  "repo": "https://github.com/remotion-dev/skills",
+  "title": "逐帧编排的就诊旅程",
+  "concept": "首屏是一段用 Remotion 逐帧编排的动态图形：表盘般的细线圆环上，播放头以弹簧缓动依次走过 相談→医療機関のマッチング→来日・送迎→同行・通訳→報告書→帰国後フォロー 六站，每站有线描插画、逐字升起的明朝体标题，最后圆环闭合并收回起点，无缝循环；下方是可点击的章节时间轴与时码。SHŌ 区是另一段合成：SHŌ 逐字输入问题、高亮关键词、思考、再以弹簧滑入结构化答卡，点击其他问题时冻结旧答案淡出并重新编排。",
+  "fromTool": "取自 remotion-markup 规则：一切画面都是 useCurrentFrame() 的纯函数，用 interpolate（clamp）、Easing.bezier(0.16,1,0.3,1) 和 spring({damping:200}) 驱动，章节用 <Sequence>，切换问题用 <Freeze>，用独立的 scale/translate/rotate，合成内不用 CSS 动画；并遵循 video-layout 的安全区与最小字号规则，手机端换用不同合成尺寸。",
+  "tech": "React 18.3.1 + remotion 4.0.539 + @remotion/player 4.0.539 <Thumbnail>（esm.sh）+ htm，SVG 线描，requestAnimationFrame 帧时钟",
+  "is3d": false
+}

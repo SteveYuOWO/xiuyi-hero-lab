@@ -1,0 +1,1184 @@
+<!doctype html>
+<!-- v10 · HyperFrames (HeyGen) · https://github.com/heygen-com/hyperframes
+     Decisions taken from the tool:
+     - The hero and the SHŌ panel are HyperFrames-style compositions: a root with data-composition-id / data-duration,
+       timed children with class="clip" + data-start / data-duration, ONE paused GSAP timeline per composition registered
+       on window.__timelines[id], fromTo-only tweens, no timers / Date.now / random / repeat:-1. A tiny inline runtime
+       (HF-lite) does what the HyperFrames runtime does: it seeks the paused timeline from a clock and toggles each clip's
+       visibility over its half-open window [start, end) (a clip that runs to the end owns the last frame).
+     - SPEC written before building (references/spec.md):
+       GOAL   the visitor arrives at night and is guided into a calm, lit morning; the film ends on a dead-still hero.
+       TIME   hero 10.0 s, SHŌ 9.6 s, support thread 2.6 s.
+       LOOK   one medium: a single photograph exposed from pre-dawn to morning. Paper #e6e2db (2% fibre noise), night
+              #120d0a, ink #44352a, coffee #5b4938, champagne #b9a17b only for the thread / rules / light.
+              Shippori Mincho 500 (H1 58px desktop / 32px mobile, palt, .04em), Cormorant Garamond 600 for XIUYI / SHŌ.
+       MOTION arrivals expo.out, camera power2/power3.inOut, constant-speed pen = sine.inOut; letters 35–45 ms apart,
+              phrases 70 ms; landed titles never move again (motion.md "Titles").
+       SHOTS  0–2.8 pre-dawn push + masked title · 2.8–5.2 dawn light sweeps L→R and writes line 2 · 4.6–7.2 the
+              champagne journey draws through four stations · 7.3–8.9 "arrival" pull-back: the photograph contracts into
+              its panel while paper floods in, text splits ink / light exactly at the photo edge · 8.4–9.6 sub + CTAs.
+       BANNED glow orbs, particles, lens flares, idle breathing loops, pill chips, mono caps labels, 01/02 numbering,
+              everything fading-and-sliding up, titles that drift after landing, crossfading two worlds.
+     - Transitions with a cause (motion.md): the dawn light causes the day plate; the thread of SHŌ's answer is drawn
+       out of the macron of its name (carrier; the macron itself never leaves the Ō); the typed question is carried
+       from the composer into its bubble (morph).
+     - Rendered like HyperFrames renders: hero-opening.mp4 was made by seeking the paused hero timeline frame by frame
+       (30 fps) in headless Chrome and encoding with ffmpeg; the page itself plays the live composition.
+     - The hero opening is skippable, replayable, pauses offscreen / in hidden tabs, and rests statically for
+       prefers-reduced-motion. -->
+<html lang="ja"
+  data-composition-variables='[{"id":"color-ground","type":"color","label":"Paper","default":"#e6e2db"},{"id":"color-ink","type":"color","label":"Ink","default":"#44352a"},{"id":"color-accent","type":"color","label":"Champagne","default":"#b9a17b"},{"id":"font-display","type":"string","label":"Display","default":"Shippori Mincho"}]'>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜東京の医療コンシェルジュ</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  // The opening only runs when motion is welcome; otherwise the page paints its resting hero directly.
+  (function () {
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!calm) {
+      document.documentElement.classList.add('hf-intro');
+      // Safety: if the timeline never starts (CDN blocked), fall back to the resting hero.
+      setTimeout(function () { if (!window.__heroStarted) document.documentElement.classList.remove('hf-intro'); }, 6000);
+    }
+  })();
+</script>
+<style>
+:root{
+  --paper:#e6e2db; --paper-warm:#f3f0ea; --white:#fff;
+  --coffee:#5b4938; --ink:#44352a; --muted:#6b5946; --logo:#7a6a56;
+  --champagne:#b9a17b; --champagne-soft:rgba(185,161,123,.55);
+  --night:#120d0a; --night-2:#2a211a; --night-3:#3a2e25;
+  --light:#f4ede2; --light-muted:rgba(244,237,226,.74);
+  --line:rgba(68,53,42,.16);
+  --gutter:96px; --max:1440px;
+  --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --latin:"Cormorant Garamond","Shippori Mincho",serif;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --noise:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .27  0 0 0 0 .21  0 0 0 0 .16  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--mincho);font-size:16px;line-height:1.9;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0;background-image:var(--noise);opacity:.045;pointer-events:none;z-index:100}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+h1,h2,h3,h4{font-weight:500;margin:0;font-feature-settings:"palt";text-wrap:balance;letter-spacing:.04em;word-break:auto-phrase}
+p{margin:0;word-break:auto-phrase;text-wrap:pretty;line-break:strict}
+.latin{font-family:var(--latin)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:1px solid var(--coffee);outline-offset:4px;border-radius:4px}
+
+/* ---------- section label ---------- */
+.label{display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:.24em;color:var(--muted);font-feature-settings:"palt"}
+.label::before{content:"";width:34px;height:1px;background:var(--champagne)}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:16px;height:54px;padding:0 26px;border-radius:8px;font-size:14px;letter-spacing:.16em;
+  font-feature-settings:"palt";transition:background-color .25s,border-color .25s,color .25s;white-space:nowrap}
+.btn svg{width:20px;height:10px;flex:none;transition:transform .3s var(--ease-out)}
+.btn:hover svg{transform:translateX(4px)}
+.btn-primary{background:var(--coffee);color:#f7f2ea}
+.btn-primary:hover{background:var(--ink)}
+.btn-ghost{border:1px solid rgba(91,73,56,.42);color:var(--coffee)}
+.btn-ghost:hover{border-color:var(--coffee)}
+.arrow{stroke:currentColor;fill:none;stroke-width:1.2}
+
+/* ---------- header ---------- */
+.site-header{--h-ink:var(--ink);position:fixed;top:0;left:0;right:0;z-index:20;height:88px;color:var(--h-ink);
+  transition:background-color .35s,box-shadow .35s}
+.site-header .bar{max-width:var(--max);margin:0 auto;height:100%;padding:0 var(--gutter);display:flex;align-items:center;gap:40px}
+.brand{display:flex;align-items:center;gap:14px;flex:none}
+.brand img{width:46px;height:46px}
+.brand .wordmark{font-family:var(--latin);font-weight:600;font-size:21px;letter-spacing:.34em;padding-left:2px}
+.nav-main{display:flex;gap:44px;margin-left:auto;font-size:15px;letter-spacing:.2em;font-feature-settings:"palt"}
+.nav-main a{position:relative;padding:6px 0}
+.nav-main a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease-out)}
+.nav-main a:hover::after{transform:scaleX(1)}
+.nav-main .latin{font-size:17px;font-weight:600;letter-spacing:.12em}
+.nav-tools{display:flex;align-items:center;gap:30px;margin-left:56px;font-size:14px;letter-spacing:.14em}
+.lang{display:flex;align-items:center;gap:6px;position:relative}
+.lang svg{width:9px;height:6px}
+.lang-pop{position:absolute;top:calc(100% + 12px);right:-14px;background:var(--paper-warm);color:var(--ink);border-radius:8px;padding:8px;min-width:140px;
+  box-shadow:0 18px 40px rgba(40,28,18,.14);display:none;flex-direction:column;letter-spacing:.08em}
+.lang-pop a{padding:8px 12px;border-radius:6px}
+.lang-pop a:hover{background:rgba(91,73,56,.07)}
+.lang-pop a[aria-current]{color:var(--coffee);font-weight:600}
+.lang[aria-expanded=true] + .lang-pop,.lang-wrap.open .lang-pop{display:flex}
+.lang-wrap{position:relative}
+.menu-btn{display:flex;align-items:center;gap:14px}
+.menu-btn i{display:block;width:26px;height:9px;border-top:1px solid currentColor;border-bottom:1px solid currentColor}
+.site-header.is-scrolled{background:rgba(230,226,219,.96);box-shadow:0 1px 0 var(--line)}
+.site-header.is-night{--h-ink:var(--light)}
+.site-header.is-night .brand img{filter:brightness(0) invert(1);opacity:.92}
+
+/* mobile menu */
+.menu-panel{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding:22px 24px 32px;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.menu-panel.open{opacity:1;visibility:visible;transition:opacity .3s}
+.menu-panel .mp-top{display:flex;justify-content:space-between;align-items:center}
+.menu-panel .mp-close{display:flex;align-items:center;gap:12px;font-size:14px;letter-spacing:.14em}
+.menu-panel .mp-close i{position:relative;width:22px;height:22px}
+.menu-panel .mp-close i::before,.menu-panel .mp-close i::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:currentColor;transform:rotate(45deg)}
+.menu-panel .mp-close i::after{transform:rotate(-45deg)}
+.menu-panel nav{display:flex;flex-direction:column;margin-top:48px;border-top:1px solid var(--line)}
+.menu-panel nav a{display:flex;justify-content:space-between;align-items:center;padding:20px 4px;font-size:22px;letter-spacing:.14em;border-bottom:1px solid var(--line);font-feature-settings:"palt"}
+.menu-panel nav a svg{width:20px;height:10px}
+.menu-panel .mp-foot{margin-top:auto;display:flex;flex-direction:column;gap:18px}
+.menu-panel .mp-langs{display:flex;gap:22px;font-size:14px;letter-spacing:.1em;color:var(--muted)}
+.menu-panel .mp-langs a[aria-current]{color:var(--ink);font-weight:600}
+.menu-panel .btn{justify-content:center}
+
+/* ---------- hero (composition: hero-film) ---------- */
+.hero{position:relative;height:100svh;min-height:740px;max-height:1080px;overflow:clip}
+.hero-inner{--c-ink:var(--ink);--c-muted:var(--muted);--c-rule:var(--champagne);
+  position:absolute;inset:0;max-width:var(--max);margin:0 auto;padding:118px var(--gutter) 88px;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.84fr);column-gap:80px;color:var(--c-ink)}
+.hero-copy{display:flex;flex-direction:column;justify-content:center;padding-bottom:12px;min-width:0}
+.eyebrow{display:flex;align-items:center;gap:16px;font-size:14px;letter-spacing:.3em;color:var(--c-muted);font-feature-settings:"palt"}
+.eyebrow .rule{width:40px;height:1px;background:var(--c-rule);flex:none;transform-origin:left}
+.h1{margin-top:30px;font-size:clamp(36px,4.05vw,58px);line-height:1.42;letter-spacing:.05em;font-weight:500}
+.h1 .line{display:block;overflow:hidden;padding:.04em 0 .08em;margin:-.04em 0 -.08em}
+.h1 .li{display:block;white-space:nowrap}
+.ch{display:inline-block;will-change:transform}
+.hero-sub{margin-top:34px;max-width:30em;font-size:16px;line-height:2.1;letter-spacing:.06em;color:var(--c-muted);word-break:keep-all;overflow-wrap:anywhere}
+.hero-sub .ph{display:inline}
+.hero-ctas{margin-top:44px;display:flex;gap:18px;flex-wrap:wrap}
+.hero-slot{position:relative;border-radius:12px;overflow:hidden;background:#cfc6b8;min-height:0}
+.hero-slot > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+.thread-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.thread-svg .t-shadow{fill:none;stroke:rgba(30,20,12,.32);stroke-width:3.2;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.thread-svg .t-main{fill:none;stroke:#cdb68c;stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.station{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
+.station .node{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--paper-warm);box-shadow:0 0 0 1.5px #b9a17b,0 1px 6px rgba(20,12,6,.35)}
+.station .tag{position:absolute;top:0;left:14px;transform:translateY(-50%);white-space:nowrap;background:rgba(246,243,237,.95);color:var(--ink);
+  font-size:12.5px;line-height:1;letter-spacing:.1em;padding:7px 10px 7px 11px;border-radius:6px;box-shadow:0 4px 14px rgba(20,12,6,.16);font-feature-settings:"palt"}
+.station.left .tag{left:auto;right:14px}
+.station .tag b{font-weight:500}
+.hero-slot .station{transform:translate(var(--sx),var(--sy))}
+.hero-slot.no-js-tags .station{display:none}
+
+/* film overlay */
+.hero-film{position:absolute;inset:0;z-index:30;pointer-events:none;display:none;background:var(--night)}
+.hf-intro .hero-film{display:block}
+.hf-intro .site-header{visibility:hidden}
+.hf-ready .site-header{visibility:visible}
+.plate{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.cam{position:absolute;inset:0;transform-origin:53% 23%;will-change:transform}
+.cam img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cam .night-img{filter:brightness(.31) saturate(.24) sepia(.14) contrast(1.2)}
+#hf-thread .t-shadow,#hf-thread .t-main{vector-effect:none}
+.cam .day-img{--p:-.3;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(var(--p)*100% - 24%),transparent calc(var(--p)*100%));
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(var(--p)*100% - 24%),transparent calc(var(--p)*100%))}
+.cam .band{position:absolute;top:-2%;bottom:-2%;left:0;width:46%;mix-blend-mode:screen;opacity:.0;will-change:transform,opacity;
+  background:linear-gradient(96deg,rgba(255,206,150,0) 0%,rgba(255,204,146,.08) 18%,rgba(255,214,164,.24) 34%,rgba(255,224,184,.4) 48%,rgba(255,230,196,.44) 56%,rgba(255,232,200,.3) 68%,rgba(255,236,208,.14) 80%,rgba(255,240,214,.04) 91%,rgba(255,240,214,0) 100%)}
+.cam .station .tag{transform-origin:0 50%}
+.film-fx{position:absolute;inset:0}
+.film-vignette{background:radial-gradient(120% 90% at 58% 38%,rgba(10,7,5,0) 42%,rgba(10,7,5,.6) 100%)}
+.film-scrim{background:linear-gradient(90deg,rgba(16,11,8,.72) 0%,rgba(16,11,8,.5) 34%,rgba(16,11,8,.08) 58%,rgba(16,11,8,0) 66%),
+  linear-gradient(180deg,rgba(16,11,8,.5) 0,rgba(16,11,8,0) 140px)}
+.film-black{background:var(--night)}
+.night-copy{position:absolute;inset:0}
+.night-head{position:absolute;left:0;right:0;top:0}
+.hero-film .hero-inner{--c-ink:var(--light);--c-muted:var(--light-muted);--c-rule:#cdb68c}
+.hero-film .hero-slot{visibility:hidden}
+.hero-film .site-header{position:absolute}
+.hero-film .btn-primary{background:var(--light);color:var(--ink)}
+.hero-film .btn-ghost{border-color:rgba(244,237,226,.5);color:var(--light)}
+
+/* transport (skip / replay) */
+.hero-ctl{position:absolute;z-index:5;right:max(var(--gutter),calc((100% - var(--max))/2 + var(--gutter)));bottom:30px;display:flex;align-items:center;gap:16px;
+  --ctl:var(--muted);color:var(--ctl);font-size:12.5px;letter-spacing:.14em;font-feature-settings:"palt" ,"tnum"}
+.hero-ctl .bar{position:relative;width:96px;height:1px;background:color-mix(in srgb,var(--ctl) 30%,transparent)}
+.hero-ctl .bar i{position:absolute;left:0;top:-.5px;height:2px;width:100%;background:var(--champagne);transform-origin:left;transform:scaleX(var(--prog,1))}
+.hero-ctl .tc{font-family:var(--latin);font-size:15px;letter-spacing:.06em;min-width:66px;font-variant-numeric:lining-nums tabular-nums}
+.hero-ctl .ctl-btn{display:none;align-items:center;gap:9px;padding:8px 2px;color:inherit;letter-spacing:.16em}
+.hero-ctl .ctl-btn svg{width:14px;height:14px}
+.hero-ctl .ctl-btn:hover{color:var(--ink)}
+.hf-playing .hero-ctl{z-index:31}
+.hf-playing .hero-ctl .skip{display:inline-flex}
+.hero-ctl .replay{display:inline-flex}
+.hf-playing .hero-ctl .replay{display:none}
+.hf-playing .hero-ctl .ctl-btn:hover{color:var(--light)}
+html:not(.hf-intro):not(.hf-done) .hero-ctl{display:none}
+
+/* ---------- SHŌ ---------- */
+.sho{padding:140px 0 150px}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:96px;align-items:center}
+.sho-text h2{margin-top:26px;font-size:40px;line-height:1.5}
+.sho-text h2 .latin{font-weight:600;font-size:1.12em;letter-spacing:.06em}
+.sho-text .lead{margin-top:26px;font-size:16px;line-height:2.1;color:var(--muted);letter-spacing:.04em}
+.qs{list-style:none;margin:44px 0 0;padding:0;border-top:1px solid var(--line)}
+.qs li{border-bottom:1px solid var(--line)}
+.q-btn{position:relative;width:100%;display:flex;align-items:center;justify-content:space-between;gap:24px;text-align:left;padding:24px 4px 24px 22px;
+  font-size:15.5px;line-height:1.8;letter-spacing:.04em;color:var(--muted);transition:color .25s}
+.q-btn::before{content:"";position:absolute;left:0;top:22px;bottom:22px;width:1px;background:var(--champagne);transform:scaleY(0);transform-origin:top;transition:transform .45s var(--ease-out)}
+.q-btn[aria-pressed=true],.q-btn:hover{color:var(--ink)}
+.q-btn[aria-pressed=true]::before{transform:scaleY(1)}
+.q-btn > span{text-wrap:balance;word-break:auto-phrase}
+.q-btn svg{width:22px;height:10px;flex:none;transition:transform .3s var(--ease-out)}
+.q-btn:hover svg{transform:translateX(4px)}
+.q-btn .q-play{font-size:11.5px;letter-spacing:.16em;color:var(--champagne);display:block;margin-top:2px;opacity:0;transition:opacity .25s}
+.q-btn[aria-pressed=true] .q-play{opacity:1}
+.sho-text .btn{margin-top:44px}
+
+.sho-stage{position:relative}
+.sho-film{--fp:34px;position:relative;margin:0;background:var(--night-2);color:var(--light);border-radius:12px;height:680px;overflow:hidden;
+  box-shadow:0 40px 80px -30px rgba(42,30,20,.45);isolation:isolate}
+.sho-film::before{content:"";position:absolute;inset:0;background-image:var(--noise);opacity:.18;mix-blend-mode:soft-light;pointer-events:none}
+.sf-top{position:relative;display:flex;align-items:center;justify-content:space-between;padding:26px var(--fp) 22px;border-bottom:1px solid rgba(244,237,226,.1)}
+.sf-mark{display:flex;align-items:baseline;gap:16px}
+.sf-word{position:relative;font-family:var(--latin);font-weight:600;font-size:30px;letter-spacing:.12em;line-height:1}
+.sf-word .o{position:relative;display:inline-block}
+.sf-macron{position:absolute;left:.1em;right:.18em;top:.02em;height:1.6px;background:#cdb68c;transform-origin:left center}
+.sf-mark small{font-size:12.5px;letter-spacing:.2em;color:var(--light-muted)}
+.sf-meta{font-family:var(--latin);font-size:14px;letter-spacing:.32em;color:rgba(244,237,226,.45)}
+.sf-body{position:relative;padding:26px var(--fp) 0}
+.sf-q{margin-left:auto;max-width:82%;background:rgba(244,237,226,.07);border:1px solid rgba(244,237,226,.12);border-radius:12px 12px 4px 12px;
+  padding:13px 18px;font-size:14.5px;line-height:1.8;letter-spacing:.04em;transform-origin:100% 100%}
+.sf-status{position:absolute;left:calc(var(--fp) + 22px);top:118px;font-size:13px;letter-spacing:.2em;color:var(--light-muted)}
+.sf-a{position:relative;margin-top:26px;padding-left:22px;display:none}
+.sf-a.on{display:block}
+.sf-lead{font-size:16px;line-height:1.95;letter-spacing:.04em}
+.sf-steps{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column;gap:16px}
+.sf-steps h4{margin:0;font-size:15px;font-weight:600;letter-spacing:.08em;line-height:1.7;font-feature-settings:"palt"}
+.sf-steps p{margin-top:3px;font-size:13.5px;line-height:1.9;color:var(--light-muted);letter-spacing:.03em}
+.sf-note{margin-top:20px;font-size:12.5px;line-height:1.9;color:rgba(244,237,226,.56);letter-spacing:.04em}
+.sf-act{margin-top:18px;display:inline-flex;align-items:center;gap:12px;height:40px;padding:0 16px;border-radius:8px;border:1px solid rgba(205,182,140,.55);
+  font-size:13px;letter-spacing:.14em;color:var(--light)}
+.sf-act svg{width:18px;height:9px}
+.sf-thread{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2}
+.sf-thread path{fill:none;stroke:#cdb68c;stroke-width:1.6;stroke-linecap:round}
+.sf-thread circle{fill:var(--night-2);stroke:#cdb68c;stroke-width:1.5}
+.sf-composer{position:absolute;left:var(--fp);right:var(--fp);bottom:26px;height:54px;border-radius:8px;border:1px solid rgba(244,237,226,.16);background:rgba(18,13,10,.35);
+  display:flex;align-items:center;padding:0 8px 0 18px;gap:12px}
+.sf-field{position:relative;flex:1;min-width:0;height:100%;display:flex;align-items:center;font-size:14.5px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10px);mask-image:linear-gradient(90deg,transparent 0,#000 10px)}
+.sf-ph{position:absolute;left:0;color:rgba(244,237,226,.42)}
+.sf-typed{display:inline-block;white-space:nowrap}
+.sf-typed .c{display:none}
+.sf-caret{display:inline-block;width:1px;height:18px;background:#cdb68c;margin-left:2px;vertical-align:middle}
+.sf-send{flex:none;width:38px;height:38px;border-radius:8px;background:rgba(244,237,226,.1);display:grid;place-items:center}
+.sf-send svg{width:16px;height:16px}
+.sho-transport{display:flex;align-items:center;gap:16px;margin-top:18px;font-size:12.5px;letter-spacing:.14em;color:var(--muted)}
+.sho-transport .bar{position:relative;flex:1;height:1px;background:var(--line)}
+.sho-transport .bar i{position:absolute;left:0;top:-.5px;height:2px;width:100%;background:var(--champagne);transform-origin:left;transform:scaleX(var(--prog,0))}
+.sho-transport .tc{font-family:var(--latin);font-size:15px;letter-spacing:.06em;font-variant-numeric:lining-nums tabular-nums;min-width:74px;text-align:right}
+.sho-transport button{display:inline-flex;align-items:center;gap:8px;letter-spacing:.16em}
+.sho-transport button:hover{color:var(--ink)}
+.sho-transport svg{width:14px;height:14px}
+
+/* ---------- services ---------- */
+.services{background:var(--paper-warm);padding:140px 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+.sec-head h2{margin-top:24px;font-size:40px;line-height:1.5}
+.sec-head p{max-width:28em;font-size:15px;color:var(--muted);line-height:2}
+.svc-grid{margin-top:64px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:88px;align-items:start}
+.svc-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line);counter-reset:svc}
+.svc-list li{border-bottom:1px solid var(--line)}
+.svc-row{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;padding:26px 4px}
+.svc-row::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--coffee);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease-out)}
+.svc-row:hover::after,.svc-row.on::after{transform:scaleX(1)}
+.svc-name{font-size:27px;letter-spacing:.08em;line-height:1.4;font-feature-settings:"palt"}
+.svc-desc{display:block;margin-top:6px;font-size:14px;color:var(--muted);letter-spacing:.04em;line-height:1.8}
+.svc-row svg{width:22px;height:10px;color:var(--muted);transition:transform .3s var(--ease-out),color .3s}
+.svc-row:hover svg,.svc-row.on svg{transform:translateX(4px);color:var(--ink)}
+.svc-photo{position:sticky;top:120px;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#d8d0c3}
+.svc-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease,transform 1.2s var(--ease-out);transform:scale(1.04)}
+.svc-photo img.on{opacity:1;transform:scale(1)}
+.svc-photo figcaption{position:absolute;left:20px;bottom:18px;background:rgba(246,243,237,.95);color:var(--ink);border-radius:6px;padding:8px 12px;font-size:13px;letter-spacing:.12em;line-height:1}
+
+/* ---------- why ---------- */
+.why{padding:150px 0}
+.why-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);gap:96px;align-items:start}
+.why-media{position:sticky;top:120px}
+.why-media h2{margin-top:24px;font-size:40px;line-height:1.5}
+.why-photo{margin-top:44px;border-radius:12px;overflow:hidden;aspect-ratio:5/4}
+.why-photo img{width:100%;height:100%;object-fit:cover}
+.why-list{list-style:none;margin:0;padding:0}
+.why-item{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:44px 0;border-top:1px solid var(--line)}
+.why-item:last-child{border-bottom:1px solid var(--line)}
+.why-mark{position:relative;width:34px;height:34px;margin-top:6px}
+.why-mark svg{width:34px;height:34px}
+.why-item h3{font-size:25px;line-height:1.55;letter-spacing:.08em}
+.why-item p{margin-top:16px;font-size:15.5px;line-height:2.1;color:var(--muted);letter-spacing:.04em}
+
+/* ---------- support ---------- */
+.support{background:var(--paper-warm);padding:140px 0 130px}
+.sup-track{position:relative;margin-top:72px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:28px}
+.sup-svg{position:absolute;left:0;right:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.sup-svg path{fill:none;stroke:var(--champagne);stroke-width:1.4;stroke-linecap:round}
+.sup-item{position:relative;min-width:0}
+.sup-photo{aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#d8d0c3}
+.sup-photo img{width:100%;height:100%;object-fit:cover}
+.sup-dot{position:relative;z-index:1;display:block;width:11px;height:11px;border-radius:50%;background:var(--paper-warm);box-shadow:0 0 0 1.5px var(--champagne);margin:30px 0 22px}
+.sup-item h3{font-size:18px;line-height:1.6;letter-spacing:.06em}
+.sup-item p{margin-top:12px;font-size:14px;line-height:2;color:var(--muted);letter-spacing:.03em}
+.sup-note{margin-top:56px;font-size:13px;color:var(--muted);letter-spacing:.06em}
+
+/* ---------- closing ---------- */
+.closing{position:relative;min-height:640px;display:flex;align-items:center;color:var(--light);overflow:hidden;isolation:isolate}
+.closing > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 60%;z-index:-2}
+.closing::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(18,13,9,.82) 0%,rgba(18,13,9,.62) 40%,rgba(18,13,9,.12) 75%)}
+.closing .wrap{width:100%}
+.closing .label{color:var(--light-muted)}
+.closing h2{margin-top:24px;font-size:44px;line-height:1.5}
+.closing p{margin-top:24px;max-width:31em;font-size:16px;line-height:2.1;color:var(--light-muted);letter-spacing:.04em}
+.closing .btn{margin-top:44px;background:var(--light);color:var(--ink)}
+.closing .btn:hover{background:#fff}
+
+/* ---------- footer ---------- */
+.footer{background:var(--night);color:var(--light-muted);padding:88px 0 40px}
+.ft-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:start}
+.ft-brand{display:flex;align-items:center;gap:18px;color:var(--light)}
+.ft-disc{width:60px;height:60px;border-radius:50%;background:var(--paper-warm);display:grid;place-items:center}
+.ft-disc img{width:50px;height:50px}
+.ft-brand .wordmark{font-family:var(--latin);font-weight:600;font-size:24px;letter-spacing:.34em}
+.ft-co{margin-top:26px;font-size:14px;line-height:2;letter-spacing:.06em}
+.ft-links{display:grid;grid-template-columns:repeat(3,auto);gap:14px 56px;font-size:14px;letter-spacing:.14em}
+.ft-links a:hover{color:var(--light)}
+.ft-bottom{margin-top:72px;padding-top:26px;border-top:1px solid rgba(244,237,226,.12);display:flex;justify-content:space-between;gap:24px;font-size:12.5px;letter-spacing:.14em}
+.ft-bottom .latin{font-size:14px;letter-spacing:.2em}
+
+/* reveal for static sections (one-shot, below the fold) */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform 1.1s var(--ease-out)}
+.rv.in{opacity:1;transform:none}
+.why-photo{clip-path:inset(0 0 100% 0 round 12px);transition:clip-path 1.3s var(--ease-out)}
+.why-media.in .why-photo{clip-path:inset(0 0 0 0 round 12px)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  :root{--gutter:56px}
+  .nav-main{gap:30px}
+  .nav-tools{margin-left:32px;gap:22px}
+  .hero-inner{column-gap:56px}
+}
+@media (max-width:980px){
+  :root{--gutter:40px}
+  .nav-main,.nav-tools .login,.nav-tools .lang-wrap{display:none}
+  .nav-tools{margin-left:auto}
+  .sho-grid,.svc-grid,.why-grid{grid-template-columns:1fr;gap:56px}
+  .svc-photo,.why-media{position:relative;top:0}
+  .sho-text{order:-1}
+  .svc-photo{aspect-ratio:16/10}
+  .sup-track{grid-template-columns:1fr;gap:0}
+}
+@media (max-width:980px) and (min-width:701px){
+  .h1{font-size:clamp(40px,6.4vw,56px)}
+  .hero{height:auto;min-height:100svh;max-height:none}
+  .hero-inner{position:relative;grid-template-columns:1fr;grid-template-rows:auto auto;padding:100px var(--gutter) 96px;row-gap:40px;min-height:100svh}
+  .hero-slot{height:46svh;min-height:320px;order:-1}
+}
+@media (max-width:700px){
+  :root{--gutter:16px}
+  body{font-size:15px}
+  .site-header{height:66px}
+  .brand img{width:40px;height:40px}
+  .brand .wordmark{font-size:18px;letter-spacing:.3em}
+  .menu-btn{font-size:13px;gap:10px}
+  .hero{height:auto;min-height:100svh;max-height:none}
+  .hero-inner{position:relative;grid-template-columns:1fr;grid-template-rows:auto auto;align-content:start;padding:76px 16px 84px;min-height:100svh}
+  .hero-slot{height:clamp(236px,35svh,300px);order:-1}
+  .hero-copy{justify-content:flex-start;padding:30px 0 0}
+  .eyebrow{font-size:12px;gap:12px;letter-spacing:.24em}
+  .eyebrow .rule{width:28px}
+  .h1{margin-top:18px;font-size:32px;line-height:1.5;letter-spacing:.04em}
+  .hero-sub{margin-top:20px;font-size:14.5px;line-height:2}
+  .hero-ctas{margin-top:28px;gap:10px;flex-wrap:nowrap}
+  .hero-ctas .btn{flex:1;justify-content:center;height:50px;padding:0 12px;gap:10px;font-size:13px;letter-spacing:.1em}
+  .hero-ctl{right:16px;bottom:22px}
+  .hero-ctl .bar{width:56px}
+  .film-scrim{background:linear-gradient(0deg,rgba(16,11,8,.82) 0%,rgba(16,11,8,.62) 42%,rgba(16,11,8,.1) 66%,rgba(16,11,8,0) 74%),
+    linear-gradient(180deg,rgba(16,11,8,.45) 0,rgba(16,11,8,0) 110px)}
+  .station .tag{font-size:11px;padding:6px 8px;letter-spacing:.06em}
+  .station .node{left:-4px;top:-4px;width:8px;height:8px}
+  .sho{padding:88px 0 96px}
+  .sho-grid{gap:44px}
+  .sho-text h2{font-size:28px}
+  .sho-text .lead{font-size:14.5px}
+  .q-btn{font-size:14.5px;padding:20px 2px 20px 18px}
+  .sho-text .btn{width:100%;justify-content:center}
+  .sho-film{--fp:20px;height:640px}
+  .sf-top{padding:20px var(--fp) 18px}
+  .sf-word{font-size:26px}
+  .sf-q{font-size:13.5px;max-width:90%}
+  .sf-a{padding-left:16px}
+  .sf-lead{font-size:14.5px}
+  .sf-steps{gap:12px}
+  .sf-steps h4{font-size:14px}
+  .sf-steps p{font-size:12.5px;line-height:1.85}
+  .sf-note{font-size:11.5px;margin-top:14px}
+  .sf-act{display:none}
+  .sf-status{left:calc(var(--fp) + 16px)}
+  .sf-field{font-size:13px}
+  .services,.support{padding:88px 0}
+  .why{padding:88px 0}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:20px}
+  .sec-head h2,.why-media h2{font-size:28px}
+  .svc-grid{margin-top:40px;gap:32px}
+  .svc-photo{order:-1}
+  .svc-name{font-size:21px}
+  .svc-desc{font-size:13px}
+  .svc-row{padding:20px 2px}
+  .why-photo{margin-top:28px}
+  .why-item{grid-template-columns:40px minmax(0,1fr);padding:32px 0}
+  .why-mark,.why-mark svg{width:26px;height:26px}
+  .why-item h3{font-size:20px}
+  .why-item p{font-size:14.5px}
+  .sup-track{margin-top:44px}
+  .sup-item{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:22px;padding:0 0 34px 30px}
+  .sup-photo{aspect-ratio:1/1;grid-row:span 2}
+  .sup-dot{position:absolute;left:-1px;top:6px;margin:0;width:9px;height:9px}
+  .sup-item h3{font-size:16px}
+  .sup-item p{margin-top:8px;font-size:13.5px}
+  .sup-note{margin-top:20px}
+  .closing{min-height:600px;align-items:flex-end;padding-bottom:64px}
+  .closing::before{background:linear-gradient(0deg,rgba(18,13,9,.88) 0%,rgba(18,13,9,.66) 52%,rgba(18,13,9,.2) 100%)}
+  .closing h2{font-size:30px}
+  .closing p{font-size:14.5px}
+  .closing .btn{width:100%;justify-content:center}
+  .ft-top{grid-template-columns:1fr}
+  .ft-links{grid-template-columns:repeat(2,auto);gap:14px 40px;justify-content:start}
+  .ft-bottom{flex-direction:column}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .rv,.why-photo{opacity:1;transform:none;clip-path:none;transition:none}
+  .svc-photo img{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="site-header">
+  <div class="bar">
+    <a class="brand" href="#top" aria-label="XIUYI ホーム"><img src="../assets/logo-mark.png" alt="" width="46" height="46"><span class="wordmark">XIUYI</span></a>
+    <nav class="nav-main" aria-label="メイン">
+      <a href="#services">サービス</a><a href="#footer">コラム</a><a href="#about">会社案内</a><a href="#sho" class="latin">SHŌ AI</a>
+    </nav>
+    <div class="nav-tools">
+      <div class="lang-wrap">
+        <button class="lang" type="button" aria-expanded="false" aria-haspopup="true">日本語<svg viewBox="0 0 9 6" class="arrow"><path d="M.5 .8 4.5 5 8.5 .8"/></svg></button>
+        <div class="lang-pop" role="menu"><a href="#" aria-current="true" role="menuitem">日本語</a><a href="#" role="menuitem" lang="en">English</a><a href="#" role="menuitem" lang="zh">简体中文</a></div>
+      </div>
+      <a class="login" href="#">ログイン</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel">メニュー<i></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-panel" id="menu-panel" role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="mp-top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" alt="" width="40" height="40"><span class="wordmark">XIUYI</span></a>
+    <button class="mp-close" type="button">閉じる<i></i></button>
+  </div>
+  <nav aria-label="メニュー">
+    <a href="#services">サービス<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+    <a href="#footer">コラム<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+    <a href="#about">会社案内<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+    <a href="#sho"><span class="latin" style="font-weight:600">SHŌ AI</span><svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+    <a href="#">ログイン<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+  </nav>
+  <div class="mp-foot">
+    <div class="mp-langs"><a href="#" aria-current="true">日本語</a><a href="#" lang="en">English</a><a href="#" lang="zh">简体中文</a></div>
+    <a class="btn btn-primary" href="#contact">相談を予約<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+  </div>
+</div>
+
+<main id="top">
+<!-- ============ HERO · composition "hero-film" ============ -->
+<section class="hero" id="hero" aria-label="XIUYI">
+  <div class="hero-inner" id="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="rule"></span><span class="eb-text">東京・美と健康のライフスタイル</span></p>
+      <h1 class="h1"><span class="line l1"><span class="li">美・健康・暮らしを、</span></span><span class="line l2"><span class="li">日本で再定義する。</span></span></h1>
+      <p class="hero-sub"><span class="ph">XIUYI は</span><wbr><span class="ph">日本の医療機関と</span><wbr><span class="ph">専属の受診同行サービスを</span><wbr><span class="ph">つなぎ、</span><wbr><span class="ph">健康と美を</span><wbr><span class="ph">支えます。</span></p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#services">サービスを見る<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+        <a class="btn btn-ghost" href="#contact">相談を予約<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+      </div>
+    </div>
+    <!-- resting panel: also the no-JS / reduced-motion state -->
+    <div class="hero-slot no-js-tags" id="hero-slot" role="img" aria-label="朝の東京タワーを望む客室。到着から受診後のご連絡までの道のりを示す線。">
+      <img src="../assets/photos/why-hospitality.jpg" alt="" width="1800" height="1800" fetchpriority="high">
+      <svg class="thread-svg" viewBox="0 0 1800 1800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path class="t-shadow" d="M-60 1150 C 90 1130 210 1100 306 1080 C 430 1052 540 958 648 900 C 790 822 820 560 954 423 C 1060 330 1260 560 1422 666 C 1560 752 1700 700 1880 560"/>
+        <path class="t-main" d="M-60 1150 C 90 1130 210 1100 306 1080 C 430 1052 540 958 648 900 C 790 822 820 560 954 423 C 1060 330 1260 560 1422 666 C 1560 752 1700 700 1880 560"/>
+      </svg>
+      <div class="station" data-x="306" data-y="1080"><span class="node"></span><span class="tag">空港送迎</span></div>
+      <div class="station" data-x="648" data-y="900"><span class="node"></span><span class="tag">宿泊</span></div>
+      <div class="station" data-x="954" data-y="423"><span class="node"></span><span class="tag">受診同行・通訳</span></div>
+      <div class="station left" data-x="1422" data-y="666"><span class="node"></span><span class="tag">受診後のご連絡</span></div>
+    </div>
+  </div>
+
+  <!-- the film: HyperFrames composition. Every timed child is a .clip with its own window. -->
+  <div class="hero-film" id="hero-film" data-composition-id="hero-film" data-start="0" data-duration="10" data-width="1440" data-height="900" aria-hidden="true">
+    <div class="plate" id="hf-plate">
+      <div class="cam" id="hf-cam">
+        <img class="night-img clip" id="hf-night" data-start="0" data-duration="5.6" src="../assets/photos/why-hospitality.jpg" alt="">
+        <img class="day-img" id="hf-day" src="../assets/photos/why-hospitality.jpg" alt="">
+        <div class="band clip" id="hf-band" data-start="2.6" data-duration="3"></div>
+        <svg class="thread-svg clip" id="hf-thread" data-start="4.5" data-duration="5.5" viewBox="0 0 1800 1800" preserveAspectRatio="none">
+          <path class="t-shadow" d="M-60 1150 C 90 1130 210 1100 306 1080 C 430 1052 540 958 648 900 C 790 822 820 560 954 423 C 1060 330 1260 560 1422 666 C 1560 752 1700 700 1880 560"/>
+          <path class="t-main" d="M-60 1150 C 90 1130 210 1100 306 1080 C 430 1052 540 958 648 900 C 790 822 820 560 954 423 C 1060 330 1260 560 1422 666 C 1560 752 1700 700 1880 560"/>
+        </svg>
+        <div class="station clip" id="hf-s1" data-start="4.5" data-duration="5.5" data-x="306" data-y="1080"><span class="node"></span><span class="tag">空港送迎</span></div>
+        <div class="station clip" id="hf-s2" data-start="4.5" data-duration="5.5" data-x="648" data-y="900"><span class="node"></span><span class="tag">宿泊</span></div>
+        <div class="station clip" id="hf-s3" data-start="4.5" data-duration="5.5" data-x="954" data-y="423"><span class="node"></span><span class="tag">受診同行・通訳</span></div>
+        <div class="station left clip" id="hf-s4" data-start="4.5" data-duration="5.5" data-x="1422" data-y="666"><span class="node"></span><span class="tag">受診後のご連絡</span></div>
+      </div>
+    </div>
+    <div class="film-fx film-vignette clip" id="hf-vignette" data-start="0" data-duration="9.2"></div>
+    <div class="film-fx film-scrim clip" id="hf-scrim" data-start="0" data-duration="9.2"></div>
+    <div class="night-copy clip" id="hf-copy" data-start="0" data-duration="9.4"></div>
+    <div class="night-head clip" id="hf-head" data-start="0" data-duration="9.4"></div>
+    <div class="film-fx film-black clip" id="hf-black" data-start="0" data-duration="2"></div>
+  </div>
+
+  <div class="hero-ctl" id="hero-ctl">
+    <span class="bar"><i></i></span><span class="tc latin" id="hero-tc">0:10</span>
+    <button class="ctl-btn skip" type="button" id="hero-skip"><svg viewBox="0 0 14 14" class="arrow"><path d="M2 2.5 7.5 7 2 11.5M7 2.5 12.5 7 7 11.5"/></svg>スキップ</button>
+    <button class="ctl-btn replay" type="button" id="hero-replay"><svg viewBox="0 0 14 14" class="arrow"><path d="M11.8 7A4.8 4.8 0 1 1 9.9 3.2"/><path d="M10.3.9l-.3 2.6 2.6.4"/></svg>オープニングを再生</button>
+  </div>
+</section>
+
+<!-- ============ SHŌ · composition "sho-film" ============ -->
+<section class="sho" id="sho" aria-labelledby="sho-h">
+  <div class="wrap sho-grid">
+    <div class="sho-stage">
+      <figure class="sho-film" id="sho-film" data-composition-id="sho-film" data-start="0" data-duration="9.6" data-width="600" data-height="680"
+        aria-label="SHŌ への質問と回答の例">
+        <div class="sf-top">
+          <div class="sf-mark"><span class="sf-word" aria-label="SHŌ"><span aria-hidden="true">SH<span class="o">O<i class="sf-macron" id="sf-macron"></i></span></span></span><small>AI アシスタント</small></div>
+          <span class="sf-meta">XIUYI</span>
+        </div>
+        <div class="sf-body" id="sf-body">
+          <div class="sf-q clip" id="sf-q" data-start="1.95" data-duration="7.65"><span id="sf-q-text">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span></div>
+          <div class="sf-status clip" id="sf-status" data-start="2.5" data-duration="1.15" aria-hidden="true">確認しています</div>
+
+          <div class="sf-a on" data-topic="0">
+            <p class="sf-lead">準備は、次の三つから始めると進めやすくなります。</p>
+            <ol class="sf-steps">
+              <li><h4>受診の目的を整理する</h4><p>気になる症状やご希望の検査、受診したい時期をお知らせください。</p></li>
+              <li><h4>これまでの資料をそろえる</h4><p>過去の検査結果、病歴、服用中のお薬が分かるものをご用意ください。</p></li>
+              <li><h4>渡航の予定を共有する</h4><p>日程が決まれば、検査の予約と空港送迎・宿泊の調整を進めます。</p></li>
+            </ol>
+            <p class="sf-note">検査当日までの過ごし方は、予約した医療機関の案内に沿ってお伝えします。診療上の判断は医療機関にご相談ください。</p>
+            <a class="sf-act" href="#contact">この内容で相談を予約<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+          </div>
+          <div class="sf-a" data-topic="1">
+            <p class="sf-lead">4 日間の滞在に合わせて、検査と美容医療の予約を一つの日程にまとめて調整します。</p>
+            <ol class="sf-steps">
+              <li><h4>ご希望をうかがう</h4><p>受けたい検査と施術の内容、到着日と出発日をお知らせください。</p></li>
+              <li><h4>医療機関と順序を確認する</h4><p>同じ日に受けられるか、日を分けるべきかは、内容に応じて医療機関が判断します。</p></li>
+              <li><h4>日程案をお送りする</h4><p>予約、送迎、宿泊を含めた日程案を、専任担当者がご案内します。</p></li>
+            </ol>
+            <p class="sf-note">送迎・宿泊は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+            <a class="sf-act" href="#contact">この内容で相談を予約<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+          </div>
+          <div class="sf-a" data-topic="2">
+            <p class="sf-lead">来院から退出まで、担当者がお母さまに同席します。</p>
+            <ol class="sf-steps">
+              <li><h4>受診中の通訳</h4><p>医師の説明は中国語・英語・日本語でその場で通訳し、ご家族の疑問もその場で伺えます。</p></li>
+              <li><h4>移動の付き添い</h4><p>空港送迎や、宿泊先と医療機関の間の移動を、ご予定に合わせて手配します。</p></li>
+              <li><h4>滞在のペースに合わせて</h4><p>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></li>
+            </ol>
+            <p class="sf-note">送迎・宿泊は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+            <a class="sf-act" href="#contact">この内容で相談を予約<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+          </div>
+        </div>
+        <svg class="sf-thread" id="sf-thread" aria-hidden="true"><path id="sf-path" d=""/></svg>
+        <div class="sf-composer" aria-hidden="true">
+          <div class="sf-field"><span class="sf-ph" id="sf-ph">SHŌに質問する</span><span class="sf-typed" id="sf-typed"></span><span class="sf-caret clip" id="sf-caret" data-start="0.3" data-duration="1.65"></span></div>
+          <span class="sf-send" id="sf-send"><svg viewBox="0 0 16 16" class="arrow"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></span>
+        </div>
+      </figure>
+      <div class="sho-transport" id="sho-transport">
+        <span class="bar"><i></i></span><span class="tc" id="sho-tc">0:00 / 0:09</span>
+        <button type="button" id="sho-replay"><svg viewBox="0 0 14 14" class="arrow"><path d="M11.8 7A4.8 4.8 0 1 1 9.9 3.2"/><path d="M10.3.9l-.3 2.6 2.6.4"/></svg>もう一度</button>
+      </div>
+    </div>
+
+    <div class="sho-text">
+      <p class="label">AI アシスタント</p>
+      <h2 id="sho-h"><span class="latin">SHŌ</span>でサービス情報を確認</h2>
+      <p class="lead">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+      <ul class="qs">
+        <li><button class="q-btn" type="button" data-topic="0" aria-pressed="true"><span>初めて日本で人間ドックを受けます。何から準備すればよいですか。<span class="q-play">回答を表示中</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></button></li>
+        <li><button class="q-btn" type="button" data-topic="1" aria-pressed="false"><span>滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。<span class="q-play">回答を表示中</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></button></li>
+        <li><button class="q-btn" type="button" data-topic="2" aria-pressed="false"><span>母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。<span class="q-play">回答を表示中</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></button></li>
+      </ul>
+      <a class="btn btn-primary" href="#contact"><span><span class="latin" style="font-size:16px;letter-spacing:.08em;font-weight:600">SHŌ</span>に相談</span><svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="services" id="services" aria-labelledby="svc-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label">Services</p><h2 id="svc-h">医療サービス</h2></div>
+      <p>健診から専門医の受診、再生医療、美容医療、生殖補助医療まで。日本の医療機関での受診を、予約から当日の同行まで調整します。</p>
+    </div>
+    <div class="svc-grid">
+      <ul class="svc-list" id="svc-list">
+        <li><a class="svc-row on" href="#contact" data-img="0"><span><span class="svc-name">精密健診</span><span class="svc-desc">人間ドック・精密検査の予約と当日の同行</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+        <li><a class="svc-row" href="#contact" data-img="1"><span><span class="svc-name">医療受診</span><span class="svc-desc">専門医の受診調整と診療資料の翻訳</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+        <li><a class="svc-row" href="#contact" data-img="2"><span><span class="svc-name">再生医療</span><span class="svc-desc">幹細胞・NK 細胞療法を行う医療機関との連携</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+        <li><a class="svc-row" href="#contact" data-img="3"><span><span class="svc-name">美容医療</span><span class="svc-desc">美容・アンチエイジングの医療機関のご紹介</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+        <li><a class="svc-row" href="#contact" data-img="4"><span><span class="svc-name">同行・医療通訳</span><span class="svc-desc">中国語・英語・日本語での同行と通訳</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+        <li><a class="svc-row" href="#contact" data-img="5"><span><span class="svc-name">生殖補助医療</span><span class="svc-desc">体外受精などを行う医療機関との調整</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+        <li><a class="svc-row" href="#contact" data-img="6"><span><span class="svc-name">移動・宿泊サポート</span><span class="svc-desc">空港送迎、医療機関間の移動、宿泊の手配</span></span><svg viewBox="0 0 22 10" class="arrow"><path d="M0 5h21M16.5 .8 21 5l-4.5 4.2"/></svg></a></li>
+      </ul>
+      <figure class="svc-photo" id="svc-photo" style="margin:0">
+        <img class="on" src="../assets/photos/checkup-equipment.jpg" alt="精密健診の検査機器" loading="lazy">
+        <img src="../assets/photos/support-consult.jpg" alt="医師との相談" loading="lazy">
+        <img src="../assets/photos/regenerative-waiting-area.jpg" alt="再生医療クリニックの待合" loading="lazy">
+        <img src="../assets/photos/aesthetic-light.jpg" alt="木漏れ日の差す洗面台と鏡" loading="lazy">
+        <img src="../assets/photos/support-attend.jpg" alt="同行する担当者" loading="lazy">
+        <img src="../assets/photos/ivf-companionship.jpg" alt="庭に面した静かな待合" loading="lazy">
+        <img src="../assets/photos/support-transfer.jpg" alt="送迎車" loading="lazy">
+        <figcaption id="svc-cap">精密健診</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="why" id="why" aria-labelledby="why-h">
+  <div class="wrap why-grid">
+    <div class="why-media">
+      <p class="label">Why XIUYI</p>
+      <h2 id="why-h">XIUYI が選ばれる理由</h2>
+      <div class="why-photo"><img src="../assets/photos/why-concierge.jpg" alt="受付カウンターの革のファイルと湯のみ" loading="lazy"></div>
+    </div>
+    <ol class="why-list">
+      <li class="why-item rv">
+        <span class="why-mark" aria-hidden="true"><svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="none" stroke="#b9a17b" stroke-width="1"/><circle cx="17" cy="17" r="2.2" fill="#b9a17b"/></svg></span>
+        <div><h3>日本の正規医療機関と連携</h3><p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p></div>
+      </li>
+      <li class="why-item rv">
+        <span class="why-mark" aria-hidden="true"><svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="none" stroke="#b9a17b" stroke-width="1"/><path d="M6 17h22" stroke="#b9a17b" stroke-width="1"/><circle cx="17" cy="17" r="2.2" fill="#b9a17b"/></svg></span>
+        <div><h3>専任担当者による一貫した調整</h3><p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p></div>
+      </li>
+      <li class="why-item rv">
+        <span class="why-mark" aria-hidden="true"><svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="none" stroke="#b9a17b" stroke-width="1"/><path d="M5 21c5-1 7-8 12-8s7 7 12 8" fill="none" stroke="#b9a17b" stroke-width="1"/><circle cx="17" cy="13" r="2.2" fill="#b9a17b"/></svg></span>
+        <div><h3>移動・宿泊のサポート</h3><p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ SUPPORT · composition "support-thread" ============ -->
+<section class="support" id="support" aria-labelledby="sup-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="label">Support</p><h2 id="sup-h">サポート内容</h2></div>
+      <p>ご相談から帰国後のご連絡まで、一本の線のように途切れずにつなぎます。</p>
+    </div>
+    <div class="sup-track" id="sup-track" data-composition-id="support-thread" data-start="0" data-duration="2.6">
+      <svg class="sup-svg" id="sup-svg" aria-hidden="true"><path id="sup-path" d=""/></svg>
+      <div class="sup-item"><div class="sup-photo"><img src="../assets/photos/support-consult.jpg" alt="" loading="lazy"></div><span class="sup-dot"></span>
+        <h3>医療ニーズの確認と予約調整</h3><p>既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p></div>
+      <div class="sup-item"><div class="sup-photo"><img src="../assets/photos/why-network.jpg" alt="" loading="lazy"></div><span class="sup-dot"></span>
+        <h3>医療機関・医師とのマッチング</h3><p>検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p></div>
+      <div class="sup-item"><div class="sup-photo"><img src="../assets/photos/support-transfer.jpg" alt="" loading="lazy"></div><span class="sup-dot"></span>
+        <h3>空港送迎と医療機関間の移動</h3><p>フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p></div>
+      <div class="sup-item"><div class="sup-photo"><img src="../assets/photos/support-attend.jpg" alt="" loading="lazy"></div><span class="sup-dot"></span>
+        <h3>中国語・英語・日本語での同行サポート</h3><p>来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p></div>
+      <div class="sup-item"><div class="sup-photo"><img src="../assets/photos/support-stay-ryokan.jpg" alt="" loading="lazy"></div><span class="sup-dot"></span>
+        <h3>宿泊・滞在日程の調整</h3><p>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></div>
+    </div>
+    <p class="sup-note">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<section class="closing" id="contact" aria-labelledby="cl-h">
+  <img src="../assets/photos/home-closing.jpg" alt="" loading="lazy">
+  <div class="wrap">
+    <p class="label">Contact</p>
+    <h2 id="cl-h">医療相談を予約する</h2>
+    <p>これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+    <a class="btn" href="#contact">相談を予約<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg></a>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" id="footer">
+  <div class="wrap">
+    <div class="ft-top" id="about">
+      <div>
+        <div class="ft-brand"><span class="ft-disc"><img src="../assets/logo-mark.png" alt="" width="50" height="50"></span><span class="wordmark">XIUYI</span></div>
+        <p class="ft-co">秀一株式会社<br>東京都渋谷区（代官山）</p>
+      </div>
+      <nav class="ft-links" aria-label="フッター">
+        <a href="#services">サービス</a><a href="#footer">コラム</a><a href="#footer">事例</a>
+        <a href="#footer">医師</a><a href="#about">会社案内</a><a href="#footer">プライバシー</a>
+      </nav>
+    </div>
+    <div class="ft-bottom"><span>診断と治療は、各医療機関と医師が行います。</span><span class="latin">© XIUYI CO., LTD.</span></div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(() => {
+'use strict';
+const doc = document.documentElement;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const fmt = (t) => { const s = Math.max(0, Math.round(t)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+/* ---------------------------------------------------------------------------
+   HF-lite: the part of the HyperFrames runtime a live page needs.
+   One paused timeline per composition, registered on window.__timelines[id];
+   a clock seeks it; .clip children are shown over their half-open window. */
+window.__timelines = window.__timelines || {};
+class Composition {
+  constructor(root, build, opts = {}) {
+    this.root = root; this.id = root.dataset.compositionId; this.duration = +root.dataset.duration;
+    this.buildFn = build; this.onFrame = opts.onFrame; this.onEnd = opts.onEnd; this.onBuild = opts.onBuild;
+    this.t = 0; this.playing = false; this.rate = 1; this.raf = 0; this.build();
+  }
+  build() {
+    if (this.tl) this.tl.kill();
+    if (this.onBuild) this.onBuild(this);
+    this.clips = $$('.clip', this.root).map((el) => {
+      const s = +el.dataset.start || 0, d = el.dataset.duration ? +el.dataset.duration : Infinity;
+      return { el, s, e: s + d, v: null };
+    });
+    const tl = gsap.timeline({ paused: true });
+    this.buildFn(tl, this);
+    tl.set({}, {}, this.duration);                // the timeline is exactly the composition's length
+    this.tl = tl; window.__timelines[this.id] = tl;
+    this.seek(this.t, true);
+  }
+  seek(t, force) {
+    t = Math.min(this.duration, Math.max(0, t)); this.t = t;
+    this.tl.seek(t, false);
+    const D = this.duration, eps = 1e-6;
+    for (const c of this.clips) {
+      const vis = t >= c.s - eps && (t < c.e - eps || c.e >= D - eps);
+      if (force || vis !== c.v) { c.el.style.visibility = vis ? '' : 'hidden'; c.v = vis; }
+    }
+    if (this.onFrame) this.onFrame(t, this);
+  }
+  play(from) {
+    if (from != null) this.seek(from);
+    if (this.t >= this.duration) this.seek(0);
+    this.playing = true; let last = null;
+    cancelAnimationFrame(this.raf);
+    const step = (now) => {
+      if (!this.playing) return;
+      if (last != null) this.seek(this.t + Math.min(0.05, (now - last) / 1000) * this.rate);
+      last = now;
+      if (this.t >= this.duration) { this.playing = false; this.rate = 1; if (this.onEnd) this.onEnd(this); return; }
+      this.raf = requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  }
+  pause() { this.playing = false; cancelAnimationFrame(this.raf); }
+}
+window.__hf = {};
+
+/* helpers */
+const splitChars = (el) => {
+  const text = el.textContent; el.textContent = '';
+  for (const ch of text) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; el.appendChild(s); }
+};
+const splitPhrases = (el) => {        // Japanese: split after 、。 and after particles-like short runs is overkill; punctuation is enough
+  const parts = el.textContent.match(/[^、。]+[、。]?/g) || [el.textContent]; el.textContent = '';
+  parts.forEach((p, i) => { const s = document.createElement('span'); s.className = 'w'; s.textContent = p; el.appendChild(s); if (i < parts.length - 1) el.appendChild(document.createElement('wbr')); });
+};
+const invEase = (ease, y) => { let lo = 0, hi = 1; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (ease(m) < y) lo = m; else hi = m; } return (lo + hi) / 2; };
+const cover = (W, H, size, fx, fy) => { const s = Math.max(W / size, H / size); const w = size * s, h = size * s; return { x: (W - w) * fx, y: (H - h) * fy, w, h, s }; };
+const ARROW = '<svg viewBox="0 0 20 10" class="arrow"><path d="M0 5h19M14.5 .8 19 5l-4.5 4.2"/></svg>';
+
+/* ---------------------------------------------------------------------------
+   Header: scrolled state, language popover, mobile menu */
+const header = $('#site-header');
+const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 24);
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+const langBtn = $('.lang', header), langWrap = $('.lang-wrap', header);
+langBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = !langWrap.classList.contains('open'); langWrap.classList.toggle('open', o); langBtn.setAttribute('aria-expanded', o); });
+document.addEventListener('click', () => { langWrap.classList.remove('open'); langBtn.setAttribute('aria-expanded', 'false'); });
+const menu = $('#menu-panel'), menuBtn = $('.menu-btn', header);
+const setMenu = (o) => { menu.classList.toggle('open', o); menuBtn.setAttribute('aria-expanded', o); document.body.style.overflow = o ? 'hidden' : ''; if (o) $('.mp-close', menu).focus(); else menuBtn.focus({ preventScroll: true }); };
+menuBtn.addEventListener('click', () => setMenu(true));
+$('.mp-close', menu).addEventListener('click', () => setMenu(false));
+$$('nav a, .btn', menu).forEach((a) => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false); });
+
+/* ---------------------------------------------------------------------------
+   Static resting panel: place the station tags with the same cover math as the film */
+const IMG = 1800;
+const slot = $('#hero-slot');
+const layoutSlot = () => {
+  const r = slot.getBoundingClientRect(); const c = cover(r.width, r.height, IMG, .5, .5);
+  $$('.station', slot).forEach((s) => { s.style.setProperty('--sx', (c.x + s.dataset.x * c.s) + 'px'); s.style.setProperty('--sy', (c.y + s.dataset.y * c.s) + 'px'); });
+  slot.classList.remove('no-js-tags');
+};
+layoutSlot();
+new ResizeObserver(layoutSlot).observe(slot);
+
+if (typeof gsap === 'undefined') { doc.classList.remove('hf-intro'); return; }
+
+/* ---------------------------------------------------------------------------
+   HERO · "hero-film" (10 s) */
+const hero = $('#hero'), film = $('#hero-film'), heroInner = $('#hero-inner');
+const ctl = $('#hero-ctl'), tcEl = $('#hero-tc'), barI = $('.bar i', ctl);
+// light twins of the header and the copy live inside the clipped film, pixel-aligned with the real ones
+const nightHead = header.cloneNode(true); nightHead.removeAttribute('id'); nightHead.classList.add('is-night'); nightHead.classList.remove('is-scrolled');
+nightHead.setAttribute('aria-hidden', 'true'); nightHead.inert = true; $('#hf-head').appendChild(nightHead);
+const nightCopy = heroInner.cloneNode(true); nightCopy.removeAttribute('id'); $$('[id]', nightCopy).forEach((n) => n.removeAttribute('id'));
+nightCopy.inert = true; $('#hf-copy').appendChild(nightCopy);
+const copies = [heroInner, nightCopy];
+copies.forEach((c) => { splitChars($('.eb-text', c)); $$('.li', c).forEach(splitChars); });
+const q = (sel) => copies.flatMap((c) => $$(sel, c));
+const l2s = q('.l2 .li');
+
+const plate = $('#hf-plate'), cam = $('#hf-cam'), day = $('#hf-day'), band = $('#hf-band');
+const filmStations = $$('.station', film);
+const tPath = $$('#hf-thread path');
+const sweep = { u: 0 }, inv = { k: 1 };
+let G = null;
+
+const heroGeom = () => {
+  const hr = hero.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+  const W = hr.width, H = hr.height, mobile = W < 701;
+  const S = { x: sr.left - hr.left, y: sr.top - hr.top, w: sr.width, h: sr.height };
+  const rest = cover(S.w, S.h, IMG, .5, .5); rest.x += S.x; rest.y += S.y;
+  const full = mobile ? cover(W, H, IMG, .56, .5) : cover(W, H, IMG, .5, .05);
+  const l2 = $('.l2 .li', heroInner).getBoundingClientRect();
+  return { W, H, mobile, S, rest, full, l2x: l2.left - hr.left, l2w: l2.width };
+};
+
+const buildHero = (tl) => {
+  G = heroGeom();
+  const { W, H, S, rest, full, mobile } = G;
+  // plate rests at the panel; the film starts it full-bleed (Z back at the end = "arrival")
+  Object.assign(plate.style, { width: rest.w + 'px', height: rest.h + 'px', left: rest.x + 'px', top: rest.y + 'px' });
+  filmStations.forEach((s) => { s.style.left = (s.dataset.x / IMG * 100) + '%'; s.style.top = (s.dataset.y / IMG * 100) + '%'; });
+  const k0 = full.w / rest.w;
+  const clipFull = 'inset(0px 0px 0px 0px round 0px)';
+  const clipRest = `inset(${S.y}px ${W - S.x - S.w}px ${H - S.y - S.h}px ${S.x}px round 12px)`;
+
+  tl.fromTo(film, { clipPath: clipFull }, { clipPath: clipFull, duration: 0.01 }, 0);
+  tl.fromTo(plate, { x: full.x - rest.x, y: full.y - rest.y, scale: k0 }, { x: full.x - rest.x, y: full.y - rest.y, scale: k0, duration: 0.01 }, 0);
+  // pre-dawn: eyes adjust, the camera pushes toward the tower
+  tl.fromTo('#hf-black', { opacity: 1 }, { opacity: 0, duration: 1.5, ease: 'power2.out' }, 0.15);
+  tl.fromTo(cam, { scale: 1 }, { scale: 1.07, duration: 7.3, ease: 'power1.inOut' }, 0);
+  tl.fromTo('#hf-vignette', { opacity: 1 }, { opacity: .45, duration: 2.4, ease: 'power2.inOut' }, 3.0);
+  tl.fromTo('#hf-head', { opacity: 0 }, { opacity: 1, duration: 1.2, ease: 'power2.out' }, 0.7);
+  // eyebrow: rule draws, then letters arrive with a slight blur (a name, letter by letter)
+  tl.fromTo(q('.eyebrow .rule'), { scaleX: 0 }, { scaleX: 1, duration: .9, ease: 'expo.out' }, 0.55);
+  tl.fromTo(q('.eb-text .ch'), { opacity: 0, filter: 'blur(4px)' }, { opacity: 1, filter: 'blur(0px)', duration: .55, ease: 'power2.out', stagger: .035 }, 0.75);
+  // line 1: glyphs rise through the line's mask
+  tl.fromTo(q('.l1 .ch'), { yPercent: 112 }, { yPercent: 0, duration: 1.15, ease: 'expo.out', stagger: .045 }, 1.25);
+  // line 2 + the day plate: written by the dawn light sweeping left → right
+  tl.fromTo(sweep, { u: 0 }, { u: 1, duration: 2.5, ease: 'power2.inOut' }, 2.8);
+  tl.fromTo(band, { opacity: 0 }, { opacity: 1, duration: .5, ease: 'power1.out' }, 2.8);
+  // the text scrim stays light in the dark and settles only once the light has crossed the title
+  tl.fromTo('#hf-scrim', { opacity: .42 }, { opacity: 1, duration: 1.3, ease: 'power2.inOut' }, 4.3);
+  tl.fromTo(q('.l2 .ch'), { color: (i, el) => (el.closest('.hero-film') ? '#e9cf9c' : '#9c825c') },
+    { color: (i, el) => (el.closest('.hero-film') ? '#f4ede2' : '#44352a'), duration: 1.4, ease: 'power1.inOut', stagger: .06 }, 3.6);
+  // the journey: a constant-speed pen through four stations
+  const pathLen = tPath[1].getTotalLength();
+  const pen = gsap.parseEase('sine.inOut'), penStart = 4.6, penDur = 2.6;
+  tl.fromTo(tPath, { strokeDasharray: pathLen + ' ' + (pathLen + 40), strokeDashoffset: pathLen + 20 }, { strokeDashoffset: 0, duration: penDur, ease: 'sine.inOut' }, penStart);
+  const probe = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  filmStations.forEach((s, i) => {
+    // when does the pen reach this station? nearest point on the path → length fraction → inverse ease
+    const px = +s.dataset.x, py = +s.dataset.y; let best = 0, bd = 1e9;
+    for (let L = 0; L <= pathLen; L += 4) { const p = tPath[1].getPointAtLength(L); const d = (p.x - px) ** 2 + (p.y - py) ** 2; if (d < bd) { bd = d; best = L; } }
+    const tAt = penStart + penDur * invEase(pen, (best + 20) / (pathLen + 20));
+    const node = $('.node', s), tag = $('.tag', s);
+    tl.fromTo(node, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: 'expo.out' }, tAt - .04);
+    const tagAt = mobile ? 8.7 + i * .08 : tAt + .08;
+    tl.fromTo(tag, { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: .35, ease: 'power2.out' }, tagAt);
+  });
+  void probe;
+  // arrival: the photograph pulls back into its panel, paper floods in behind it
+  const R0 = 7.3, RD = 1.6, re = 'power3.inOut';
+  tl.fromTo(film, { clipPath: clipFull }, { clipPath: clipRest, duration: RD, ease: re }, R0);
+  tl.fromTo(plate, { x: full.x - rest.x, y: full.y - rest.y, scale: k0 }, { x: 0, y: 0, scale: 1, duration: RD, ease: re }, R0);
+  tl.fromTo(cam, { scale: 1.07 }, { scale: 1, duration: RD, ease: re }, R0);
+  tl.fromTo(['#hf-scrim', '#hf-vignette'], { opacity: (i) => (i ? .45 : 1) }, { opacity: 0, duration: RD * .8, ease: 'power2.inOut', immediateRender: false }, R0 + .1);
+  tl.fromTo(film, { backgroundColor: 'rgba(18,13,10,1)' }, { backgroundColor: 'rgba(18,13,10,0)', duration: .3 }, R0);
+  // the rest of the copy arrives on paper: phrases go from light grey to ink, buttons blur in
+  tl.fromTo(q('.hero-sub .ph'), { opacity: 0 }, { opacity: 1, duration: .7, ease: 'power1.out', stagger: .085 }, 8.35);
+  tl.fromTo(q('.hero-ctas .btn'), { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: .5, ease: 'power2.out', stagger: .12 }, 8.75);
+  // transport colour follows the edge: light over the photograph, ink on paper
+  tl.fromTo(ctl, { '--ctl': '#efe6d8' }, { '--ctl': '#6b5946', duration: .3, ease: 'none' }, R0 + RD * .55);
+};
+
+const heroFrame = (t, comp) => {
+  if (!G) return;
+  // sweep u → the day plate's mask edge (plate space) and line 2's mask edge (screen space)
+  const u = sweep.u, p = -.08 + u * 1.36;
+  day.style.setProperty('--p', p.toFixed(4));
+  band.style.transform = `translate3d(${((p + .2 - .46) / .46 * 100).toFixed(2)}%,0,0)`;
+  const camS = gsap.getProperty(cam, 'scale'), plS = gsap.getProperty(plate, 'scale');
+  const plX = G.rest.x + gsap.getProperty(plate, 'x');
+  const plW = G.rest.w * plS;
+  const edge = plX + plW * (.53 + (p - .53) * camS);
+  const lx = edge - G.l2x, fe = Math.max(140, G.l2w * .35);
+  l2s.forEach((el) => {
+    const m = `linear-gradient(90deg,#000 0,#000 ${lx - fe}px,transparent ${lx}px)`;
+    el.style.webkitMaskImage = m; el.style.maskImage = m;
+  });
+  // tags keep their reading size while the plate scales
+  const k = 1 / (camS * plS);
+  filmStations.forEach((s) => { s.style.transform = `scale(${k.toFixed(4)})`; });
+  // the thread keeps a 1.5 px hairline at any plate scale (dashes stay in path units)
+  const upx = IMG / (plW * camS);
+  tPath[0].style.strokeWidth = (3.2 * upx).toFixed(3); tPath[1].style.strokeWidth = (1.5 * upx).toFixed(3);
+  barI.style.setProperty('--prog', (t / comp.duration).toFixed(4));
+  tcEl.textContent = fmt(t);
+};
+
+let heroComp = null;
+const startHero = () => {
+  window.__heroStarted = true;
+  heroComp = new Composition(film, buildHero, {
+    onFrame: heroFrame,
+    onEnd: () => { doc.classList.remove('hf-playing'); doc.classList.add('hf-done'); doc.classList.remove('hf-intro'); clearMasks(); }
+  });
+  window.__hf.hero = heroComp; window.__player = heroComp;
+  doc.classList.add('hf-ready', 'hf-playing');
+  heroComp.play(0);
+};
+const clearMasks = () => l2s.forEach((el) => { el.style.webkitMaskImage = ''; el.style.maskImage = ''; });
+const replay = () => {
+  if (!heroComp) return;
+  scrollTo({ top: 0, behavior: 'instant' });
+  doc.classList.add('hf-intro', 'hf-playing', 'hf-ready'); doc.classList.remove('hf-done');
+  heroComp.rate = 1; heroComp.build(); heroComp.play(0);
+};
+// skip = the film rushes to rest in under a second instead of jump-cutting
+const skip = () => { if (heroComp && heroComp.playing) heroComp.rate = Math.max(1, (heroComp.duration - heroComp.t) / .9); };
+$('#hero-skip').addEventListener('click', skip);
+$('#hero-replay').addEventListener('click', replay);
+addEventListener('wheel', () => { if (heroComp && heroComp.playing) skip(); }, { passive: true });
+addEventListener('touchmove', () => { if (heroComp && heroComp.playing) skip(); }, { passive: true });
+addEventListener('keydown', (e) => { if (heroComp && heroComp.playing && ['ArrowDown', 'PageDown', ' ', 'End', 'Escape'].includes(e.key)) skip(); });
+
+if (!reduced && doc.classList.contains('hf-intro')) {
+  let started = false;
+  const go = () => { if (!started) { started = true; startHero(); } };
+  Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 1400))])
+    .then(() => (day.complete ? null : new Promise((r) => { day.onload = r; day.onerror = r; setTimeout(r, 1500); })))
+    .then(go);
+}
+// keep the composition true to the layout: rebuild on resize at the same instant
+let rzT = 0, lastW = innerWidth, lastH = hero.offsetHeight;
+new ResizeObserver(() => {
+  if (!heroComp) return;
+  if (Math.abs(innerWidth - lastW) < 2 && Math.abs(hero.offsetHeight - lastH) < 2) return;
+  lastW = innerWidth; lastH = hero.offsetHeight;
+  clearTimeout(rzT); rzT = setTimeout(() => { const was = heroComp.playing; heroComp.pause(); heroComp.build(); if (was) heroComp.play(); else if (heroComp.t >= heroComp.duration) clearMasks(); }, 120);
+}).observe(hero);
+// pause offscreen and in hidden tabs
+new IntersectionObserver(([e]) => {
+  if (!heroComp) return;
+  if (!e.isIntersecting && heroComp.playing) { heroComp.pause(); heroComp._held = true; }
+  else if (e.isIntersecting && heroComp._held) { heroComp._held = false; heroComp.play(); }
+}).observe(hero);
+
+/* ---------------------------------------------------------------------------
+   SHŌ · "sho-film" (9.6 s): question typed → carried into its bubble → the macron becomes the thread of the answer */
+const shoRoot = $('#sho-film'), shoBody = $('#sf-body'), typed = $('#sf-typed'), qText = $('#sf-q-text');
+const shoPath = $('#sf-path'), shoSvg = $('#sf-thread'), macron = $('#sf-macron');
+const qBtns = $$('.q-btn'), shoTc = $('#sho-tc'), shoBar = $('#sho-transport .bar i');
+const QUESTIONS = qBtns.map((b) => b.firstElementChild.firstChild.textContent.trim());
+let topic = 0;
+$$('.sf-a').forEach((a) => { $$('.sf-lead, .sf-steps p, .sf-note', a).forEach(splitPhrases); });
+const setTypeText = (s) => { typed.textContent = ''; for (const ch of s) { const c = document.createElement('span'); c.className = 'c'; c.textContent = ch; typed.appendChild(c); } };
+
+const fitSho = () => {
+  const answers = $$('.sf-a'), qEl = $('#sf-q'), keep = qText.textContent;
+  let maxA = 0, maxQ = 0;
+  answers.forEach((a, i) => {
+    answers.forEach((b) => b.classList.toggle('on', b === a));
+    qText.textContent = QUESTIONS[i]; maxQ = Math.max(maxQ, qEl.offsetHeight);
+    maxA = Math.max(maxA, a.offsetHeight + parseFloat(getComputedStyle(a).marginTop));
+  });
+  qText.textContent = keep;
+  const top = $('.sf-top', shoRoot).offsetHeight, bodyPad = parseFloat(getComputedStyle(shoBody).paddingTop);
+  const need = Math.ceil(top + bodyPad + maxQ + maxA + 26 + 54 + 26 + 18);
+  shoRoot.style.height = Math.max(innerWidth > 700 ? 680 : 0, need) + 'px';
+};
+const buildSho = (tl, comp) => {
+  const D = comp.duration;
+  fitSho();
+  $$('.sf-a').forEach((a) => a.classList.toggle('on', +a.dataset.topic === topic));
+  const A = $(`.sf-a[data-topic="${topic}"]`);
+  qText.textContent = QUESTIONS[topic]; setTypeText(QUESTIONS[topic]);
+  gsap.set([macron, '#sf-q', typed, '#sf-send'], { clearProps: 'transform,opacity,filter' });
+  // geometry: the thread starts on the macron and runs down the answer's gutter through one node per step
+  const fr = shoRoot.getBoundingClientRect();
+  const mr = macron.getBoundingClientRect(), ar = A.getBoundingClientRect();
+  const mx1 = mr.right - fr.left, mx0 = mr.left - fr.left, my = mr.top - fr.top + mr.height / 2;
+  const fp = parseFloat(getComputedStyle(shoRoot).getPropertyValue('--fp')) || 34;
+  const gx = Math.round(fp * .5);
+  const steps = $$('.sf-steps li', A);
+  const nodeYs = steps.map((li) => { const h = $('h4', li).getBoundingClientRect(); return h.top - fr.top + h.height / 2; });
+  const leadR = $('.sf-lead', A).getBoundingClientRect();
+  const noteR = $('.sf-note', A).getBoundingClientRect();
+  const yEnd = noteR.top - fr.top + 8;
+  const y1 = leadR.top - fr.top + 12;
+  // the thread springs from the macron's left end, passes above the word and drops into a margin rule;
+  // the macron itself never leaves the O, so the word always reads SHŌ
+  const hy = my - 11;
+  const d = `M${mx0},${my} C${mx0 - 3},${my - 7} ${mx0 - 9},${hy} ${mx0 - 18},${hy} L${gx + 12},${hy} C${gx + 4},${hy} ${gx},${hy + 5} ${gx},${hy + 14} L${gx},${yEnd}`;
+  shoPath.setAttribute('d', d);
+  shoSvg.setAttribute('viewBox', `0 0 ${fr.width} ${fr.height}`);
+  $$('circle', shoSvg).forEach((c) => c.remove());
+  const circles = nodeYs.map((y) => { const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', gx); c.setAttribute('cy', y); c.setAttribute('r', 4.2); shoSvg.appendChild(c); return c; });
+  const L = shoPath.getTotalLength(), mLen = 0; void mx1;
+  const lenAtY = (y) => { // length along the path where it reaches height y on the gutter
+    const straightStart = L - (yEnd - (hy + 14)); return straightStart + (y - (hy + 14));
+  };
+
+  // 0 · composer: placeholder → typing, caret travels with the text
+  tl.fromTo('#sf-ph', { opacity: 1 }, { opacity: 0, duration: .15, ease: 'none' }, 0.3);
+  const chars = $$('.c', typed), per = Math.min(.05, 1.35 / chars.length);
+  chars.forEach((c) => { c.style.display = 'inline'; });
+  const fieldW = $('.sf-field').clientWidth - 6, ends = chars.map((c) => c.offsetLeft + c.offsetWidth);
+  chars.forEach((c) => { c.style.display = ''; });
+  chars.forEach((c, i) => tl.fromTo(c, { display: 'none' }, { display: 'inline', duration: .001, ease: 'none' }, 0.36 + i * per));
+  if (ends[ends.length - 1] > fieldW) {
+    let shift = 0;
+    chars.forEach((c, i) => { const need = Math.max(0, ends[i] - fieldW); if (need > shift + 1) { tl.fromTo(typed, { x: -shift }, { x: -need, duration: per, ease: 'none', immediateRender: false }, 0.36 + i * per); shift = need; } });
+    tl.fromTo(typed, { x: 0 }, { x: 0, duration: .001, immediateRender: true }, 0);
+  }
+  // send: button press, then the typed line is carried into its bubble (morph with a horizontal blur)
+  tl.fromTo('#sf-send', { scale: 1, backgroundColor: 'rgba(244,237,226,.1)' }, { scale: .9, backgroundColor: 'rgba(205,182,140,.45)', duration: .12, ease: 'power2.out' }, 1.78);
+  tl.fromTo('#sf-send', { scale: .9 }, { scale: 1, backgroundColor: 'rgba(244,237,226,.1)', duration: .35, ease: 'power3.out', immediateRender: false }, 1.9);
+  tl.fromTo(chars, { opacity: 1 }, { opacity: 0, duration: .01 }, 1.95);
+  const qr = $('#sf-q').getBoundingClientRect(), cr = $('.sf-field').getBoundingClientRect();
+  tl.fromTo('#sf-q', { x: cr.left - qr.left - 18, y: cr.top - qr.top - 4, scale: .96, opacity: .2, filter: 'blur(5px)' },
+    { x: 0, y: 0, scale: 1, opacity: 1, filter: 'blur(0px)', duration: .6, ease: 'power3.inOut' }, 1.95);
+  tl.fromTo('#sf-ph', { opacity: 0 }, { opacity: 1, duration: .4, ease: 'power1.out', immediateRender: false }, 2.4);
+  // 1 · SHŌ reads: the macron contracts and extends (the presence working), status letters pass a light along
+  tl.fromTo(macron, { scaleX: 1 }, { scaleX: .3, duration: .32, ease: 'power2.inOut' }, 2.55);
+  tl.fromTo(macron, { scaleX: .3, xPercent: 0 }, { scaleX: .3, xPercent: 230, duration: .3, ease: 'power2.inOut', immediateRender: false }, 2.87);
+  tl.fromTo(macron, { scaleX: .3, xPercent: 230 }, { scaleX: 1, xPercent: 0, duration: .4, ease: 'power2.inOut', immediateRender: false }, 3.17);
+  const st = $('#sf-status');
+  if (!st.dataset.split) { splitChars(st); st.dataset.split = 1; }
+  tl.fromTo($$('.ch', st), { opacity: .25 }, { opacity: 1, duration: .28, ease: 'sine.inOut', stagger: { each: .06, yoyo: true, repeat: 1 } }, 2.55);
+  // 2 · the thread is drawn out of the macron (carrier) and threads the answer together
+  const T0 = 3.5, TD = 3.8, te = gsap.parseEase('power1.out');
+  tl.fromTo(shoPath, { strokeDasharray: `${L} ${L + 20}`, strokeDashoffset: L - mLen }, { strokeDashoffset: 0, duration: TD, ease: 'power1.out' }, T0);
+  tl.fromTo(shoSvg, { opacity: 0 }, { opacity: 1, duration: .01 }, T0 - .01);
+  const tAtLen = (len) => T0 + TD * invEase(te, Math.min(1, (len - mLen) / (L - mLen)));
+  // lead: phrases blur in as the thread reaches it
+  const tLead = Math.max(T0 + .25, tAtLen(lenAtY(y1)) - .2);
+  tl.fromTo($$('.sf-lead .w', A), { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: .3, ease: 'power2.out', stagger: .09 }, tLead);
+  steps.forEach((li, i) => {
+    const t = tAtLen(lenAtY(nodeYs[i]));
+    tl.fromTo(circles[i], { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: .45, ease: 'expo.out' }, t - .05);
+    tl.fromTo($('h4', li), { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: .22, ease: 'power2.out' }, t);
+    tl.fromTo($$('p .w', li), { opacity: 0 }, { opacity: 1, duration: .45, ease: 'power1.out', stagger: .08 }, t + .18);
+  });
+  tl.fromTo($$('.sf-note .w', A), { opacity: 0 }, { opacity: 1, duration: .5, ease: 'power1.out', stagger: .08 }, T0 + TD - .1);
+  tl.fromTo($('.sf-act', A), { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: .45, ease: 'power2.out' }, Math.min(D - .9, T0 + TD + .35));
+};
+const shoFrame = (t, comp) => {
+  shoBar.style.setProperty('--prog', (t / comp.duration).toFixed(4));
+  shoTc.textContent = fmt(t) + ' / ' + fmt(comp.duration);
+};
+const markTopic = () => qBtns.forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.topic === topic)));
+let shoComp = null, shoSeen = false;
+const initSho = () => {
+  shoComp = new Composition(shoRoot, buildSho, { onFrame: shoFrame });
+  window.__hf.sho = shoComp;
+  if (reduced) shoComp.seek(shoComp.duration);
+};
+const playTopic = (i) => {
+  topic = i; markTopic();
+  if (!shoComp) return;
+  shoComp.pause(); shoComp.t = 0; shoComp.build();
+  if (reduced) shoComp.seek(shoComp.duration); else shoComp.play(0);
+};
+qBtns.forEach((b) => b.addEventListener('click', () => playTopic(+b.dataset.topic)));
+$('#sho-replay').addEventListener('click', () => playTopic(topic));
+new IntersectionObserver(([e]) => {
+  if (!shoComp) return;
+  if (e.isIntersecting && !shoSeen) { shoSeen = true; if (!reduced) shoComp.play(0); }
+  else if (!e.isIntersecting && shoComp.playing) { shoComp.pause(); shoComp._held = true; }
+  else if (e.isIntersecting && shoComp._held) { shoComp._held = false; shoComp.play(); }
+}, { threshold: .4 }).observe(shoRoot);
+
+/* ---------------------------------------------------------------------------
+   SUPPORT · "support-thread" (2.6 s): one line through the five steps */
+const track = $('#sup-track'), supPath = $('#sup-path'), supSvg = $('#sup-svg');
+const buildSup = (tl) => {
+  const tr = track.getBoundingClientRect();
+  const dots = $$('.sup-dot', track).map((d) => { const r = d.getBoundingClientRect(); return { x: r.left - tr.left + r.width / 2, y: r.top - tr.top + r.height / 2, el: d }; });
+  supSvg.setAttribute('viewBox', `0 0 ${tr.width} ${tr.height}`);
+  const vertical = dots.length > 1 && Math.abs(dots[1].x - dots[0].x) < 4;
+  const d = vertical
+    ? `M${dots[0].x},${dots[0].y - 4} L${dots[0].x},${dots[dots.length - 1].y}`
+    : `M${dots[0].x},${dots[0].y} L${tr.width},${dots[0].y}`;
+  supPath.setAttribute('d', d);
+  const L = supPath.getTotalLength();
+  tl.fromTo(supPath, { strokeDasharray: `${L} ${L + 10}`, strokeDashoffset: L }, { strokeDashoffset: 0, duration: 2.2, ease: 'power1.inOut' }, 0.1);
+  const pe = gsap.parseEase('power1.inOut');
+  dots.forEach((dt) => {
+    const len = vertical ? dt.y - dots[0].y : dt.x - dots[0].x;
+    const t = .1 + 2.2 * invEase(pe, Math.max(0, len) / L);
+    tl.fromTo(dt.el, { scale: .2, backgroundColor: '#f3f0ea' }, { scale: 1, backgroundColor: '#b9a17b', duration: .5, ease: 'expo.out' }, t);
+  });
+};
+let supComp = null;
+const initSup = () => {
+  supComp = new Composition(track, buildSup);
+  window.__hf.support = supComp;
+  if (reduced) supComp.seek(supComp.duration);
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); if (!reduced) supComp.play(0); } }, { threshold: .35 }).observe(track);
+};
+
+const afterFonts = Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 1600))]);
+afterFonts.then(() => { initSho(); initSup(); });
+let rz2 = 0;
+addEventListener('resize', () => {
+  clearTimeout(rz2);
+  rz2 = setTimeout(() => {
+    if (shoComp) { const was = shoComp.playing; shoComp.pause(); shoComp.build(); if (was) shoComp.play(); }
+    if (supComp) { const was = supComp.playing; supComp.pause(); supComp.build(); if (was) supComp.play(); }
+  }, 150);
+});
+document.addEventListener('visibilitychange', () => {
+  for (const c of [heroComp, shoComp, supComp]) {
+    if (!c) continue;
+    if (document.hidden && c.playing) { c.pause(); c._tabHeld = true; }
+    else if (!document.hidden && c._tabHeld) { c._tabHeld = false; c.play(); }
+  }
+});
+
+/* ---------------------------------------------------------------------------
+   Services: the photograph follows the row under the pointer / focus */
+const svcRows = $$('.svc-row'), svcImgs = $$('#svc-photo img'), svcCap = $('#svc-cap');
+const showSvc = (i) => { svcRows.forEach((r, j) => r.classList.toggle('on', j === i)); svcImgs.forEach((im, j) => im.classList.toggle('on', j === i)); svcCap.textContent = $('.svc-name', svcRows[i]).textContent; };
+svcRows.forEach((r, i) => { r.addEventListener('mouseenter', () => showSvc(i)); r.addEventListener('focus', () => showSvc(i)); });
+
+/* one-shot reveals below the fold */
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .2 });
+$$('.rv, .why-media').forEach((el) => io.observe(el));
+})();
+</script>
+</body>
+</html>

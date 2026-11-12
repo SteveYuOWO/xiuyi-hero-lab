@@ -1,0 +1,11 @@
+{
+  "id": "v18",
+  "slug": "garden-skills",
+  "tool": "garden-skills (motion-showreel · copperplate-engraving + one-line styles; web-design-engineer)",
+  "repo": "https://github.com/ConardLi/garden-skills",
+  "title": "铜版丝绸与一线手毬",
+  "concept": "首屏是一块实时 3D 的丝绸，全部用铜版雕刻的刀线随形排线表现明暗——光跟随鼠标移动，线条随之实时变粗变细、交叉加深，翻起的一角露出香槟色里衬（裏勝り），并可用放大镜看刀线细节。SHŌ 是一根连续的香槟色丝线绕成的手毬，悬停三个问题时线团解开，分别变成带四个结的路径、四天日程格和两股相伴的编绳，表达“把问题理清”。",
+  "fromTool": "取自 motion-showreel 的风格库：copperplate-engraving（随形排线、刻刀线、交叉排线、试印层次、透明淡彩、放大细节圈、印版压痕）驱动首屏，one-line（线团解开、游走线头、回折共享边）驱动 SHŌ 与支援步骤的串线；沿用其 render(t) 确定性原则（画面只由时间与输入决定、无随机）。页面层面用 web-design-engineer 的 Design Read 五维刻度、Editorial/Minimalist（muji-kenya-hara、aesop 配方）与反 AI 俗套/失败模式清单。",
+  "tech": "three.js r170 + custom GLSL engraving shader (analytic silk with page-curl and rolled hem, burin hatching driven by an exposure-constant raking light that orbits from the cursor, engraved cast shadow, scissored ×3 loupe pass); Canvas 2D projected-3D thread with arc-length morphing; SVG scroll-drawn thread",
+  "is3d": true
+}

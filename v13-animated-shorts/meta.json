@@ -1,0 +1,11 @@
+{
+  "id": "v13",
+  "slug": "animated-shorts",
+  "tool": "claude animated shorts (cartoon-3d-short skill)",
+  "repo": "https://github.com/mromidev/claude-animated-shorts",
+  "title": "代官山・午後四時的短片",
+  "concept": "首屏是一部20秒循环的three.js微缩短片：黄昏的代官山银杏大道，金箔“霞”云框住远景，飞机掠过，咖啡色专车停到诊所门前，专属协调员出门鞠躬迎接并陪同入内；SHŌ是同一世界里诊所门口那盏和纸行灯，从室内看，悬停提问时灯光随“说话”节奏变亮并作答。",
+  "fromTool": "照搬其方法：按故事节拍写分镜（到着→送迎→出迎え→同行）、story.ts的镜头语法（smootherstep滑移、每个停留都缓慢推近、强调处微倾）、shade.ts的双色调光照（阴影贴图×柔和明暗交界）、雾色=地平线色、ink.ts的法线+深度描线（在景深之前单独一遍）、lensblur.ts的薄透镜景深做移轴微缩感、只对HDR发光做bloom、最后调色；把黑色粗描线改为细咖啡色线、把豆头卡片角色改为建筑模型式人物以符合医疗奢华调性。",
+  "tech": "three.js r175 + custom GLSL post (two-tone lighting, normal/depth ink, thin-lens DOF, bloom, grade)",
+  "is3d": true
+}

@@ -1,0 +1,11 @@
+{
+  "id": "v14",
+  "slug": "blender",
+  "tool": "MCP for Blender (blender-mcp)",
+  "repo": "https://github.com/ahujasid/mcp-for-blender",
+  "title": "金继茶碗与呼吸之石",
+  "concept": "首屏是一只在 Blender Cycles 中渲染的乐烧金继茶碗：咖啡色釉、焦糖流釉、香槟金继缝，在品牌米色上做 6 秒无缝转台，可用鼠标或手指拖动“转动”它；SHŌ 区则是深咖啡底上一枚磨砂玻璃卵石，内部的光以 4 秒节奏呼吸并把暖光洒在漆面上，像一个安静待命的存在。用“器”与“光”代替原来的金环和金色团块，传达修复、照料与陪伴。",
+  "fromTool": "照仓库 execute_blender_code 的做法，用同样的 bpy 调用在无界面 Blender 4.5 中搭建场景（数据 API 优先、按 type 查找节点、防御式解析插座名、对象全部命名、首尾关键帧相同的循环），并按其 look/frames 思路先渲染多角度帧条检查再出终版；茶碗由手绘轮廓车削并加入手捏起伏、波状口沿与刮刀面，金继缝以 numpy 生成 UV 遮罩并凸起，阴影单独用 shadow catcher 渲染后染成咖啡色合成到页面米色。",
+  "tech": "Blender 4.5 LTS Cycles (Metal GPU, OIDN denoise, light & shadow linking) → ffmpeg VP9 WebM + H.264 MP4; page is vanilla HTML/CSS/JS with drag-to-scrub turntable",
+  "is3d": true
+}

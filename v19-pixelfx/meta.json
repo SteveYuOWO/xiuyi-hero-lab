@@ -1,0 +1,11 @@
+{
+  "id": "v19",
+  "slug": "pixelfx",
+  "tool": "pixelfx",
+  "repo": "https://github.com/patch-gg/pixelfx",
+  "title": "网点印刷里的东京",
+  "concept": "首屏把公司实拍的东京塔客房照片用 4×4 Bayer 有序抖动印成咖啡与香槟色的“校样版画”，光柱缓缓扫过、尘埃只在光里闪现，指针所到之处像素按“粗块→细格→原片”逐级还原成真彩照片；SHŌ 是由汉字字形组成、缓慢呼吸的圆相（ensō），悬停问题时它收缩成小头像，在原稿用纸格子里逐字写出回答。",
+  "fromTool": "取自 pixelfx 的帧模型（不透明/抖动像素的 color 缓冲 + 加色 light 缓冲，合成后用 pixelated 放大）、4×4 Bayer 阈值与由暗到亮的硬色阶 ramp、种子哈希噪声、pixel-dissolve 转场的成团入场与描边沿色阶冷却（用于首屏开场和服务照片切换）、god-rays 的光柱与尘埃、12fps 步进动画和 5×7 像素字体数据。",
+  "tech": "Canvas 2D 像素缓冲（无 WebGL）+ 原生 JS，Shippori Mincho / IBM Plex Mono",
+  "is3d": false
+}

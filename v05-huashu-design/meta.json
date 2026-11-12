@@ -1,0 +1,11 @@
+{
+  "id": "v05",
+  "slug": "huashu-design",
+  "tool": "huashu design (花叔Design)",
+  "repo": "https://github.com/alchaincyf/huashu-design",
+  "title": "水墨富士与墨滴圆相",
+  "concept": "首屏是实时 WebGL 水墨山水：咖啡色墨按纸上吸收规律晕开，远山、富士、流动的雾与松林层层叠化，随指针缓慢视差，右上角竖排题款配 XIUYI 落款；SHŌ 是一滴墨落在湿纸上晕开、颜料被推向边缘（咖啡环效应）后干成一笔圆相，悬停问题时再滴一滴、重新晕开又收回成圆。",
+  "fromTool": "照花叔Design 的窄桥走：品牌资产协议、六张方向卡（等伯雾景/原研哉/实景参照/秒数轮盘）、form 五问、素材先行 T0 档程序化材质、色彩推导（墨色=logo 棕加水）、中文与东亚风格库里的马一角构图与宋刻本界栏、中文排印规则与反 AI 模板清单，并把 design_lint 的检查移植到实验室 Playwright 跑通，做了四轮截图打磨。",
+  "tech": "Raw WebGL 1 + GLSL fragment shaders (two canvases, procedural noise, no textures), vanilla JS, Google Fonts",
+  "is3d": false
+}

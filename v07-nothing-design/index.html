@@ -1,0 +1,1180 @@
+<!doctype html>
+<!-- v07 · nothing design · https://github.com/dominikmartn/nothing-design-skill · Taken from the tool: light "printed technical manual" mode on warm paper plus one dark "instrument panel in a dark room" (SHŌ); the three-layer hierarchy (display / body / Space Mono ALL-CAPS labels); Doto dot-matrix only for hero numerals; the dot-matrix motif as the only illustration (hero = point-cloud ring rendered on a fixed LED dot grid, SHŌ = 16-dot LED board); segmented progress bar, bracket labels, left 2px active-row bar; the red signal accent replaced by XIUYI champagne; no shadows / gradients / blur, opacity-only ease-out motion, percussive (stepped) animation, pill buttons, 12–16px cards. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XIUYI — 美・健康・暮らしを、日本で再定義する。</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:ROND,wght@0..100,400..900&family=DotGothic16&family=Shippori+Mincho:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  /* light — printed manual on warm paper */
+  --page:#f3f0ea; --beige:#e6e2db; --surface:#fbfaf7;
+  --border:#e0d9ce; --border-visible:#c9bfb0;
+  --text-disabled:#9a8c7c; --text-secondary:#6b5946; --text-primary:#44352a; --text-display:#2a2019;
+  --coffee:#5b4938; --logo:#7a6a56; --accent:#b9a17b;
+  /* dark — instrument panel */
+  --d-black:#15110e; --d-surface:#1c1713; --d-raised:#231d18; --d-border:#2f2720; --d-border-visible:#463b31;
+  --d-disabled:#7d7062; --d-secondary:#a99b8a; --d-primary:#e8e1d5; --d-display:#faf6ef; --led:#e2c891;
+  --f-jp:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --f-mono:"Space Mono","SF Mono",ui-monospace,Menlo,monospace;
+  --f-dot:"Doto","Space Mono",monospace;
+  --ease:cubic-bezier(.25,.1,.25,1);
+  --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px; --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px;
+  --gutter:48px; --head:76px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{background:var(--page);color:var(--text-primary);font-family:var(--f-jp);font-size:15px;line-height:1.95;
+  letter-spacing:.04em;-webkit-font-smoothing:antialiased;overflow-x:clip;text-rendering:optimizeLegibility}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;letter-spacing:inherit}
+ol,ul{list-style:none}
+:focus-visible{outline:1px solid currentColor;outline-offset:4px;border-radius:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1440px;margin:0 auto;padding:0 var(--gutter)}
+.ph{display:inline-block}
+.jp{word-break:auto-phrase;line-break:strict;text-wrap:pretty}
+.palt{font-feature-settings:"palt"}
+
+/* labels: Space Mono, ALL CAPS, instrument-panel */
+.lbl{font-family:var(--f-mono);font-size:11px;line-height:1.2;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);font-weight:400}
+.lbl b{font-weight:400;color:var(--text-display)}
+.doto{font-family:var(--f-dot);font-weight:700;font-variation-settings:"ROND" 100;letter-spacing:-.02em;line-height:.9}
+.sec-lbl{display:flex;gap:12px;align-items:center}
+.sec-lbl .idx{color:var(--text-display)}
+
+/* buttons — pill, mono, the arrow is a 1.5px line icon */
+.btn{display:inline-flex;align-items:center;gap:14px;height:52px;padding:0 26px 0 30px;border-radius:999px;
+  font-family:var(--f-jp);font-size:14px;font-weight:500;letter-spacing:.16em;white-space:nowrap;
+  transition:opacity .2s var(--ease),border-color .2s var(--ease),background-color .2s var(--ease)}
+.btn svg{width:18px;height:18px;flex:none}
+.btn-primary{background:var(--coffee);color:var(--page)}
+.btn-primary:hover{background:var(--text-display)}
+.btn-secondary{border:1px solid var(--border-visible);color:var(--text-primary)}
+.btn-secondary:hover{border-color:var(--text-display);color:var(--text-display)}
+.btn-light{background:var(--d-display);color:var(--d-black)}
+.btn-light:hover{opacity:.82}
+.ico{stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ───────── header ───────── */
+.head{position:sticky;top:0;z-index:40;background:var(--page);border-bottom:1px solid transparent;transition:border-color .25s var(--ease)}
+.head.is-scrolled{border-bottom-color:var(--border)}
+.head .wrap{height:var(--head);display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.brand{display:flex;align-items:center;gap:14px;justify-self:start}
+.brand img{width:44px;height:44px}
+.wordmark{font-family:var(--f-jp);font-weight:600;font-size:17px;letter-spacing:.36em;color:var(--coffee);line-height:1}
+.nav{display:flex;gap:44px}
+.nav a{font-size:14px;letter-spacing:.16em;color:var(--text-secondary);position:relative;transition:color .2s var(--ease);display:inline-flex;align-items:center;gap:8px}
+.nav a:hover{color:var(--text-display)}
+.sig{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;flex:none}
+.head-r{justify-self:end;display:flex;align-items:center;gap:28px}
+.head-r > *,.lang > button{font-size:13px;letter-spacing:.14em;color:var(--text-secondary);display:inline-flex;align-items:center;gap:8px;transition:color .2s var(--ease)}
+.head-r > *:hover{color:var(--text-display)}
+.head-r svg{width:14px;height:14px}
+.lang{position:relative}
+.lang-list{position:absolute;top:calc(100% + 10px);right:-12px;background:var(--surface);border:1px solid var(--border-visible);border-radius:8px;padding:6px;min-width:132px;display:none}
+.lang.is-open .lang-list{display:block}
+.lang-list a{display:flex;justify-content:space-between;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--text-primary)}
+.lang-list a:hover{background:var(--page)}
+.lang-list a[aria-current]{color:var(--text-display)}
+.lang-list a[aria-current]::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);align-self:center}
+.menu-btn .bars{display:inline-grid;gap:5px;width:22px}
+.menu-btn .bars i{display:block;height:1.5px;background:currentColor}
+
+/* overlay menu */
+.menu{position:fixed;inset:0;z-index:60;background:var(--page);display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .25s var(--ease),visibility 0s .25s}
+.menu.is-open{opacity:1;visibility:visible;transition:opacity .25s var(--ease)}
+.menu > .wrap{width:100%}
+.menu-top{height:var(--head);display:flex;align-items:center;justify-content:space-between}
+.menu-close{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;color:var(--text-primary)}
+.menu-list{flex:1;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.menu-list a{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:baseline;padding:18px 0;border-top:1px solid var(--border);font-size:28px;letter-spacing:.12em;color:var(--text-display)}
+.menu-list a:last-child{border-bottom:1px solid var(--border)}
+.menu-list .lbl{align-self:center}
+.menu-foot{display:flex;justify-content:space-between;align-items:center;padding-top:24px;padding-bottom:32px;gap:16px;flex-wrap:wrap}
+.menu-foot .langs{display:flex;gap:18px;font-size:13px;letter-spacing:.12em}
+.menu-foot .langs a[aria-current]{color:var(--text-display);border-bottom:1px solid currentColor}
+
+/* ───────── hero ───────── */
+.hero{position:relative;min-height:calc(100svh - var(--head));display:flex;flex-direction:column;isolation:isolate}
+#field{position:absolute;inset:0;width:100%;height:100%;z-index:-1;touch-action:pan-y}
+.hero.no-gl{background-image:radial-gradient(circle,rgba(68,53,42,.16) .8px,transparent 1px);background-size:7px 7px}
+.hero-inner{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);align-items:center;gap:var(--s-2xl);padding-top:24px;padding-bottom:24px}
+.hero-copy{max-width:640px;position:relative}
+.kicker{display:flex;align-items:center;gap:14px;margin-bottom:36px}
+.kicker .rule{width:28px;height:1px;background:var(--text-secondary)}
+.kicker .jp-k{font-size:13px;letter-spacing:.3em;color:var(--text-secondary)}
+h1,h2,h3{word-break:auto-phrase;text-wrap:balance}
+h1{font-weight:500;font-size:clamp(34px,4.4vw,64px);line-height:1.36;letter-spacing:.05em;color:var(--text-display);font-feature-settings:"palt"}
+h1 .l{display:block;white-space:nowrap}
+.hero-lead{margin-top:32px;max-width:30em;font-size:16px;line-height:2;color:var(--text-secondary)}
+.ctas{margin-top:44px;display:flex;gap:14px;flex-wrap:wrap}
+.hero-stage{position:relative;justify-self:center;height:min(640px,calc(100svh - var(--head) - 150px));aspect-ratio:1;max-width:100%;pointer-events:none}
+.stage-mark{position:absolute;width:12px;height:12px}
+.stage-mark::before,.stage-mark::after{content:"";position:absolute;background:var(--text-secondary)}
+.stage-mark::before{left:0;right:0;top:50%;height:1px;transform:translateY(-.5px)}
+.stage-mark::after{top:0;bottom:0;left:50%;width:1px;transform:translateX(-.5px)}
+.stage-mark.tl{left:-6px;top:-6px}.stage-mark.tr{right:-6px;top:-6px}.stage-mark.bl{left:-6px;bottom:-6px}.stage-mark.br{right:-6px;bottom:-6px}
+.fig-cap{position:absolute;left:0;top:-30px;display:flex;gap:16px}
+.readout{position:absolute;right:0;bottom:-34px;display:flex;gap:22px}
+.readout div{display:flex;gap:8px}
+.readout dd{color:var(--text-display);font-variant-numeric:tabular-nums;min-width:6ch;text-align:right}
+.readout .rd-scan dd{color:var(--coffee)}
+.readout .rd-scan dt::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px}
+.hero > .wrap{width:100%}
+.hero-meta{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;border-top:1px solid var(--border);background:var(--page)}
+.hero-meta > div{display:flex;align-items:center;gap:14px;padding:20px 0}
+.hero-meta .v{font-size:13px;letter-spacing:.14em;color:var(--text-primary)}
+.hero-meta .v.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em}
+.scroll-cue{justify-self:end}
+.scroll-cue .lbl{display:inline-flex;gap:10px;align-items:center}
+
+/* ───────── SHŌ (dark instrument) ───────── */
+.dark{background:var(--d-black);color:var(--d-primary)}
+.dark .lbl{color:var(--d-secondary)}
+.dark .lbl b,.dark .sec-lbl .idx{color:var(--d-display)}
+.sho{padding:136px 0}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"dev head" "dev qs";column-gap:96px;row-gap:0;align-items:start}
+.device{grid-area:dev;align-self:center}
+.sho-head{grid-area:head}
+.sho-qs{grid-area:qs}
+.device{background:var(--d-surface);border:1px solid var(--d-border);border-radius:16px;padding:18px 18px 16px}
+.dev-top{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:2px 4px 16px}
+#presence{width:44px;height:44px;display:block}
+.dev-id{display:flex;flex-direction:column;gap:6px}
+.dev-name{font-family:var(--f-dot);font-weight:800;font-variation-settings:"ROND" 100;font-size:26px;line-height:.8;letter-spacing:.02em;color:var(--d-display)}
+.dev-state{color:var(--led)!important}
+.dev-clock{text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.dev-clock b{font-variant-numeric:tabular-nums}
+.board{background:#0d0a08;border:1px solid var(--d-border);border-radius:8px;padding:14px 12px;display:flex;justify-content:center}
+#led{display:block}
+.dev-bottom{padding:16px 4px 2px}
+.seg{display:grid;grid-template-columns:repeat(32,1fr);gap:2px;height:8px}
+.seg i{background:var(--d-border);display:block}
+.seg i.on{background:var(--d-primary)}
+.seg i.head{background:var(--led)}
+.dev-meta{display:flex;justify-content:space-between;margin-top:12px}
+.dev-meta b{font-variant-numeric:tabular-nums}
+.sho-head h2{margin-top:28px}
+h2{font-weight:500;font-size:clamp(28px,2.9vw,42px);line-height:1.42;letter-spacing:.06em;font-feature-settings:"palt";color:var(--text-display)}
+.dark h2{color:var(--d-display)}
+.sho-lead{margin-top:24px;color:var(--d-secondary);max-width:34em}
+.qs{margin-top:48px;border-bottom:1px solid var(--d-border)}
+.q{position:relative;display:grid;grid-template-columns:52px minmax(0,1fr) 22px;gap:16px;align-items:center;width:100%;text-align:left;padding:22px 0;border-top:1px solid var(--d-border);color:var(--d-primary);font-size:15px;line-height:1.8;transition:color .2s var(--ease)}
+.q .q-n{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;color:var(--d-disabled);transition:color .2s var(--ease)}
+.q svg{width:18px;height:18px;color:var(--d-disabled);transition:color .2s var(--ease)}
+.q::before{content:"";position:absolute;left:-20px;top:22px;bottom:22px;width:2px;background:var(--led);opacity:0;transition:opacity .2s var(--ease)}
+.q:hover,.q.is-active{color:var(--d-display)}
+.q:hover .q-n,.q.is-active .q-n{color:var(--d-primary)}
+.q:hover svg,.q.is-active svg{color:var(--d-display)}
+.q.is-active::before{opacity:1}
+.sho-cta{margin-top:44px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.sho-note{font-size:12px;color:var(--d-disabled);letter-spacing:.06em;line-height:1.7}
+
+/* ───────── services ───────── */
+.services{padding:144px 0 128px}
+.svc-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:96px;align-items:start}
+.svc-side{position:sticky;top:calc(var(--head) + 40px)}
+.svc-side h2{margin-top:28px}
+.big-num{display:flex;align-items:flex-end;gap:18px;margin-top:40px}
+.big-num .doto{font-size:156px;color:var(--text-display)}
+.big-num .lbl{padding-bottom:14px;line-height:1.7}
+.svc-fig{margin-top:48px;position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--beige)}
+.svc-fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;filter:saturate(.25) sepia(.1) contrast(.98);transition:opacity .35s var(--ease),filter .35s var(--ease)}
+.svc-fig img.is-on{opacity:1}
+.svc-fig.is-live img.is-on{filter:none}
+.svc-fig figcaption{position:absolute;left:14px;bottom:12px;background:var(--page);padding:6px 10px;border-radius:4px;color:var(--text-primary)}
+.svc-list{border-bottom:1px solid var(--border)}
+.svc-list a{display:grid;grid-template-columns:56px minmax(0,1fr) auto 22px;gap:24px;align-items:center;padding:26px 0;border-top:1px solid var(--border);position:relative}
+.svc-list .n{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--text-disabled);transition:color .2s var(--ease)}
+.svc-list .t{font-size:26px;line-height:1.4;letter-spacing:.1em;color:var(--text-primary);font-feature-settings:"palt";transition:color .2s var(--ease)}
+.svc-list .lbl{color:var(--text-disabled);transition:color .2s var(--ease)}
+.svc-list svg{width:18px;height:18px;color:var(--text-disabled);transition:color .2s var(--ease)}
+.svc-list a::before{content:"";position:absolute;left:-20px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity .2s var(--ease)}
+.svc-list a:hover .t,.svc-list a.is-on .t{color:var(--text-display)}
+.svc-list a:hover .n,.svc-list a.is-on .n,.svc-list a:hover .lbl,.svc-list a.is-on .lbl{color:var(--text-secondary)}
+.svc-list a:hover svg,.svc-list a.is-on svg{color:var(--text-display)}
+.svc-list a.is-on::before{opacity:1}
+
+/* ───────── why ───────── */
+.why{background:var(--surface);padding:136px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sec-head{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:96px;align-items:end}
+.sec-head h2{margin-top:28px}
+.sec-head p.jp{color:var(--text-secondary);max-width:34em}
+.why-grid{margin-top:88px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+.why-item{padding:0 40px;border-left:1px solid var(--border);display:flex;flex-direction:column}
+.why-item:first-child{padding-left:0;border-left:0}
+.why-item:last-child{padding-right:0}
+.why-item .doto{font-size:64px;color:var(--text-display)}
+.why-item .lbl{margin-top:36px}
+.why-item h3{margin-top:14px;font-weight:500;font-size:21px;line-height:1.6;letter-spacing:.08em;color:var(--text-display);font-feature-settings:"palt"}
+.why-item p.jp{margin-top:16px;font-size:14px;line-height:2;color:var(--text-secondary)}
+.why-viz{margin-top:auto;padding-top:36px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tags li{border:1px solid var(--border-visible);border-radius:999px;padding:5px 13px;font-size:12px;letter-spacing:.12em;line-height:1.5;color:var(--text-primary)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.steps i{display:block;height:10px;background:var(--text-display)}
+.steps i:last-of-type{background:var(--accent)}
+.steps span{font-size:11px;letter-spacing:.06em;color:var(--text-secondary);margin-top:10px;line-height:1.5}
+.steps .lbl{font-size:10px;grid-column:1/-1;margin-top:14px}
+
+/* ───────── support ───────── */
+.support{padding:144px 0}
+.sup-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:96px;align-items:start}
+.sup-side{position:sticky;top:calc(var(--head) + 40px)}
+.sup-side h2{margin-top:28px}
+.sup-fig{margin-top:48px;border-radius:12px;overflow:hidden;aspect-ratio:1;max-width:440px;background:var(--beige)}
+.sup-fig img{width:100%;height:100%;object-fit:cover;filter:saturate(.72)}
+.sup-figcap{margin-top:14px;display:flex;justify-content:space-between;max-width:440px}
+.sup-list{border-bottom:1px solid var(--border)}
+.sup-list li{display:grid;grid-template-columns:56px minmax(0,1fr);gap:24px;padding:34px 0;border-top:1px solid var(--border)}
+.sup-list .n{padding-top:8px}
+.sup-list h3{font-weight:500;font-size:21px;line-height:1.6;letter-spacing:.08em;color:var(--text-display);font-feature-settings:"palt";display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.sup-list h3 .chip{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;line-height:1;padding:5px 9px;border:1px solid var(--border-visible);border-radius:4px;color:var(--text-secondary);font-weight:400}
+.sup-list p{margin-top:10px;font-size:14px;line-height:2;color:var(--text-secondary);max-width:38em}
+.sup-note{margin-top:24px;font-size:12px;line-height:1.8;color:var(--text-secondary);letter-spacing:.06em}
+
+/* ───────── closing ───────── */
+.closing{background:var(--beige);padding:128px 0;position:relative;overflow:hidden}
+.closing::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(68,53,42,.18) .9px,transparent 1.1px);background-size:14px 14px;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 48%,#000 100%);mask-image:linear-gradient(90deg,transparent 0,transparent 48%,#000 100%)}
+.close-grid{position:relative;display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:96px;align-items:center}
+.close-grid h2{margin-top:28px;font-size:clamp(32px,3.6vw,52px)}
+.close-grid p.jp{margin-top:28px;color:var(--text-secondary);max-width:32em}
+.close-grid .ctas{margin-top:40px}
+.stats{margin-top:56px;max-width:480px;border-top:1px solid var(--border-visible)}
+.stats div{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+.stats dd{font-size:14px;letter-spacing:.12em;color:var(--text-primary)}
+.close-fig{border-radius:12px;overflow:hidden;aspect-ratio:4/5;background:var(--page)}
+.close-fig img{width:100%;height:100%;object-fit:cover;filter:saturate(.8)}
+.close-cap{margin-top:14px;display:flex;justify-content:space-between}
+
+/* ───────── footer ───────── */
+.foot{padding:88px 0 40px}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:start}
+.foot-brand{display:flex;gap:20px;align-items:center}
+.disc{width:60px;height:60px;border-radius:50%;background:var(--page);display:grid;place-items:center;flex:none}
+.disc img{width:52px;height:52px}
+.foot-brand .wordmark{color:var(--d-display);font-size:19px}
+.foot-brand p{margin-top:8px;font-size:13px;color:var(--d-secondary);letter-spacing:.12em;line-height:1.7}
+.foot-nav{display:grid;grid-template-columns:repeat(3,auto);gap:14px 56px}
+.foot-nav a{font-size:14px;letter-spacing:.14em;color:var(--d-primary);transition:opacity .2s var(--ease)}
+.foot-nav a:hover{opacity:.55}
+.foot-base{margin-top:88px;padding-top:22px;border-top:1px solid var(--d-border);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ───────── responsive ───────── */
+@media (max-width:1180px){
+  .nav{gap:28px}
+  .head-r{gap:20px}
+  .head-r .login{display:none}
+  .sho-grid,.svc-grid,.sup-grid,.sec-head,.close-grid{gap:56px}
+  .why-item{padding:0 24px}
+}
+@media (max-width:960px){
+  :root{--gutter:20px;--head:64px}
+  .nav,.head-r .lang,.head-r .login{display:none}
+  .head .wrap{grid-template-columns:1fr auto}
+  .brand img{width:40px;height:40px}
+  .wordmark{font-size:15px}
+  .hero{min-height:auto}
+  .hero-inner{grid-template-columns:1fr;gap:28px;padding-top:12px;padding-bottom:48px}
+  .hero-stage{order:-1;width:100%;aspect-ratio:auto;height:min(78vw,320px);justify-self:stretch}
+  .fig-cap{top:4px;left:0}
+  .readout{bottom:4px;gap:14px;right:0}
+  .readout .rd-pts{display:none}
+  .stage-mark{display:none}
+  .kicker{margin-bottom:22px}
+  .hero-lead{margin-top:22px;font-size:15px}
+  .ctas{margin-top:32px}
+  .ctas{gap:10px}
+  .btn{height:50px;padding:0 18px 0 22px;font-size:13px;letter-spacing:.1em;gap:10px}
+  .btn svg{width:16px;height:16px}
+  .hero-meta{grid-template-columns:1fr}
+  .hero-meta > div{padding:14px 0;justify-content:space-between;gap:16px}
+  .hero-meta > div + div{border-top:1px solid var(--border)}
+  .scroll-cue{display:none!important}
+  .sho{padding:88px 0}
+  .sho-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "dev" "qs";row-gap:40px}
+  .device{padding:14px 12px 12px}
+  .board{padding:10px 8px}
+  .qs{margin-top:0}
+  .q{grid-template-columns:44px minmax(0,1fr) 18px;gap:12px;font-size:14.5px;padding:18px 0}
+  .q::before{left:-12px;top:18px;bottom:18px}
+  .services,.support{padding:96px 0}
+  .svc-grid,.sup-grid,.sec-head,.close-grid{grid-template-columns:1fr;gap:40px}
+  .svc-side,.sup-side{position:static}
+  .big-num{margin-top:28px}
+  .big-num .doto{font-size:104px}
+  .svc-fig{display:none}
+  .svc-list a{grid-template-columns:36px minmax(0,1fr) 18px;gap:14px;padding:20px 0}
+  .svc-list .lbl{display:none}
+  .svc-list .t{font-size:20px}
+  .svc-list a::before{display:none}
+  .why{padding:96px 0}
+  .why-grid{margin-top:48px;grid-template-columns:1fr;gap:0}
+  .why-item,.why-item:first-child,.why-item:last-child{padding:36px 0;border-left:0;border-top:1px solid var(--border)}
+  .why-item .doto{font-size:52px}
+  .why-item .lbl{margin-top:24px}
+  .sup-fig{max-width:none;aspect-ratio:4/3}
+  .sup-figcap{max-width:none}
+  .sup-list li{grid-template-columns:40px minmax(0,1fr);gap:12px;padding:28px 0}
+  .sup-list h3{font-size:18.5px}
+  .closing{padding:96px 0}
+  .closing::before{-webkit-mask-image:linear-gradient(180deg,transparent 0,transparent 55%,#000 100%);mask-image:linear-gradient(180deg,transparent 0,transparent 55%,#000 100%)}
+  .close-fig{aspect-ratio:4/3}
+  .foot{padding:64px 0 32px}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-nav{grid-template-columns:repeat(2,auto);justify-content:start;gap:14px 48px}
+  .foot-base{margin-top:56px}
+}
+@media (max-width:380px){ h1{font-size:31px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path class="ico" d="M4 12h15M13.5 6.5 19 12l-5.5 5.5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path class="ico" d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<header class="head" id="head">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="XIUYI ホーム">
+      <img src="../assets/logo-mark.png" alt="" width="44" height="44">
+      <span class="wordmark">XIUYI</span>
+    </a>
+    <nav class="nav" aria-label="メイン">
+      <a href="#services">サービス</a>
+      <a href="#column">コラム</a>
+      <a href="#why">会社案内</a>
+      <a href="#sho"><span class="sig" aria-hidden="true"></span>SHŌ AI</a>
+    </nav>
+    <div class="head-r">
+      <div class="lang" id="lang">
+        <button type="button" aria-expanded="false" aria-controls="lang-list" id="lang-btn">日本語<svg aria-hidden="true"><use href="#i-down"/></svg></button>
+        <div class="lang-list" id="lang-list">
+          <a href="#" aria-current="true">日本語</a><a href="#" lang="zh">中文</a><a href="#" lang="en">English</a>
+        </div>
+      </div>
+      <a class="login" href="#">ログイン</a>
+      <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu">メニュー<span class="bars" aria-hidden="true"><i></i><i></i></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="wrap menu-top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" alt="" width="40" height="40"><span class="wordmark">XIUYI</span></a>
+    <button type="button" class="menu-close" id="menu-close">[ 閉じる ]</button>
+  </div>
+  <nav class="wrap menu-list" aria-label="メニュー">
+    <a href="#services"><span class="lbl">01</span>サービス<span class="lbl">SERVICES</span></a>
+    <a href="#column"><span class="lbl">02</span>コラム<span class="lbl">COLUMN</span></a>
+    <a href="#why"><span class="lbl">03</span>会社案内<span class="lbl">ABOUT</span></a>
+    <a href="#sho"><span class="lbl">04</span>SHŌ AI<span class="lbl">ASSISTANT</span></a>
+    <a href="#contact"><span class="lbl">05</span>相談を予約<span class="lbl">BOOK</span></a>
+  </nav>
+  <div class="wrap menu-foot">
+    <div class="langs"><a href="#" aria-current="true">日本語</a><a href="#" lang="zh">中文</a><a href="#" lang="en">English</a></div>
+    <a href="#" class="lbl">ログイン →</a>
+  </div>
+</div>
+
+<main>
+<!-- ───── HERO ───── -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="kicker"><span class="lbl">Tokyo</span><span class="rule" aria-hidden="true"></span><span class="jp-k">東京・美と健康のライフスタイル</span></p>
+      <h1 id="hero-title"><span class="l">美・健康・暮らしを、</span><span class="l">日本で再定義する。</span></h1>
+      <p class="hero-lead jp">XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#services">サービスを見る<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-secondary" href="#contact">相談を予約<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+    <div class="hero-stage" id="stage" aria-hidden="true">
+      <span class="stage-mark tl"></span><span class="stage-mark tr"></span><span class="stage-mark bl"></span><span class="stage-mark br"></span>
+      <p class="fig-cap lbl"><b>Fig. 00</b><span>XIUYI ring — point cloud</span></p>
+      <dl class="readout lbl">
+        <div class="rd-pts"><dt>Pts</dt><dd id="rd-pts">—</dd></div>
+        <div><dt>Rot</dt><dd id="rd-rot">000.0°</dd></div>
+        <div class="rd-scan"><dt>Scan</dt><dd id="rd-scan">+0.00</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="hero-meta">
+      <div><span class="lbl">Services</span><span class="v mono">07</span></div>
+      <div><span class="lbl">Languages</span><span class="v">中文・English・日本語</span></div>
+      <div><span class="lbl">Base</span><span class="v">東京・代官山</span></div>
+      <div class="scroll-cue"><span class="lbl">Scroll<svg aria-hidden="true" width="14" height="14"><use href="#i-down"/></svg></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── SHŌ ───── -->
+<section class="sho dark" id="sho" aria-labelledby="sho-title">
+  <div class="wrap sho-grid">
+    <div class="device" id="device">
+      <div class="dev-top">
+        <canvas id="presence" aria-hidden="true"></canvas>
+        <div class="dev-id"><span class="dev-name">SHŌ</span><span class="lbl dev-state" id="dev-state">Standby</span></div>
+        <div class="dev-clock lbl"><span>Tokyo JST</span><b id="clock">--:--</b></div>
+      </div>
+      <div class="board"><canvas id="led" aria-hidden="true"></canvas></div>
+      <div class="dev-bottom">
+        <div class="seg" id="seg" aria-hidden="true"></div>
+        <div class="dev-meta lbl"><span id="dev-q">Q.— / 03</span><span><b id="dev-count">000</b> / <span id="dev-total">000</span> 字</span></div>
+      </div>
+      <p class="sr-only" aria-live="polite" id="sho-live"></p>
+    </div>
+    <div class="sho-head">
+      <p class="sec-lbl lbl"><span class="idx">01</span><span>AI Assistant — SHŌ</span></p>
+      <h2 id="sho-title" class="palt"><span class="ph">SHŌで</span><span class="ph">サービス情報を確認</span></h2>
+      <p class="sho-lead jp">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+    </div>
+    <div class="sho-qs">
+      <ol class="qs">
+        <li><button type="button" class="q" data-q="0"><span class="q-n">Q.01</span><span class="jp">初めて日本で人間ドックを受けます。何から準備すればよいですか。</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></button></li>
+        <li><button type="button" class="q" data-q="1"><span class="q-n">Q.02</span><span class="jp">滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></button></li>
+        <li><button type="button" class="q" data-q="2"><span class="q-n">Q.03</span><span class="jp">母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></button></li>
+      </ol>
+      <div class="sho-cta">
+        <a class="btn btn-light" href="#">SHŌに相談<svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <p class="sho-note jp">表示は回答の一例です。<br>診療上の判断は医療機関が行います。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── SERVICES ───── -->
+<section class="services" id="services" aria-labelledby="svc-title">
+  <div class="wrap svc-grid">
+    <div class="svc-side">
+      <p class="sec-lbl lbl"><span class="idx">02</span><span>Medical services</span></p>
+      <h2 id="svc-title">医療サービス</h2>
+      <div class="big-num" aria-hidden="true"><span class="doto">07</span><span class="lbl">Services<br>in Japan</span></div>
+      <figure class="svc-fig" id="svc-fig">
+        <img class="is-on" src="../assets/photos/checkup-equipment.jpg" alt="" loading="lazy">
+        <img src="../assets/photos/support-consult.jpg" alt="" loading="lazy">
+        <img src="../assets/photos/regenerative-waiting-area.jpg" alt="" loading="lazy">
+        <img src="../assets/photos/aesthetic-light.jpg" alt="" loading="lazy">
+        <img src="../assets/photos/support-attend.jpg" alt="" loading="lazy">
+        <img src="../assets/photos/ivf-companionship.jpg" alt="" loading="lazy">
+        <img src="../assets/photos/support-transfer.jpg" alt="" loading="lazy">
+        <figcaption class="lbl" id="svc-cap">Fig. 01 — Precision check-up</figcaption>
+      </figure>
+    </div>
+    <ol class="svc-list" id="svc-list">
+      <li><a href="#" data-i="0" data-en="Precision check-up"><span class="n">01</span><span class="t">精密健診</span><span class="lbl">Precision check-up</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#" data-i="1" data-en="Specialist visits"><span class="n">02</span><span class="t">医療受診</span><span class="lbl">Specialist visits</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#" data-i="2" data-en="Regenerative medicine"><span class="n">03</span><span class="t">再生医療</span><span class="lbl">Regenerative medicine</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#" data-i="3" data-en="Aesthetic medicine"><span class="n">04</span><span class="t">美容医療</span><span class="lbl">Aesthetic medicine</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#" data-i="4" data-en="Escort &amp; interpreting"><span class="n">05</span><span class="t">同行・医療通訳</span><span class="lbl">Escort &amp; interpreting</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#" data-i="5" data-en="Assisted reproduction"><span class="n">06</span><span class="t">生殖補助医療</span><span class="lbl">Assisted reproduction</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#" data-i="6" data-en="Transfer &amp; stay"><span class="n">07</span><span class="t">移動・宿泊サポート</span><span class="lbl">Transfer &amp; stay</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ───── WHY ───── -->
+<section class="why" id="why" aria-labelledby="why-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="sec-lbl lbl"><span class="idx">03</span><span>Why XIUYI</span></p>
+        <h2 id="why-title">XIUYI が選ばれる理由</h2>
+      </div>
+      <p class="jp">ご希望の整理から医療機関の予約、滞在中の受診、受診後の連絡まで。日本での受診を、ひとつの窓口でつなぎます。</p>
+    </div>
+    <div class="why-grid">
+      <article class="why-item">
+        <span class="doto" aria-hidden="true">01</span>
+        <p class="lbl">Licensed clinics</p>
+        <h3>日本の正規医療機関と連携</h3>
+        <p class="jp">健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+        <div class="why-viz"><ul class="tags" aria-label="対応分野"><li>健診</li><li>美容医療</li><li>再生医療</li><li>生殖補助医療</li><li>資料翻訳</li></ul></div>
+      </article>
+      <article class="why-item">
+        <span class="doto" aria-hidden="true">02</span>
+        <p class="lbl">One coordinator</p>
+        <h3>専任担当者による一貫した調整</h3>
+        <p class="jp">初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+        <div class="why-viz"><div class="steps" aria-label="調整の流れ"><i></i><i></i><i></i><i></i><span>初回相談</span><span>予約</span><span>受診</span><span>受診後</span><span class="lbl">Same coordinator · 4 / 4</span></div></div>
+      </article>
+      <article class="why-item">
+        <span class="doto" aria-hidden="true">03</span>
+        <p class="lbl">Transfer &amp; stay</p>
+        <h3>移動・宿泊のサポート</h3>
+        <p class="jp">医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+        <div class="why-viz"><ul class="tags" aria-label="付帯サービス"><li>空港送迎</li><li>宿泊</li><li>滞在日程</li></ul></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ───── SUPPORT ───── -->
+<section class="support" id="support" aria-labelledby="sup-title">
+  <div class="wrap sup-grid">
+    <div class="sup-side">
+      <p class="sec-lbl lbl"><span class="idx">04</span><span>Support</span></p>
+      <h2 id="sup-title">サポート内容</h2>
+      <figure class="sup-fig"><img src="../assets/photos/why-concierge.jpg" alt="受付カウンターに置かれた資料と湯呑み" loading="lazy"></figure>
+      <p class="sup-figcap lbl"><span><b>Fig. 02</b>&nbsp;&nbsp;Concierge desk</span><span>中 · EN · 日</span></p>
+    </div>
+    <div>
+      <ol class="sup-list">
+        <li><span class="n lbl">S.01</span><div><h3>医療ニーズの確認と予約調整</h3><p class="jp">既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</p></div></li>
+        <li><span class="n lbl">S.02</span><div><h3>中国語・英語・日本語での同行サポート<span class="chip">中 / EN / 日</span></h3><p class="jp">来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</p></div></li>
+        <li><span class="n lbl">S.03</span><div><h3>医療機関・医師とのマッチング</h3><p class="jp">検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</p></div></li>
+        <li><span class="n lbl">S.04</span><div><h3>空港送迎と医療機関間の移動<span class="chip">付帯</span></h3><p class="jp">フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</p></div></li>
+        <li><span class="n lbl">S.05</span><div><h3>宿泊・滞在日程の調整<span class="chip">付帯</span></h3><p class="jp">受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</p></div></li>
+      </ol>
+      <p class="sup-note jp">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───── CLOSING ───── -->
+<section class="closing" id="contact" aria-labelledby="close-title">
+  <div class="wrap close-grid">
+    <div>
+      <p class="sec-lbl lbl"><span class="idx">05</span><span>Consultation</span></p>
+      <h2 id="close-title">医療相談を予約する</h2>
+      <p class="jp">これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+      <div class="ctas"><a class="btn btn-primary" href="#">相談を予約<svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+      <dl class="stats">
+        <div><dt class="lbl">Contact</dt><dd>専任担当者</dd></div>
+        <div><dt class="lbl">Languages</dt><dd>中文・English・日本語</dd></div>
+        <div><dt class="lbl">Base</dt><dd>東京都渋谷区（代官山）</dd></div>
+      </dl>
+    </div>
+    <figure>
+      <div class="close-fig"><img src="../assets/photos/home-closing.jpg" alt="夕暮れの中庭と灯り" loading="lazy"></div>
+      <figcaption class="close-cap lbl"><span><b>Fig. 03</b>&nbsp;&nbsp;Courtyard, evening</span><span>XIUYI · Tokyo</span></figcaption>
+    </figure>
+  </div>
+</section>
+</main>
+
+<footer class="foot dark" id="column">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <span class="disc"><img src="../assets/logo-mark.png" alt="" width="52" height="52"></span>
+      <div><p class="wordmark">XIUYI</p><p>秀一株式会社<br>東京都渋谷区（代官山）</p></div>
+    </div>
+    <nav class="foot-nav" aria-label="フッター">
+      <a href="#services">サービス</a><a href="#column">コラム</a><a href="#">事例</a>
+      <a href="#">医師</a><a href="#why">会社案内</a><a href="#">プライバシー</a>
+    </nav>
+  </div>
+  <div class="wrap foot-base">
+    <span class="lbl">© XIUYI CO., LTD.</span>
+    <span class="lbl">Medical concierge · Tokyo</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DPR = () => Math.min(2, window.devicePixelRatio || 1);
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+
+/* ───────── header, menu, language ───────── */
+const head = $('#head');
+const onScroll = () => head.classList.toggle('is-scrolled', window.scrollY > 8);
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+const menu = $('#menu'), menuBtn = $('#menu-btn');
+const setMenu = (open) => {
+  menu.classList.toggle('is-open', open);
+  menuBtn.setAttribute('aria-expanded', String(open));
+  document.body.style.overflow = open ? 'hidden' : '';
+  if (open) $('#menu-close').focus(); else menuBtn.focus({ preventScroll: true });
+};
+menuBtn.addEventListener('click', () => setMenu(true));
+$('#menu-close').addEventListener('click', () => setMenu(false));
+$$('#menu a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (menu.classList.contains('is-open')) setMenu(false); lang.classList.remove('is-open'); } });
+
+const lang = $('#lang'), langBtn = $('#lang-btn');
+langBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = lang.classList.toggle('is-open'); langBtn.setAttribute('aria-expanded', String(o)); });
+document.addEventListener('click', () => { lang.classList.remove('is-open'); langBtn.setAttribute('aria-expanded', 'false'); });
+
+/* ───────── HERO: point-cloud ring on a fixed LED dot grid ─────────
+   CPU: rotate + project ~40k points, bilinear-splat them into a cell grid (ink + champagne scan channel).
+   GPU: one full-screen pass draws each cell as a dot whose radius follows the cell's density. */
+const Hero = (() => {
+  const cv = $('#field'), hero = cv.parentElement, stage = $('#stage');
+  const INK = hex('#2a2019'), ACC = hex('#b39869');
+
+  // Möbius-twisted band: radius and width breathe three times around the loop (the live ring's soft trefoil).
+  const NU = 1250, NV = 30, NE = 3200;
+  const N = NU * NV + NE;
+  const P = new Float32Array(N * 3), NR = new Float32Array(N * 3), W = new Float32Array(N);
+  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  let k = 0;
+  const add = (u, v, w) => {
+    const R = 1 + 0.055 * Math.cos(3 * u);
+    const hw = 0.41 * (1 + 0.2 * Math.sin(3 * u + 0.7));
+    const th = u * 0.5 + 0.35;
+    const cu = Math.cos(u), su = Math.sin(u), ct = Math.cos(th), st = Math.sin(th);
+    const dx = ct * cu, dy = ct * su, dz = st;
+    P[k * 3] = R * cu + v * hw * dx; P[k * 3 + 1] = R * su + v * hw * dy; P[k * 3 + 2] = v * hw * dz;
+    NR[k * 3] = cu * st; NR[k * 3 + 1] = su * st; NR[k * 3 + 2] = -ct;
+    W[k] = w; k++;
+  };
+  for (let i = 0; i < NU; i++) for (let j = 0; j < NV; j++) add((i + rnd()) / NU * Math.PI * 2, ((j + rnd()) / NV) * 2 - 1, 1);
+  for (let i = 0; i < NE; i++) add((i + rnd()) / NE * Math.PI * 4, 1, 1.25); // the single Möbius edge, traced twice round
+  const ptsEl = $('#rd-pts'); ptsEl.textContent = N.toLocaleString('en-US');
+
+  let gl = null, ctx2d = null, prog, uni = {}, tex;
+  let W_ = 0, H_ = 0, dpr = 1, pitch = 7, cols = 0, rows = 0, ox = 0, oy = 0;
+  let ink, acc, dI, dA, bytes;
+  let cx = 0, cy = 0, S = 100;
+  const ptr = { x: -9999, y: -9999, on: 0, tOn: 0, nx: 0, ny: 0, sx: 0, sy: 0 };
+  const pulse = { x: 0, y: 0, t0: -1e9, pinged: false };
+
+  const VS = `#version 300 es
+  void main(){ vec2 p = vec2(float((gl_VertexID<<1)&2), float(gl_VertexID&2)); gl_Position = vec4(p*2.0-1.0,0.0,1.0); }`;
+  const FS = `#version 300 es
+  precision highp float;
+  uniform sampler2D uGrid; uniform vec2 uRes; uniform vec2 uOrigin; uniform float uPitch; uniform ivec2 uDim;
+  uniform vec3 uInk; uniform vec3 uAcc; uniform vec3 uPtr; uniform float uDpr; uniform float uBoot; uniform vec4 uPulse;
+  out vec4 o;
+  void main(){
+    vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+    vec2 g = (p - uOrigin) / uPitch;
+    ivec2 c = ivec2(floor(g));
+    if (c.x < 0 || c.y < 0 || c.x >= uDim.x || c.y >= uDim.y) { o = vec4(0.0); return; }
+    float row = (float(c.y) + 0.5) / float(uDim.y);
+    float on = step(row, uBoot);
+    float edge = (1.0 - smoothstep(0.0, 0.035, abs(row - uBoot))) * step(uBoot, 0.999);
+    vec2 v = texelFetch(uGrid, c, 0).rg * on;
+    vec2 cc = (vec2(c) + 0.5) * uPitch + uOrigin;
+    float d = length(p - cc);
+    float lens = uPtr.z * (1.0 - smoothstep(0.0, 150.0 * uDpr, length(cc - uPtr.xy)));
+    float lum = clamp(max(v.r, v.g) * (1.0 + 0.45 * lens), 0.0, 1.0);
+    // sonar pulse: one ring front travelling through the grid, gone in ~1.6 s
+    float age = uPulse.z;
+    float wave = uPulse.w * exp(-pow((length(cc - uPulse.xy) - age * 560.0 * uDpr) / (22.0 * uDpr), 2.0)) * (1.0 - smoothstep(0.2, 1.6, age));
+    lens = max(lens, wave);
+    float r0 = (0.62 + 0.42 * lens + 0.9 * wave) * uDpr;
+    float r = mix(r0, 0.5 * uPitch, sqrt(lum));
+    float cov = clamp(r + 0.5 - d, 0.0, 1.0);
+    float base = (0.15 + 0.22 * lens) * max(on, edge * 3.0);
+    float a = cov * mix(base, 1.0, smoothstep(0.015, 0.09, lum));
+    float t = clamp(v.g / (v.r + v.g + 1e-4) * 1.6, 0.0, 1.0);
+    vec3 col = mix(uInk, uAcc, t);
+    o = vec4(col * a, a);
+  }`;
+
+  function initGL() {
+    gl = cv.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' });
+    if (!gl) return false;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+    try {
+      prog = gl.createProgram();
+      gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    } catch (e) { gl = null; return false; }
+    gl.useProgram(prog);
+    ['uGrid', 'uRes', 'uOrigin', 'uPitch', 'uDim', 'uInk', 'uAcc', 'uPtr', 'uDpr', 'uBoot', 'uPulse'].forEach((n) => (uni[n] = gl.getUniformLocation(prog, n)));
+    gl.bindVertexArray(gl.createVertexArray());
+    tex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.uniform1i(uni.uGrid, 0);
+    gl.uniform3fv(uni.uInk, INK); gl.uniform3fv(uni.uAcc, ACC);
+    gl.clearColor(0, 0, 0, 0);
+    cv.addEventListener('webglcontextlost', (e) => { e.preventDefault(); running = false; });
+    return true;
+  }
+
+  function resize() {
+    const r = hero.getBoundingClientRect();
+    W_ = Math.max(1, Math.round(r.width)); H_ = Math.max(1, Math.round(r.height)); dpr = DPR();
+    cv.width = Math.round(W_ * dpr); cv.height = Math.round(H_ * dpr);
+    pitch = W_ >= 960 ? 7 : 6;
+    cols = Math.floor(W_ / pitch); rows = Math.floor(H_ / pitch);
+    ox = (W_ - cols * pitch) / 2; oy = (H_ - rows * pitch) / 2;
+    const n = cols * rows;
+    ink = new Float32Array(n); acc = new Float32Array(n); dI = new Float32Array(n); dA = new Float32Array(n); bytes = new Uint8Array(n * 2);
+    const s = stage.getBoundingClientRect();
+    cx = s.left - r.left + s.width / 2; cy = s.top - r.top + s.height / 2;
+    S = W_ >= 960 ? Math.min(s.width, s.height) * 0.31 : Math.min(s.width * 0.335, s.height * 0.5);
+    if (gl) {
+      gl.viewport(0, 0, cv.width, cv.height);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG8, cols, rows, 0, gl.RG, gl.UNSIGNED_BYTE, bytes);
+    }
+    if (!running || REDUCE) frame(performance.now(), true);
+  }
+
+  const L = (() => { const v = [-0.45, 0.62, 0.64]; const m = Math.hypot(...v); return v.map((x) => x / m); })();
+  let spin = 0.7, last = 0, boot = REDUCE ? 1 : 0, bootStart = 0, rdT = 0;
+  const rdRot = $('#rd-rot'), rdScan = $('#rd-scan');
+
+  function simulate(t, dt) {
+    ink.fill(0); acc.fill(0);
+    if (!REDUCE) spin += dt * 0.000085;
+    const k = 1 - Math.exp(-dt / 420);
+    ptr.sx += (ptr.nx - ptr.sx) * k; ptr.sy += (ptr.ny - ptr.sy) * k;
+    ptr.on += (ptr.tOn - ptr.on) * (1 - Math.exp(-dt / 220));
+    const ax = 0.98 + ptr.sy * 0.32 + (REDUCE ? 0 : Math.sin(t * 0.00011) * 0.22);
+    const ay = -0.28 + ptr.sx * 0.45 + (REDUCE ? 0 : Math.sin(t * 0.000071 + 1) * 0.3);
+    const cs = Math.cos(spin), sn = Math.sin(spin), ca = Math.cos(ax), sa = Math.sin(ax), cb = Math.cos(ay), sb = Math.sin(ay);
+    // CT-style sweep: top → bottom in 5.2 s, then a hard reset (percussive, never eased)
+    const scanY = REDUCE ? 0.18 : 0.72 - ((t % 5200) / 5200) * 1.44;
+    const cam = 4.6, band = 0.034;
+    // gain: expected points per face-on cell → face-on surfaces sit near 0.3, edge-on folds saturate
+    const face = (NU * NV) / (2 * Math.PI * 0.82) * (pitch / S) ** 2;
+    const gain = 0.17 / Math.max(0.5, face * 0.7);
+    const R2 = (W_ >= 960 ? 120 : 90) ** 2, pR = Math.sqrt(R2), push = 24 * ptr.on;
+    const pxp = ptr.x, pyp = ptr.y;
+    const inv = 1 / pitch;
+    for (let i = 0, j = 0; i < N; i++, j += 3) {
+      const x = P[j], y = P[j + 1], z = P[j + 2];
+      const x1 = x * cs - y * sn, y1 = x * sn + y * cs;
+      const y2 = y1 * ca - z * sa, z2 = y1 * sa + z * ca;
+      const x3 = x1 * cb + z2 * sb, z3 = -x1 * sb + z2 * cb;
+      const nx = NR[j], ny = NR[j + 1], nz = NR[j + 2];
+      const nx1 = nx * cs - ny * sn, ny1 = nx * sn + ny * cs;
+      const ny2 = ny1 * ca - nz * sa, nz2 = ny1 * sa + nz * ca;
+      const nx3 = nx1 * cb + nz2 * sb, nz3 = -nx1 * sb + nz2 * cb;
+      const f = cam / (cam - z3);
+      let sx = cx + x3 * S * f, sy = cy - y2 * S * f;
+      if (push > 0.01) {
+        const ddx = sx - pxp, ddy = sy - pyp, d2 = ddx * ddx + ddy * ddy;
+        if (d2 < R2 && d2 > 1) { const d = Math.sqrt(d2), q = 1 - d / pR, m = push * q * q / d; sx += ddx * m; sy += ddy * m; }
+      }
+      const ndl = Math.abs(nx3 * L[0] + ny2 * L[1] + nz3 * L[2]);
+      const depth = 0.42 + 0.58 * Math.min(1, Math.max(0, (z3 + 1.45) / 2.9));
+      const w = W[i] * (1 - 0.55 * ndl) * depth;
+      const gx = (sx - ox) * inv - 0.5, gy = (sy - oy) * inv - 0.5;
+      const ix = Math.floor(gx), iy = Math.floor(gy);
+      if (ix < 0 || iy < 0 || ix >= cols - 1 || iy >= rows - 1) continue;
+      const fx = gx - ix, fy = gy - iy, c0 = iy * cols + ix;
+      const dyS = Math.abs(y2 - scanY);
+      const target = dyS < band ? acc : ink;
+      const wa = dyS < band ? w * 1.6 : w;
+      target[c0] += wa * (1 - fx) * (1 - fy); target[c0 + 1] += wa * fx * (1 - fy);
+      target[c0 + cols] += wa * (1 - fx) * fy; target[c0 + cols + 1] += wa * fx * fy;
+    }
+    const keep = REDUCE ? 0 : 0.42;
+    for (let c = 0, n = cols * rows; c < n; c++) {
+      const vi = Math.min(1, ink[c] * gain), va = Math.min(1, acc[c] * gain);
+      dI[c] = vi + (dI[c] - vi) * keep; dA[c] = va + (dA[c] - va) * keep;
+      bytes[c * 2] = dI[c] * 255; bytes[c * 2 + 1] = dA[c] * 255;
+    }
+    if (t - rdT > 110) {
+      rdT = t;
+      const deg = ((spin * 180 / Math.PI) % 360 + 360) % 360;
+      rdRot.textContent = deg.toFixed(1).padStart(5, '0') + '°';
+      rdScan.textContent = (scanY >= 0 ? '+' : '−') + Math.abs(scanY).toFixed(2);
+    }
+  }
+
+  function draw() {
+    if (gl) {
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, cols, rows, gl.RG, gl.UNSIGNED_BYTE, bytes);
+      gl.uniform2f(uni.uRes, cv.width, cv.height);
+      gl.uniform2f(uni.uOrigin, ox * dpr, oy * dpr);
+      gl.uniform1f(uni.uPitch, pitch * dpr);
+      gl.uniform2i(uni.uDim, cols, rows);
+      gl.uniform3f(uni.uPtr, ptr.x * dpr, ptr.y * dpr, ptr.on);
+      gl.uniform1f(uni.uDpr, dpr);
+      gl.uniform1f(uni.uBoot, boot);
+      const age = (performance.now() - pulse.t0) / 1000;
+      gl.uniform4f(uni.uPulse, pulse.x * dpr, pulse.y * dpr, age, age < 1.8 ? 1 : 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    } else if (ctx2d) {
+      ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx2d.clearRect(0, 0, W_, H_);
+      const lim = Math.floor(rows * boot);
+      for (let y = 0; y < lim; y++) for (let x = 0; x < cols; x++) {
+        const c = y * cols + x, a = bytes[c * 2] / 255, b = bytes[c * 2 + 1] / 255, l = Math.max(a, b);
+        if (l < 0.03) continue;
+        ctx2d.fillStyle = b > a * 0.6 ? '#b39869' : '#2a2019';
+        ctx2d.beginPath(); ctx2d.arc(ox + (x + 0.5) * pitch, oy + (y + 0.5) * pitch, 0.6 + (pitch * 0.5 - 0.6) * Math.sqrt(l), 0, Math.PI * 2); ctx2d.fill();
+      }
+    }
+  }
+
+  let running = false, visible = true, raf = 0;
+  function frame(t, once) {
+    const dt = last ? Math.min(64, t - last) : 16; last = t;
+    if (!REDUCE && boot < 1) { if (!bootStart) bootStart = t; boot = Math.min(1, (t - bootStart) / 1500); }
+    if (!REDUCE && boot >= 1 && !pulse.pinged) { pulse.pinged = true; pulse.x = cx; pulse.y = cy; pulse.t0 = performance.now(); } // power-on ping from the ring
+    simulate(t, dt); draw();
+    if (!once && running) raf = requestAnimationFrame(frame);
+  }
+  function setRunning(on) {
+    on = on && !REDUCE && visible && !document.hidden;
+    if (on === running) return;
+    running = on;
+    if (on) { last = 0; raf = requestAnimationFrame(frame); } else cancelAnimationFrame(raf);
+  }
+
+  function init() {
+    if (!initGL()) { ctx2d = cv.getContext('2d'); hero.classList.add('no-gl'); }
+    new ResizeObserver(resize).observe(hero);
+    resize();
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; setRunning(true); }, { threshold: 0 }).observe(hero);
+    document.addEventListener('visibilitychange', () => setRunning(!document.hidden));
+    const move = (e) => {
+      const r = cv.getBoundingClientRect();
+      ptr.x = e.clientX - r.left; ptr.y = e.clientY - r.top; ptr.tOn = 1;
+      ptr.nx = Math.max(-1, Math.min(1, (ptr.x - cx) / (r.width * 0.5)));
+      ptr.ny = Math.max(-1, Math.min(1, (ptr.y - cy) / (r.height * 0.5)));
+      if (REDUCE) frame(performance.now(), true);
+    };
+    hero.addEventListener('pointermove', move, { passive: true });
+    hero.addEventListener('pointerdown', (e) => { move(e); if (!REDUCE) { pulse.x = ptr.x; pulse.y = ptr.y; pulse.t0 = performance.now(); } }, { passive: true });
+    hero.addEventListener('pointerleave', () => { ptr.tOn = 0; ptr.nx = 0; ptr.ny = 0; });
+    hero.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') { ptr.tOn = 0; } });
+    if (REDUCE) frame(performance.now(), true); else setRunning(true);
+  }
+  return { init };
+})();
+
+/* ───────── SHŌ: 16-dot LED board (電光掲示板) + presence glyph ───────── */
+const Sho = (() => {
+  const QA = [
+    { q: '初めて日本で人間ドックを受けます。何から準備すればよいですか。',
+      a: 'まずは、|これまでの|検査結果と|既往歴、|今回|確認したいことを|お知らせください。|担当者が|内容を|整理し、|検査内容と|医療機関の|予約を|調整します。' },
+    { q: '滞在は 4 日間です。検査と美容医療を同じ日程に入れられますか。',
+      a: 'ご希望の|日程と|内容を|伺い、|医療機関の|空き状況に|合わせて|予約を|調整します。|同じ|期間に|組めるかどうかは、|検査内容と|各医療機関の|判断によります。' },
+    { q: '母（68 歳）を連れて行きます。付き添いはどこまでお願いできますか。',
+      a: '来院から|退出まで|担当者が|同席し、|医師の|説明は|中国語・|英語・|日本語で|通訳します。|空港送迎や|宿泊の|手配も、|付帯サービスとして|ご相談いただけます。' },
+  ];
+  const IDLE_MARQ = 'SHŌ ─ XIUYI の AI アシスタント ─ 検査資料・よくあるご質問・渡航前の準備を整理します ─ ';
+  const NO_START = '、。，．・：；？！ー）」』】〕…ゃゅょっャュョッぁぃぅぇぉァィゥェォ';
+  const cv = $('#led'), ctx = cv.getContext('2d');
+  const boardEl = cv.parentElement, device = $('#device');
+  const low = document.createElement('canvas'), lctx = low.getContext('2d', { willReadFrequently: true });
+  const tmp = document.createElement('canvas'), tctx = tmp.getContext('2d');
+  const unlit = document.createElement('canvas'), mask = document.createElement('canvas');
+  const gc = document.createElement('canvas'); gc.width = 960; gc.height = 72;
+  const gctx = gc.getContext('2d', { willReadFrequently: true });
+  const LED = [226, 200, 145];
+  const MX = 6, MY = 5, LH = 20, MARQ_Y = MY, RULE_Y = MY + 16 + 4, BODY_Y = MY + 16 + 10;
+  let dpr = 1, pd = 3, pc = 3, cols = 0, rows = 0, cpl = 10, maxLines = 6;
+  let cur, tgt, img, glyphTop = 2, ready = false;
+
+  // rasterise a string with a font into 1-bit dots (one canvas pixel = one LED)
+  function raster(text, font, h, base) {
+    gctx.font = font;
+    const w = Math.max(1, Math.ceil(gctx.measureText(text).width));
+    gctx.clearRect(0, 0, gc.width, gc.height);
+    gctx.fillStyle = '#fff'; gctx.textBaseline = 'alphabetic';
+    gctx.fillText(text, 0, base);
+    const ww = Math.min(w, gc.width);
+    const d = gctx.getImageData(0, 0, ww, h).data;
+    const bits = new Uint8Array(ww * h);
+    for (let i = 0; i < ww * h; i++) bits[i] = d[i * 4 + 3] > 112 ? 1 : 0;
+    return { w: ww, h, bits };
+  }
+  const F16 = '16px "DotGothic16", monospace';
+  const glyphCache = new Map();
+  function glyph(ch) {
+    if (glyphCache.has(ch)) return glyphCache.get(ch);
+    gctx.font = F16;
+    const adv = Math.round(gctx.measureText(ch).width) || 8;
+    const r = raster(ch, F16, 40, 24);
+    const bits = new Uint8Array(adv * 16);
+    for (let y = 0; y < 16; y++) for (let x = 0; x < Math.min(adv, r.w); x++) bits[y * adv + x] = r.bits[(y + glyphTop) * r.w + x] || 0;
+    const g = { w: adv, h: 16, bits };
+    glyphCache.set(ch, g); return g;
+  }
+  function stripOf(text) { // a long 16-row strip for the marquee
+    const gs = [...text].map(glyph); const w = gs.reduce((s, g) => s + g.w, 0);
+    const bits = new Uint8Array(w * 16); let x0 = 0;
+    for (const g of gs) { for (let y = 0; y < 16; y++) for (let x = 0; x < g.w; x++) bits[y * w + x0 + x] = g.bits[y * g.w + x]; x0 += g.w; }
+    return { w, bits };
+  }
+  // wrap at phrase (文節) boundaries marked with "|"; split inside a phrase only when it is longer than a line.
+  // 、。 and small kana never start a line — they hang into the right margin.
+  function layout(src) {
+    const maxW = cpl * 16, out = []; let line = 0, x = 0;
+    for (const seg of src.split('|')) {
+      const gs = [...seg].map((ch) => ({ ch, g: glyph(ch) }));
+      let core = gs.reduce((s, o) => s + o.g.w, 0);
+      for (let i = gs.length - 1; i >= 0 && NO_START.includes(gs[i].ch); i--) core -= gs[i].g.w;
+      if (x > 0 && x + core > maxW) { line++; x = 0; }
+      for (const o of gs) {
+        if (x + o.g.w > maxW && !NO_START.includes(o.ch)) { line++; x = 0; }
+        out.push({ ch: o.ch, g: o.g, x, line }); x += o.g.w;
+      }
+    }
+    return { chars: out, lines: line + 1 };
+  }
+  const plain = (s) => s.replace(/\|/g, '');
+
+  function measure() {
+    dpr = 2; // always supersample: crisp round LEDs on 1x screens too
+    const pad = parseFloat(getComputedStyle(boardEl).paddingLeft) || 12;
+    const cssW = boardEl.clientWidth - pad * 2;
+    const target = cssW >= 420 ? 2 : 1.5;
+    pd = Math.max(2, Math.round(target * dpr)); pc = pd / dpr;
+    cols = Math.floor(cssW / pc);
+    cpl = Math.max(6, Math.floor((cols - MX * 2 - 10) / 16));
+    maxLines = Math.max(...QA.map((x) => layout(x.a).lines), 5);
+    rows = BODY_Y + maxLines * LH - 4 + MY + 4;
+    cv.width = cols * pd; cv.height = rows * pd;
+    cv.style.width = cols * pc + 'px'; cv.style.height = rows * pc + 'px';
+    low.width = cols; low.height = rows; tmp.width = cv.width; tmp.height = cv.height;
+    img = lctx.createImageData(cols, rows);
+    for (let i = 0; i < cols * rows; i++) { img.data[i * 4] = LED[0]; img.data[i * 4 + 1] = LED[1]; img.data[i * 4 + 2] = LED[2]; }
+    cur = new Float32Array(cols * rows); tgt = new Float32Array(cols * rows);
+    const cell = (r, col) => { const c = document.createElement('canvas'); c.width = c.height = pd; const x = c.getContext('2d'); x.fillStyle = col; x.beginPath(); x.arc(pd / 2, pd / 2, r, 0, Math.PI * 2); x.fill(); return c; };
+    for (const [cnv, r, col] of [[unlit, pd * 0.34, '#2a221c'], [mask, pd * 0.42, '#fff']]) {
+      cnv.width = cv.width; cnv.height = cv.height;
+      const x = cnv.getContext('2d'); x.fillStyle = x.createPattern(cell(r, col), 'repeat'); x.fillRect(0, 0, cnv.width, cnv.height);
+    }
+    // dotted rule under the marquee
+    for (let x = MX; x < cols - MX; x += 2) tgt[RULE_Y * cols + x] = 0.22;
+  }
+
+  /* state */
+  const stateEl = $('#dev-state'), countEl = $('#dev-count'), totalEl = $('#dev-total'), qEl = $('#dev-q'), live = $('#sho-live');
+  const segWrap = $('#seg'); const SEG = 32;
+  for (let i = 0; i < SEG; i++) segWrap.appendChild(document.createElement('i'));
+  const segs = [...segWrap.children];
+  let phase = 'idle', phaseT = 0, active = -1, lay = null, typed = 0, nextAt = 0, interacted = false;
+  let marq = null, marqOff = 0, marqT = 0, idleBits = null, idleLine = null;
+  let cursor = { x: 0, y: 0, on: false };
+  const rows0 = () => BODY_Y;
+
+  function setState(label) { stateEl.textContent = label; }
+  function setSeg(p) { const n = Math.round(p * SEG); segs.forEach((s, i) => { s.className = i < n - 1 ? 'on' : i === n - 1 ? 'head' : ''; }); }
+  function clearBody(instant) { for (let y = BODY_Y - 1; y < rows; y++) for (let x = 0; x < cols; x++) { const i = y * cols + x; tgt[i] = 0; if (instant) cur[i] = 0; } }
+  function put(g, x0, y0, v) { for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) if (g.bits[y * g.w + x]) { const X = x0 + x, Y = y0 + y; if (X >= 0 && X < cols && Y >= 0 && Y < rows) tgt[Y * cols + X] = v; } }
+
+  function buildIdle() {
+    gctx.font = '700 46px "Space Mono", monospace';
+    const r = raster('SHŌ', '700 46px "Space Mono", monospace', 66, 54);
+    let minY = r.h, maxY = 0, minX = r.w, maxX = 0;
+    for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) if (r.bits[y * r.w + x]) { minY = Math.min(minY, y); maxY = Math.max(maxY, y); minX = Math.min(minX, x); maxX = Math.max(maxX, x); }
+    const w = maxX - minX + 1, h = maxY - minY + 1, bits = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) bits[y * w + x] = r.bits[(y + minY) * r.w + x + minX];
+    idleBits = { w, h, bits };
+    idleLine = stripOf('質問を選んでください');
+    if (idleLine.w > cols - MX * 2) idleLine = stripOf('質問をどうぞ');
+  }
+  function idleLayout() {
+    const bodyH = rows - BODY_Y - MY;
+    const totalH = idleBits.h + 10 + 16;
+    const y0 = BODY_Y + Math.max(0, Math.floor((bodyH - totalH) / 2));
+    const x0 = Math.floor((cols - idleBits.w) / 2);
+    const lx = Math.floor((cols - idleLine.w) / 2);
+    return { x0, y0, lx, ly: y0 + idleBits.h + 10 };
+  }
+
+  function setMarquee(text) { marq = stripOf(text); marqOff = 0; }
+  function drawMarquee(dim) {
+    const w = cols - MX * 2;
+    for (let y = 0; y < 16; y++) for (let x = 0; x < w; x++) {
+      const sx = (x + marqOff) % marq.w;
+      const v = marq.bits[y * marq.w + sx] ? dim : 0;
+      const i = (MARQ_Y + y) * cols + MX + x; tgt[i] = v; cur[i] = v;
+    }
+  }
+
+  function ask(i, fromUser) {
+    if (!ready) { pending = i; return; }
+    if (fromUser) interacted = true;
+    if (i === active && phase !== 'idle') return;
+    active = i;
+    $$('.q').forEach((b) => b.classList.toggle('is-active', +b.dataset.q === i));
+    setMarquee(`Q.0${i + 1}  ${QA[i].q}   ─   `);
+    lay = layout(QA[i].a); typed = 0;
+    totalEl.textContent = String([...plain(QA[i].a)].length).padStart(3, '0'); countEl.textContent = '000';
+    qEl.textContent = `Q.0${i + 1} / 03`;
+    live.textContent = `SHŌ: ${plain(QA[i].a)}`;
+    setSeg(0);
+    if (REDUCE) { clearBody(true); lay.chars.forEach((c) => put(c.g, MX + c.x, BODY_Y + c.line * LH, 1)); typed = lay.chars.length; finish(); return; }
+    phase = 'wipe'; phaseT = performance.now(); setState('Thinking');
+    kick();
+  }
+  function finish() {
+    phase = 'done'; setState('Answered'); setSeg(1); countEl.textContent = totalEl.textContent;
+    const lastC = lay.chars[lay.chars.length - 1];
+    cursor = { x: MX + lastC.x + lastC.g.w + 2, y: BODY_Y + lastC.line * LH + 1, on: true };
+    if (cursor.x + 7 > cols - 2) { cursor.x = MX; cursor.y += LH; }
+    if (cursor.y + 14 > rows) cursor.y = BODY_Y + (lay.lines - 1) * LH + 1;
+    if (REDUCE) staticFrame();
+  }
+  let pending = -1;
+
+  function step(t, dt) {
+    // marquee: steps one LED at a time (percussive, never smooth)
+    if (!REDUCE && t - marqT > 42) { marqT = t; marqOff = (marqOff + 1) % marq.w; }
+    drawMarquee(phase === 'idle' ? 0.5 : 0.42);
+    if (phase === 'idle') {
+      const L = idleLayout();
+      clearBody(false);
+      const g = idleBits;
+      for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) if (g.bits[y * g.w + x]) {
+        const wv = REDUCE ? 1 : 0.5 + 0.5 * Math.sin((x - y * 0.6) * 0.09 - t * 0.0026);
+        const i = (L.y0 + y) * cols + L.x0 + x; tgt[i] = 0.42 + 0.58 * wv * wv;
+      }
+      put({ w: idleLine.w, h: 16, bits: idleLine.bits }, L.lx, L.ly, 0.62);
+    } else if (phase === 'wipe') {
+      const p = Math.min(1, (t - phaseT) / 260), lim = Math.floor(p * cols);
+      for (let y = BODY_Y - 1; y < rows; y++) for (let x = 0; x < lim; x++) { const i = y * cols + x; tgt[i] = 0; cur[i] = 0; }
+      if (p >= 1) { phase = 'think'; phaseT = t; }
+    } else if (phase === 'think') {
+      clearBody(false);
+      const k = Math.floor((t - phaseT) / 140) % 4;
+      for (let d = 0; d < 3; d++) { const v = d < k ? 1 : 0.18; for (let yy = 0; yy < 2; yy++) for (let xx = 0; xx < 2; xx++) tgt[(BODY_Y + 12 + yy) * cols + MX + 2 + d * 6 + xx] = v; }
+      if (t - phaseT > 620) { clearBody(true); phase = 'type'; phaseT = t; nextAt = t; setState('Typing'); }
+    } else if (phase === 'type') {
+      while (t >= nextAt && typed < lay.chars.length) {
+        const c = lay.chars[typed++];
+        put(c.g, MX + c.x, BODY_Y + c.line * LH, 1);
+        nextAt += c.ch === '。' ? 260 : c.ch === '、' ? 120 : 46;
+        pulse = 1;
+      }
+      countEl.textContent = String(typed).padStart(3, '0');
+      setSeg(typed / lay.chars.length);
+      if (typed < lay.chars.length) {
+        const c = lay.chars[typed];
+        cursor = { x: MX + c.x, y: BODY_Y + c.line * LH + 1, on: true };
+      }
+      if (typed >= lay.chars.length && t > nextAt) finish();
+    }
+    // cursor (7×14 block) is its own layer so it never eats glyph dots; steady while typing, 1 Hz blink after
+    curVis = (phase === 'type' && typed < lay.chars.length) || (phase === 'done' && Math.floor(t / 520) % 2 === 0);
+    // phosphor: fast attack, slower decay
+    const ku = 1 - Math.exp(-dt / 30), kd = 1 - Math.exp(-dt / 80);
+    for (let i = 0, n = cols * rows; i < n; i++) { const d = tgt[i] - cur[i]; cur[i] += d * (d > 0 ? ku : kd); }
+  }
+  let curVis = false;
+
+  function render() {
+    const d = img.data;
+    for (let i = 0, n = cols * rows; i < n; i++) d[i * 4 + 3] = cur[i] * 255;
+    if (curVis) for (let y = 0; y < 14; y++) for (let x = 0; x < 7; x++) { const X = cursor.x + x, Y = cursor.y + y; if (X < cols && Y < rows) d[(Y * cols + X) * 4 + 3] = 230; }
+    lctx.putImageData(img, 0, 0);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(unlit, 0, 0);
+    // soft halo: the same low-res frame scaled with smoothing, very low alpha
+    ctx.globalAlpha = 0.2; ctx.imageSmoothingEnabled = true; ctx.drawImage(low, 0, 0, cv.width, cv.height); ctx.globalAlpha = 1;
+    // crisp LEDs: nearest-neighbour upscale, clipped to round dots
+    tctx.globalCompositeOperation = 'source-over'; tctx.clearRect(0, 0, tmp.width, tmp.height);
+    tctx.imageSmoothingEnabled = false; tctx.drawImage(low, 0, 0, tmp.width, tmp.height);
+    tctx.globalCompositeOperation = 'destination-in'; tctx.drawImage(mask, 0, 0);
+    ctx.drawImage(tmp, 0, 0);
+  }
+
+  /* presence glyph: an 11×11 circular matrix */
+  const pv = $('#presence'), pctx = pv.getContext('2d');
+  let pulse = 0;
+  function presence(t, dt) {
+    const s = 44, dp = DPR();
+    if (pv.width !== s * dp) { pv.width = pv.height = s * dp; }
+    pctx.setTransform(dp, 0, 0, dp, 0, 0); pctx.clearRect(0, 0, s, s);
+    pulse *= Math.exp(-dt / 140);
+    const n = 11, p = s / n;
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      const dx = x - 5, dy = y - 5, r = Math.hypot(dx, dy);
+      if (r > 5.45) continue;
+      let I = 0;
+      if (REDUCE) I = r < 1.2 ? 1 : r < 3.2 ? 0.35 : 0.08;
+      else if (phase === 'idle') I = 0.06 + 0.94 * Math.pow(0.5 + 0.5 * Math.sin(t * 0.0021 - r * 0.85), 5) * (1 - r / 7.5);
+      else if (phase === 'wipe' || phase === 'think') {
+        const a = Math.atan2(dy, dx), head = t * 0.009;
+        let da = ((head - a) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+        I = r > 3 ? Math.max(0.06, 1 - da / 2.4) : r < 1 ? 0.5 : 0.06;
+      } else if (phase === 'type') {
+        const lvl = 1.2 + pulse * 3.8;
+        I = r <= lvl ? 0.35 + 0.65 * (1 - r / 6) : 0.06;
+      } else { I = r < 1 ? 1 : 0.06 + 0.3 * Math.pow(0.5 + 0.5 * Math.sin(t * 0.0016 - r * 0.7), 3); }
+      pctx.fillStyle = '#2a221c'; pctx.beginPath(); pctx.arc((x + 0.5) * p, (y + 0.5) * p, p * 0.36, 0, 7); pctx.fill();
+      if (I > 0.02) { pctx.globalAlpha = Math.min(1, I); pctx.fillStyle = '#e2c891'; pctx.beginPath(); pctx.arc((x + 0.5) * p, (y + 0.5) * p, p * 0.4, 0, 7); pctx.fill(); pctx.globalAlpha = 1; }
+    }
+  }
+
+  /* loop */
+  let running = false, visible = false, raf = 0, last = 0;
+  function loop(t) {
+    const dt = last ? Math.min(64, t - last) : 16; last = t;
+    step(t, dt);
+    render(); presence(t, dt);
+    if (running) raf = requestAnimationFrame(loop);
+  }
+  function kick() { const on = visible && !document.hidden && ready && !REDUCE; if (on && !running) { running = true; last = 0; raf = requestAnimationFrame(loop); } else if (!on && running) { running = false; cancelAnimationFrame(raf); } }
+  function staticFrame() { const t = performance.now(); step(t, 1000); render(); presence(t, 16); }
+
+  function clock() {
+    try { $('#clock').textContent = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()); } catch (e) { /* keep placeholder */ }
+  }
+
+  async function init() {
+    clock(); setInterval(clock, 15000);
+    const all = QA.map((x) => x.q + x.a).join('') + IDLE_MARQ + '質問を選んでくださいQ.0123456789 ─';
+    try { await Promise.race([Promise.all([document.fonts.load(F16, all), document.fonts.load('700 46px "Space Mono"', 'SHŌ')]), new Promise((r) => setTimeout(r, 4000))]); } catch (e) { /* fall back to system fonts */ }
+    // find the glyph cell's top row so 16 rows cover the em box
+    gctx.font = F16; const m = gctx.measureText('国');
+    glyphTop = Math.max(0, Math.round(24 - (m.actualBoundingBoxAscent || 14)) - 1);
+    measure(); buildIdle(); setMarquee(IDLE_MARQ);
+    ready = true;
+    let rw = boardEl.clientWidth;
+    new ResizeObserver(() => { if (Math.abs(boardEl.clientWidth - rw) < 2) return; rw = boardEl.clientWidth; measure(); if (lay && active >= 0) { const a = active; active = -1; lay = null; phase = 'idle'; ask(a, false); } if (REDUCE) staticFrame(); }).observe(boardEl);
+    if (REDUCE) { staticFrame(); if (pending >= 0) ask(pending, true); return; }
+    kick();
+    if (pending >= 0) ask(pending, true);
+  }
+
+  // questions: click = ask; hover (fine pointers) asks after a short intent delay
+  let hoverT = 0;
+  $$('.q').forEach((b) => {
+    const i = +b.dataset.q;
+    b.addEventListener('click', () => ask(i, true));
+    b.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse') return; clearTimeout(hoverT); hoverT = setTimeout(() => ask(i, true), 220); });
+    b.addEventListener('pointerleave', () => clearTimeout(hoverT));
+  });
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting; kick();
+    if (visible && !interacted && active < 0) setTimeout(() => { if (!interacted && active < 0) ask(0, false); }, REDUCE ? 0 : 700);
+  }, { threshold: 0.2 }).observe(device);
+  document.addEventListener('visibilitychange', kick);
+  return { init };
+})();
+
+/* ───────── services: hovered row swaps the plate ───────── */
+(() => {
+  const fig = $('#svc-fig'), imgs = $$('img', fig), cap = $('#svc-cap'), rows = $$('#svc-list a');
+  const set = (i, live) => {
+    imgs.forEach((im, k) => im.classList.toggle('is-on', k === i));
+    rows.forEach((r, k) => r.classList.toggle('is-on', k === i && live));
+    fig.classList.toggle('is-live', live);
+    cap.textContent = `Fig. 01 — ${rows[i].dataset.en}`;
+  };
+  rows.forEach((r, i) => {
+    r.addEventListener('pointerenter', () => set(i, true));
+    r.addEventListener('focus', () => set(i, true));
+    r.addEventListener('click', (e) => e.preventDefault());
+  });
+  $('#svc-list').addEventListener('pointerleave', () => fig.classList.remove('is-live'));
+})();
+
+Hero.init();
+Sho.init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "id": "v02",
+  "slug": "anthropic-skills",
+  "tool": "Anthropic skills (frontend-design + algorithmic-art)",
+  "repo": "https://github.com/anthropics/skills",
+  "title": "结丝·生成艺术",
+  "concept": "首屏是一幅带编号的种子生成艺术：一百多根咖啡与香槟色的细丝从画面边缘被牵引进来，缠绕成一个会缓慢旋转、可被指尖拨开的丝线圆环（像正在卷线的线轴，也像留一道缺口的圆相），象征把医院、口译、接送、住宿汇成一条连续的照护。SHŌ 用同一套丝线系统，在漆黑底上绕成一颗手毬；悬停三个问题时，丝线依次重绕成清单、四天行程的一条线、两股并行的绳。",
+  "fromTool": "algorithmic-art：先写算法哲学《Gathered Filament》（放在 HTML 注释中），再用 p5.js 实例模式实现 randomSeed/noiseSeed 可复现的种子作品，并保留其模板的种子导航（编号、上一张/下一张、点击换一张）。frontend-design：先定配色/字体/版式再写码，只在首屏一处用力，去掉每节眉标、按钮箭头、伪编号和卡片套件；canvas-design 的“编号图版+克制说明文字”用于图版标注。",
+  "tech": "p5.js 1.11.3（2D canvas，实例模式）+ 手写 3D 投影、Lambert/高光分级着色、Path2D 分桶描线",
+  "is3d": true
+}

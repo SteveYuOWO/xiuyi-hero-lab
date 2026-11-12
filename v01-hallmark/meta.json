@@ -1,0 +1,11 @@
+{
+  "id": "v01",
+  "slug": "hallmark",
+  "tool": "Hallmark",
+  "repo": "https://github.com/Nutlope/hallmark",
+  "title": "校正的标题与真实SHŌ",
+  "concept": "首屏用公司自己的接待台照片做成装裱在棉纸卡上的版画，标题像校对稿一样被改写——金色校正符号把「・暮らし」写进页边再排进行内；背后是 Atelier 主题的实时 WebGL「空气」，指针划过会把雾拨开。SHŌ 区不再是金色球体，而是真实的 SHŌ 对话界面，逐字流式回答问题 1，点另外两个问题即重新作答，可切换「じっくり／高速」。",
+  "fromTool": "照 Hallmark 流程执行：theme.mjs 发牌（Dose / Atelier / Wayfind）选 Atelier 并把石板蓝强调色换成 XIUYI 咖啡色，draw 抽出构图（Catalogue 换成 Split Studio 并在 CSS 首行注释中记录），遵守 Floor 规则（:root 令牌、无 eyebrow、无字距大写标签、焦点环、减弱动效），借用其官网的标题校对动画手法与 Atelier 的棉纸色卡（服务以七条吸墨纸条发牌展开），并用 sloplint 静态与渲染两层检查到 0 FAIL。",
+  "tech": "HTML/CSS + 原生 WebGL（域扭曲 fbm 着色器）+ Web Animations API",
+  "is3d": false
+}

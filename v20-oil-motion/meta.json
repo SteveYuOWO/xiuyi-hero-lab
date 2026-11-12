@@ -1,0 +1,11 @@
+{
+  "id": "v20",
+  "slug": "oil-motion",
+  "tool": "oil-motion",
+  "repo": "https://github.com/oil-oil/oil-motion",
+  "title": "墨流し・流体",
+  "concept": "首屏是实时 WebGL 稳定流体：咖啡墨与香槟金在暖纸上按墨流し的方式一滴一滴扩散成同心圆，再被指针、滚动和无人时的自动搅动拉成羽纹，文字区域始终保持干净纸面；SHŌ 是一滴带漆面光泽、映出障子窗格的粘稠墨滴（SDF metaballs），悬停哪个问题就向哪里倾身并拉出蜜丝般的触须，周围水面泛起涟漪。",
+  "fromTool": "oil-motion 本身是“AI 生成视频→滚动/指针驱动动画”的流水线，实时物理效果按它的规则交给前端代码，所以没有调用其付费生成服务；照搬的是它的方法：为两处视觉各写 Concept Contract（driver / time_control / rest_state），移植 interactive-motion.ts 的 smoothDamp + maxSpeed 做所有跟随（笔触、滚动速度、墨滴倾身、触须逐节滞后），闲置时自动播放、一有输入立即交还控制，segment-play 式可从当前姿态反向的状态切换，以及 runtime.md 的离屏/后台暂停、预先铺好的清晰首帧与减少动态时的静态画面。",
+  "tech": "WebGL2 + 手写 GLSL：stable fluids 驱动参考映射（reference map）在 mipmap 墨纸上流动、面积守恒的墨流し滴落；SHŌ 为 SDF metaballs + 圆锥链触须的漆面着色；无第三方库",
+  "is3d": false
+}

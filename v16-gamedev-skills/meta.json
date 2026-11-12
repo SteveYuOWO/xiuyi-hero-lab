@@ -1,0 +1,11 @@
+{
+  "id": "v16",
+  "slug": "gamedev-skills",
+  "tool": "awesome gamedev agent skills",
+  "repo": "https://github.com/gamedev-skills/awesome-gamedev-agent-skills",
+  "title": "实时枯山水庭园",
+  "concept": "首屏是用 three.js 实时渲染的枯山水：程序化耙纹砂地、带苔的三尊石组、低角度暖阳与柔和长影、缓慢环绕的镜头和随时间移动的光线，访客用指针在砂上“耙”出新的五齿纹路。SHŌ 区是一块独石与同心砂纹，悬停哪个问题，砂纹就重新整理并朝那个问题流去。",
+  "fromTool": "按仓库的 threejs-scene-setup / materials-lighting / shader-programming / procedural-gen / camera-systems / performance-optimization 技能落实：r187 import map、setAnimationLoop + Timer 限幅 delta、一盏方向光加半球补光的 PCF 软阴影与 Neutral 色调映射、onBeforeCompile 扩展标准材质、解析导数求法线并按导数抗摩尔纹、fBm 程序化石头、1-exp(-rate·dt) 平滑、自适应像素比与离屏/隐藏页暂停、减弱动效时按需渲染。",
+  "tech": "three.js r187 (WebGLRenderer) + GLSL via onBeforeCompile + half-float render-target ping-pong",
+  "is3d": true
+}

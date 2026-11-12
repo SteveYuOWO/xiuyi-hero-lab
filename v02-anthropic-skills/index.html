@@ -1,0 +1,1138 @@
+<!doctype html>
+<!-- v02 · anthropic skills (frontend-design + algorithmic-art, craft from canvas-design / theme-factory) · https://github.com/anthropics/skills
+     Decisions taken from the tool:
+     - algorithmic-art: philosophy first ("Gathered Filament", below), then a seeded p5.js piece (randomSeed + noiseSeed, one params object,
+       reproducible impressions). The template's fixed seed contract survives as the plate caption: number, previous / next, click for another.
+     - frontend-design: one committed direction grounded in the subject (silk thread, lacquer, printmaking plate marks, temari), one
+       orchestrated load moment (the threads are drawn in), all other motion answers the visitor; no eyebrow labels on every section,
+       no arrows appended to buttons, no numbered markers on content that is not a sequence, no card kit.
+     - canvas-design: the artwork is presented like a numbered plate from an imaginary discipline, with sparse clinical captions.
+     - theme-factory: a custom theme, "Lacquer & Silk", built from the XIUYI palette of record instead of a preset. -->
+<!--
+  ALGORITHMIC PHILOSOPHY — "GATHERED FILAMENT" (結糸)
+
+  Care, in this movement, is not a single gesture but a convergence. Many separate strands — a clinic in one ward, an interpreter's
+  voice in three languages, a car at the arrivals hall, a room in Daikanyama, the four days a visitor actually has — each wander on
+  their own field until a patient, quiet force gathers them into one closed form. The work never draws the ring. It draws hundreds of
+  filaments that never quite coincide, and lets the ring emerge from their accumulation, the way a skein appears out of thread. The
+  algorithm must read as meticulously crafted, every constant tuned by hand over countless iterations until nothing in it feels random.
+
+  Each filament is a parametric path on a torus. Its major angle advances along a seeded arc; its minor angle winds around the tube at
+  a seeded helical rate, some left-handed, some right-handed, so that opposite helices cross and a woven lattice appears — kumihimo
+  without a loom. Depth inside the tube is drawn from a square-root distribution: a dense surface, a soft interior. One arc of the ring
+  is left open like the lifted brush of an ensō, and only a few bridging filaments cross it. This is the product of deep computational
+  patience: the density of the brush stroke is not painted, it is the statistics of where arcs begin and end.
+
+  The loose ends originate beyond the frame. They sway on low-frequency Perlin noise and are pulled inward as cubic Béziers whose final
+  tangent is the helix tangent at the point of entry, so the join is continuous: there is no visible moment at which a stranger becomes
+  part of the ring. Where the filaments pass behind the words of the page they thin almost to nothing; the text keeps its silence.
+
+  Light is carried by tone, never by colour. Every short run of thread evaluates its tube normal against a lamp at the upper left —
+  Lambert plus a narrow specular lobe — and is quantised into ten tones from roasted coffee through champagne to a glint the colour of
+  the paper itself, so the lit edge dissolves into the ground. Far strands are laid first and fainter. The result should feel like a
+  bronze sculpture rebuilt from silk, a master-level piece of rendering done with nothing but hairlines.
+
+  Time and touch keep it alive. The ring turns toroidally and rolls poloidally like a slow vortex ring; a visitor's hand parts the
+  filaments with a spring-damped displacement and tilts the ring toward itself. Every seed is one impression pulled from the same plate,
+  numbered and reproducible. The same filaments, wound as a temari on lacquer, become SHŌ: they re-form into the shape of what is being
+  asked — a ruled page, four linked days, a two-ply cord — staggered along each thread so that change flows like thread being re-wound.
+  Painstaking calibration everywhere: restraint is the craft.
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XIUYI｜美・健康・暮らしを、日本で再定義する</title>
+<meta name="description" content="XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。">
+<meta name="theme-color" content="#e6e2db">
+<link rel="icon" href="../assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+<style>
+/* Theme "Lacquer & Silk": paper grounds, coffee ink, champagne thread, one lacquer panel. */
+:root{
+  --paper:#e6e2db;        /* live ground */
+  --paper-warm:#f3f0ea;
+  --white:#ffffff;
+  --coffee:#5b4938;       /* actions, wordmark */
+  --ink:#44352a;          /* text */
+  --muted:#6b5946;
+  --champagne:#b9a17b;    /* hairlines only */
+  --logo:#7a6a56;
+  --lacquer:#2b211a;      /* SHŌ panel, footer */
+  --lacquer-2:#352920;
+  --rule:rgba(68,53,42,.16);
+  --rule-strong:rgba(68,53,42,.32);
+  --on-dark:#efe9df;
+  --on-dark-muted:rgba(239,233,223,.66);
+
+  --serif:"Spectral","Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --gutter:clamp(20px,5vw,72px);
+  --maxw:1296px;
+  --header:84px;
+  --r-btn:8px; --r-card:12px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:var(--header)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;color:var(--ink);background-color:var(--paper);
+  font-family:var(--serif);font-size:16px;line-height:2;letter-spacing:.04em;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  /* washi grain, procedural */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .27 0 0 0 0 .21 0 0 0 0 .16 0 0 0 .055 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:500;font-feature-settings:"palt";text-wrap:balance;word-break:auto-phrase}
+p{text-wrap:pretty}
+body{word-break:auto-phrase;line-break:strict}
+:focus-visible{outline:2px solid var(--coffee);outline-offset:3px;border-radius:4px}
+.wrap{max-width:calc(var(--maxw) + var(--gutter)*2);margin-inline:auto;padding-inline:var(--gutter)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;height:54px;padding:0 32px;border-radius:var(--r-btn);
+  font-size:14px;letter-spacing:.18em;text-decoration:none;white-space:nowrap;border:1px solid transparent;
+  transition:background-color .25s,border-color .25s,color .25s}
+.btn-primary{background:var(--coffee);color:var(--white)}
+.btn-primary:hover{background:var(--ink)}
+.btn-ghost{border-color:rgba(91,73,56,.45);color:var(--coffee);background:transparent}
+.btn-ghost:hover{border-color:var(--coffee);background:rgba(243,240,234,.55)}
+.btn-paper{background:var(--paper-warm);color:var(--ink)}
+.btn-paper:hover{background:var(--white)}
+
+/* ---------- header ---------- */
+.site-header{position:sticky;top:0;z-index:50;height:var(--header);background:var(--paper);transition:box-shadow .3s}
+.site-header.is-scrolled{box-shadow:0 1px 0 var(--rule)}
+.site-header .wrap{height:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}
+.brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;justify-self:start}
+.brand img{width:46px;height:46px}
+.brand span{font-size:19px;font-weight:500;letter-spacing:.34em;color:var(--coffee);line-height:1}
+.nav-primary ul{display:flex;gap:clamp(28px,3.4vw,52px);list-style:none;margin:0;padding:0}
+.nav-primary a{position:relative;font-size:15px;letter-spacing:.16em;text-decoration:none;color:var(--ink);padding:6px 0}
+.nav-primary a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--champagne);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav-primary a:hover::after{transform:scaleX(1)}
+.tools{justify-self:end;display:flex;align-items:center;gap:28px;font-size:14px;letter-spacing:.12em}
+.lang{position:relative}
+.lang summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 0}
+.lang summary::-webkit-details-marker{display:none}
+.lang summary svg{transition:transform .25s}
+.lang[open] summary svg{transform:rotate(180deg)}
+.lang ul{position:absolute;right:-14px;top:calc(100% + 8px);margin:0;padding:8px;list-style:none;background:var(--paper-warm);border:1px solid var(--rule);border-radius:var(--r-btn);min-width:132px}
+.lang li a{display:block;padding:6px 12px;text-decoration:none;border-radius:6px}
+.lang li a:hover{background:var(--paper)}
+.lang li a[aria-current]{color:var(--coffee);font-weight:600}
+.tools .login{text-decoration:none}
+.menu-btn{display:inline-flex;align-items:center;gap:12px;background:none;border:0;padding:6px 0;cursor:pointer;letter-spacing:.12em;font-size:14px}
+.menu-btn i{display:block;width:24px;height:7px;border-top:1px solid currentColor;border-bottom:1px solid currentColor}
+
+/* mobile menu */
+.drawer{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;
+  visibility:hidden;opacity:0;transition:opacity .3s,visibility 0s .3s}
+.drawer.is-open{visibility:visible;opacity:1;transition:opacity .3s}
+.drawer-top{height:var(--header);display:flex;align-items:center;justify-content:space-between;padding-inline:var(--gutter);border-bottom:1px solid var(--rule)}
+.drawer-close{background:none;border:0;display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;letter-spacing:.12em}
+.drawer nav{padding:24px var(--gutter);flex:1;overflow:auto}
+.drawer nav ul{list-style:none;margin:0;padding:0}
+.drawer nav li a{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--rule);font-size:24px;letter-spacing:.1em;text-decoration:none}
+.drawer nav li a small{font-size:13px;color:var(--muted);font-style:italic;letter-spacing:.04em}
+.drawer-foot{padding:24px var(--gutter) calc(32px + env(safe-area-inset-bottom));display:grid;gap:20px}
+.drawer-lang{display:flex;gap:20px;font-size:14px}
+.drawer-lang a{text-decoration:none;color:var(--muted)}
+.drawer-lang a[aria-current]{color:var(--ink);border-bottom:1px solid var(--champagne)}
+.drawer-foot .btn{width:100%}
+
+/* ---------- hero ---------- */
+.hero{position:relative;height:calc(100svh - var(--header));min-height:640px;max-height:900px;overflow:hidden}
+.hero-art{position:absolute;inset:0;transition:opacity .38s ease;cursor:pointer}
+.hero-art.is-fading{opacity:0}
+.hero-art canvas{display:block}
+.hero-inner{position:relative;height:100%;display:flex;align-items:center;pointer-events:none}
+.hero-copy{pointer-events:auto;max-width:600px;padding-bottom:12px}
+.hero h1{font-size:clamp(34px,4.05vw,58px);line-height:1.6;letter-spacing:.07em;margin-bottom:34px;color:var(--ink)}
+.hero h1 .ln{display:block;white-space:nowrap}
+.hero-sub{font-size:17px;line-height:2.05;color:var(--muted);max-width:30em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:48px}
+.hero-vert{position:absolute;left:calc(var(--gutter)*.42);top:56px;writing-mode:vertical-rl;font-size:13px;letter-spacing:.42em;color:var(--muted);
+  display:flex;align-items:center;gap:18px;pointer-events:none}
+.hero-vert::after{content:"";width:1px;height:64px;background:var(--champagne)}
+.plate{position:absolute;right:var(--gutter);bottom:30px;display:flex;align-items:center;gap:18px;font-size:13px;color:var(--muted);letter-spacing:.08em;margin:0}
+.plate-no{font-variant-numeric:lining-nums tabular-nums;letter-spacing:.14em}
+.plate-title{padding-left:18px;border-left:1px solid var(--rule-strong)}
+.plate-nav{display:flex;gap:4px}
+.plate-nav button{width:30px;height:30px;border-radius:var(--r-btn);border:1px solid var(--rule-strong);background:transparent;display:grid;place-items:center;cursor:pointer;transition:border-color .2s,background-color .2s}
+.plate-nav button:hover{border-color:var(--coffee);background:rgba(243,240,234,.6)}
+.plate-hint{color:rgba(107,89,70,.75);font-size:12px}
+.no-art .plate,.no-art .hero-art{display:none}
+
+/* ---------- sections ---------- */
+.section{padding:clamp(88px,10vw,148px) 0}
+.h2{font-size:clamp(28px,2.6vw,38px);line-height:1.55;letter-spacing:.07em;color:var(--ink)}
+.lead{font-size:16.5px;line-height:2.05;color:var(--muted)}
+
+/* SHŌ */
+.sho{background:var(--paper-warm)}
+.sho-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(48px,7vw,112px);align-items:center}
+.sho-panel{position:relative;margin:0;aspect-ratio:1/1;border-radius:var(--r-card);overflow:hidden;background:var(--lacquer)}
+.sho-art{position:absolute;inset:0}
+.sho-art canvas{display:block}
+.sho-cap{position:absolute;left:28px;right:28px;bottom:22px;display:flex;align-items:center;gap:16px;color:var(--on-dark-muted);font-size:13px;letter-spacing:.1em;pointer-events:none}
+.sho-cap b{font-weight:500;color:var(--on-dark);letter-spacing:.28em;font-size:14px}
+.sho-cap i{display:block;width:28px;height:1px;background:rgba(185,161,123,.6)}
+.sho-cap span{transition:opacity .3s}
+.sho-copy .h2{margin-bottom:28px}
+.qs{list-style:none;margin:44px 0 48px;padding:0;border-top:1px solid var(--rule)}
+.qs a{position:relative;display:grid;grid-template-columns:1fr 30px;gap:28px;align-items:center;padding:24px 4px 24px 0;border-bottom:1px solid var(--rule);
+  text-decoration:none;font-size:17px;line-height:1.85;letter-spacing:.05em;color:var(--ink)}
+.qs a::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--coffee);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.qs a:hover::after,.qs a.is-active::after,.qs a:focus-visible::after{transform:scaleX(1)}
+.qs .ctx,.qs .ask{display:block}
+.qs .ctx{font-size:14px;color:var(--muted);letter-spacing:.06em;line-height:1.7;margin-bottom:4px}
+.qs svg{color:var(--muted);transition:transform .3s,color .3s}
+.qs a:hover svg,.qs a.is-active svg{transform:translateX(5px);color:var(--ink)}
+
+/* Services */
+.svc-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(48px,7vw,112px);align-items:start}
+.svc-aside{position:sticky;top:calc(var(--header) + 40px)}
+.svc-aside .h2{margin-bottom:40px}
+.svc-photo{position:relative;aspect-ratio:4/5;border-radius:var(--r-card);overflow:hidden;background:#cfc8bd}
+.svc-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+.svc-photo img.is-on{opacity:1}
+.svc-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule-strong)}
+.svc-list a{position:relative;display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:28px 0 26px;border-bottom:1px solid var(--rule);text-decoration:none}
+.svc-list a::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--coffee);transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.svc-list a.is-on::after{transform:scaleX(1)}
+.svc-list .txt{flex:1;display:flex;justify-content:space-between;align-items:baseline;gap:24px}
+.svc-list .jp{transition:color .3s}
+.svc-list .jp{font-size:clamp(22px,2.15vw,30px);letter-spacing:.1em;line-height:1.5;font-feature-settings:"palt"}
+.svc-list .en{font-style:italic;font-size:16px;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
+.svc-list a.is-on .jp{color:var(--coffee)}
+.svc-list a.is-on .en{color:var(--ink)}
+.svc-thumb{display:none}
+
+/* Why */
+.why-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:64px}
+.why-head p{max-width:27em;color:var(--muted);font-size:15px}
+.why-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,3.4vw,56px)}
+.why-item img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-card)}
+.why-item h3{font-size:21px;line-height:1.6;letter-spacing:.07em;margin:30px 0 14px;font-weight:600}
+.why-item p{font-size:15px;line-height:2.05;color:var(--muted)}
+
+/* Support */
+.support{background:var(--paper-warm)}
+.sup-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(48px,7vw,112px);align-items:start}
+.sup-photo{position:sticky;top:calc(var(--header) + 40px);border-radius:var(--r-card);overflow:hidden;aspect-ratio:4/5}
+.sup-photo img{width:100%;height:100%;object-fit:cover}
+.sup-list{margin:44px 0 0;padding:0;border-top:1px solid var(--rule-strong)}
+.sup-list div{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:28px 0;border-bottom:1px solid var(--rule)}
+.sup-list dt{font-size:18px;line-height:1.75;font-weight:600;letter-spacing:.06em;font-feature-settings:"palt"}
+.sup-list dd{margin:0;font-size:15px;line-height:2.05;color:var(--muted);max-width:34em}
+.note{margin-top:24px;font-size:13px;line-height:1.9;color:var(--muted)}
+
+/* Closing */
+.closing{position:relative;color:var(--on-dark);background:#2b211a url("../assets/photos/home-closing.jpg") center 60%/cover no-repeat;min-height:620px;display:flex;align-items:center}
+.closing::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(33,25,19,.9) 0%,rgba(33,25,19,.74) 38%,rgba(33,25,19,.18) 72%,rgba(33,25,19,.05) 100%)}
+.closing .wrap{position:relative;width:100%}
+.closing-copy{max-width:520px}
+.closing .h2{color:var(--on-dark);margin-bottom:26px}
+.closing p{color:var(--on-dark-muted);font-size:16px;line-height:2.1}
+.closing .btn{margin-top:44px}
+
+/* Footer */
+.site-footer{background:var(--lacquer);color:var(--on-dark-muted);padding:88px 0 40px;font-size:14px}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:start}
+.foot-brand{display:flex;gap:20px;align-items:center}
+.disc{width:58px;height:58px;border-radius:50%;background:var(--paper-warm);display:grid;place-items:center;flex:none}
+.disc img{width:46px;height:46px}
+.foot-brand strong{display:block;font-weight:500;color:var(--on-dark);letter-spacing:.34em;font-size:19px;line-height:1.4}
+.foot-brand span{display:block;line-height:1.9}
+.foot-links{display:grid;grid-template-columns:repeat(3,auto);gap:10px 48px;list-style:none;margin:0;padding:0}
+.foot-links a{text-decoration:none;letter-spacing:.12em}
+.foot-links a:hover,.foot-lang a:hover{color:var(--on-dark)}
+.foot-lang{display:flex;gap:24px}.foot-lang a{text-decoration:none}
+.foot-base{margin-top:72px;padding-top:24px;border-top:1px solid rgba(239,233,223,.14);display:flex;justify-content:space-between;gap:24px;font-size:12px;letter-spacing:.12em}
+
+/* floating contact */
+.fab{position:fixed;right:24px;bottom:24px;z-index:40;display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 20px 0 16px;border-radius:var(--r-btn);
+  background:var(--coffee);color:var(--white);text-decoration:none;font-size:14px;letter-spacing:.12em;box-shadow:0 6px 18px rgba(43,33,26,.18);
+  transition:background-color .25s,opacity .3s,transform .3s}
+.fab:hover{background:var(--ink)}
+.fab.is-hidden{opacity:0;transform:translateY(8px);pointer-events:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .nav-primary{display:none}
+  .site-header .wrap{grid-template-columns:1fr auto}
+  .hero-copy{max-width:520px}
+}
+@media (max-width:760px){
+  :root{--header:64px}
+  .brand img{width:38px;height:38px}
+  .brand span{font-size:16px}
+  .tools .lang,.tools .login{display:none}
+  .hero{height:auto;min-height:calc(100svh - var(--header));max-height:none}
+  .hero-inner{align-items:flex-end;min-height:calc(100svh - var(--header));padding-top:52vh;padding-bottom:40px}
+  .hero-copy{max-width:none}
+  .hero h1{font-size:clamp(26px,7.6vw,32px);line-height:1.62;margin-bottom:20px;letter-spacing:.05em}
+  .hero-sub{font-size:15px;line-height:2}
+  .hero-cta{margin-top:30px;gap:12px}
+  .hero-cta .btn{flex:1 1 0;padding:0 12px;height:52px;letter-spacing:.14em}
+  .hero-vert{display:none}
+  .plate{right:auto;left:var(--gutter);bottom:auto;top:calc(52vh - 52px);gap:12px;font-size:12px}
+  .plate-hint{display:none}
+  .sho-grid,.svc-grid,.sup-grid{grid-template-columns:minmax(0,1fr)}
+  .sho-panel{order:-1}
+  .qs{margin:32px 0 36px}
+  .qs a{font-size:15.5px;gap:16px;padding:20px 0}
+  .svc-aside{position:static}
+  .svc-aside .h2{margin-bottom:0}
+  .svc-photo{display:none}
+  .svc-list a{padding:20px 0;align-items:center}
+  .svc-list .txt{display:grid;gap:2px}
+  .svc-list .en{font-size:14px}
+  .svc-thumb{display:block;width:72px;height:72px;border-radius:var(--r-btn);object-fit:cover;flex:none}
+  .why-head{display:block;margin-bottom:40px}
+  .why-head p{margin-top:16px}
+  .why-grid{grid-template-columns:minmax(0,1fr);gap:48px}
+  .why-item h3{margin-top:22px}
+  .sup-photo{position:relative;top:auto;aspect-ratio:16/11}
+  .sup-list{margin-top:32px}
+  .sup-list div{grid-template-columns:minmax(0,1fr);gap:8px;padding:24px 0}
+  .closing{min-height:auto;padding:300px 0 72px;background-position:62% 0;background-size:auto 340px;background-color:#2b211a}
+  .closing::before{background:linear-gradient(180deg,rgba(43,33,26,0) 0,rgba(43,33,26,.1) 160px,rgba(43,33,26,1) 340px)}
+  .foot-grid{grid-template-columns:minmax(0,1fr)}
+  .foot-links{grid-template-columns:repeat(3,auto);gap:10px 28px}
+  .foot-base{flex-direction:column;margin-top:48px}
+  .fab{right:16px;bottom:16px;height:48px;width:48px;padding:0;justify-content:center}
+  .fab span{display:none}
+}
+@media (max-width:380px){
+  .hero-cta .btn{letter-spacing:.08em}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="XIUYI ホーム">
+      <img src="../assets/logo-mark.png" alt="" width="46" height="46">
+      <span>XIUYI</span>
+    </a>
+    <nav class="nav-primary" aria-label="メインナビゲーション">
+      <ul>
+        <li><a href="#services">サービス</a></li>
+        <li><a href="#column">コラム</a></li>
+        <li><a href="#about">会社案内</a></li>
+        <li><a href="#sho">SHŌ AI</a></li>
+      </ul>
+    </nav>
+    <div class="tools">
+      <details class="lang">
+        <summary aria-label="言語を選択">日本語 <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></summary>
+        <ul>
+          <li><a href="#" aria-current="true">日本語</a></li>
+          <li><a href="#">中文</a></li>
+          <li><a href="#">English</a></li>
+        </ul>
+      </details>
+      <a class="login" href="#login">ログイン</a>
+      <button class="menu-btn" id="menuOpen" aria-expanded="false" aria-controls="drawer">メニュー <i aria-hidden="true"></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="drawer-top">
+    <a class="brand" href="#top"><img src="../assets/logo-mark.png" alt="" width="38" height="38"><span>XIUYI</span></a>
+    <button class="drawer-close" id="menuClose">閉じる <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.1"/></svg></button>
+  </div>
+  <nav aria-label="モバイルナビゲーション">
+    <ul>
+      <li><a href="#services">サービス <small>Services</small></a></li>
+      <li><a href="#column">コラム <small>Journal</small></a></li>
+      <li><a href="#about">会社案内 <small>About</small></a></li>
+      <li><a href="#sho">SHŌ AI <small>Assistant</small></a></li>
+      <li><a href="#login">ログイン <small>Sign in</small></a></li>
+    </ul>
+  </nav>
+  <div class="drawer-foot">
+    <div class="drawer-lang"><a href="#" aria-current="true">日本語</a><a href="#">中文</a><a href="#">English</a></div>
+    <a class="btn btn-primary" href="#contact">相談を予約</a>
+  </div>
+</div>
+
+<main id="top">
+  <!-- HERO: "Gathered Filament", a seeded p5.js plate -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-art" id="heroArt" aria-hidden="true" title="クリックで次の図版"></div>
+    <p class="hero-vert">東京・美と健康のライフスタイル</p>
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <h1 id="hero-title"><span class="ln">美・健康・暮らしを、</span><span class="ln">日本で再定義する。</span></h1>
+        <p class="hero-sub">XIUYI は日本の医療機関と専属の受診同行サービスをつなぎ、健康と美を支えます。</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#services">サービスを見る</a>
+          <a class="btn btn-ghost" href="#contact">相談を予約</a>
+        </div>
+      </div>
+    </div>
+    <figure class="plate" aria-label="図版">
+      <span class="plate-no">No.&nbsp;<span id="plateNo">0000</span></span>
+      <span class="plate-nav">
+        <button type="button" id="platePrev" aria-label="前の図版"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M6.5 1.5 3 5l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+        <button type="button" id="plateNext" aria-label="次の図版"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M3.5 1.5 7 5 3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+      </span>
+      <span class="plate-title">結び</span>
+      <span class="plate-hint">図版をクリックすると、次の一枚に</span>
+    </figure>
+  </section>
+
+  <!-- SHŌ -->
+  <section class="section sho" id="sho" aria-labelledby="sho-title">
+    <div class="wrap sho-grid">
+      <figure class="sho-panel">
+        <div class="sho-art" id="shoArt" role="img" aria-label="SHŌ：糸で巻かれた手毬が、質問に合わせて形を変えます"></div>
+        <figcaption class="sho-cap"><b>SHŌ</b><i></i><span id="shoStatus">ご質問を選んでください</span></figcaption>
+      </figure>
+      <div class="sho-copy">
+        <h2 class="h2" id="sho-title">SHŌでサービス情報を確認</h2>
+        <p class="lead">SHŌは XIUYI の AI アシスタントです。検査資料やよくあるご質問、渡航前の準備事項を整理できます。診療上の判断は医療機関にご相談ください。</p>
+        <ul class="qs" id="qs">
+          <li><a href="#sho" data-q="1"><span><span class="ctx">初めて日本で人間ドックを受けます。</span><span class="ask">何から準備すればよいですか。</span></span><svg width="30" height="10" viewBox="0 0 30 10" aria-hidden="true"><path d="M0 5h28M23.5 1 28 5l-4.5 4" fill="none" stroke="currentColor" stroke-width="1"/></svg></a></li>
+          <li><a href="#sho" data-q="2"><span><span class="ctx">滞在は 4 日間です。</span><span class="ask">検査と美容医療を同じ日程に入れられますか。</span></span><svg width="30" height="10" viewBox="0 0 30 10" aria-hidden="true"><path d="M0 5h28M23.5 1 28 5l-4.5 4" fill="none" stroke="currentColor" stroke-width="1"/></svg></a></li>
+          <li><a href="#sho" data-q="3"><span><span class="ctx">母（68 歳）を連れて行きます。</span><span class="ask">付き添いはどこまでお願いできますか。</span></span><svg width="30" height="10" viewBox="0 0 30 10" aria-hidden="true"><path d="M0 5h28M23.5 1 28 5l-4.5 4" fill="none" stroke="currentColor" stroke-width="1"/></svg></a></li>
+        </ul>
+        <a class="btn btn-primary" href="#sho">SHŌに相談</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="section services" id="services" aria-labelledby="svc-title">
+    <div class="wrap svc-grid">
+      <div class="svc-aside">
+        <h2 class="h2" id="svc-title">医療サービス</h2>
+        <div class="svc-photo" aria-hidden="true">
+          <img class="is-on" src="../assets/photos/checkup-arrival.jpg" alt="">
+          <img src="../assets/photos/service-detail-check.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/regenerative-waiting-area.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/aesthetic-light.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/support-attend.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/ivf-companionship.jpg" alt="" loading="lazy">
+          <img src="../assets/photos/support-transfer.jpg" alt="" loading="lazy">
+        </div>
+      </div>
+      <ul class="svc-list" id="svcList">
+        <li><a href="#services" class="is-on"><span class="txt"><span class="jp">精密健診</span> <span class="en">Health screening</span></span><img class="svc-thumb" src="../assets/photos/checkup-arrival.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="#services"><span class="txt"><span class="jp">医療受診</span> <span class="en">Specialist visits</span></span><img class="svc-thumb" src="../assets/photos/service-detail-check.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="#services"><span class="txt"><span class="jp">再生医療</span> <span class="en">Regenerative medicine</span></span><img class="svc-thumb" src="../assets/photos/regenerative-waiting-area.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="#services"><span class="txt"><span class="jp">美容医療</span> <span class="en">Aesthetic medicine</span></span><img class="svc-thumb" src="../assets/photos/aesthetic-light.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="#services"><span class="txt"><span class="jp">同行・医療通訳</span> <span class="en">Escort &amp; interpreting</span></span><img class="svc-thumb" src="../assets/photos/support-attend.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="#services"><span class="txt"><span class="jp">生殖補助医療</span> <span class="en">Assisted reproduction</span></span><img class="svc-thumb" src="../assets/photos/ivf-companionship.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="#services"><span class="txt"><span class="jp">移動・宿泊サポート</span> <span class="en">Transfers &amp; stays</span></span><img class="svc-thumb" src="../assets/photos/support-transfer.jpg" alt="" loading="lazy"></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Why -->
+  <section class="section why" id="about" aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="why-head">
+        <h2 class="h2" id="why-title">XIUYI が選ばれる理由</h2>
+        <p>診断と治療は、提携する医療機関と医師が行います。XIUYI は受診の前後と、その間をつなぎます。</p>
+      </div>
+      <div class="why-grid">
+        <article class="why-item">
+          <img src="../assets/photos/why-network.jpg" alt="提携医療機関のエントランス" loading="lazy">
+          <h3>日本の正規医療機関と連携</h3>
+          <p>健診、美容医療、再生医療、生殖補助医療などのご希望に応じて医療機関や医師との連携を支援し、診療資料の翻訳にも対応します。</p>
+        </article>
+        <article class="why-item">
+          <img src="../assets/photos/why-concierge.jpg" alt="受付カウンターに置かれた書類と茶器" loading="lazy">
+          <h3>専任担当者による一貫した調整</h3>
+          <p>初回相談から医療機関の予約、滞在中の受診、受診後の連絡まで、専任担当者が調整します。</p>
+        </article>
+        <article class="why-item">
+          <img src="../assets/photos/why-hospitality.jpg" alt="東京タワーを望む客室" loading="lazy">
+          <h3>移動・宿泊のサポート</h3>
+          <p>医療機関の予約に合わせ、送迎、宿泊、滞在日程を調整します。付帯サービスは別途お見積りします。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support -->
+  <section class="section support" id="support" aria-labelledby="sup-title">
+    <div class="wrap sup-grid">
+      <div class="sup-photo"><img src="../assets/photos/about-plan.jpg" alt="地図と書類、茶碗が置かれた机" loading="lazy"></div>
+      <div>
+        <h2 class="h2" id="sup-title">サポート内容</h2>
+        <dl class="sup-list">
+          <div><dt>医療ニーズの確認と予約調整</dt><dd>既往の検査結果、病歴、今回の受診目的を踏まえて相談内容を整理し、検査や診療の予約を調整します。</dd></div>
+          <div><dt>中国語・英語・日本語での同行サポート</dt><dd>来院から退出まで担当者が同席します。医師の説明はその場で通訳し、疑問もその場で伺えます。</dd></div>
+          <div><dt>医療機関・医師とのマッチング</dt><dd>検査内容に応じて施設と専門医を選定し、予約・資料提出・日程調整を代行します。</dd></div>
+          <div><dt>空港送迎と医療機関間の移動</dt><dd>フライトと受診予定に合わせ、空港送迎や宿泊施設・医療機関間の移動を手配します。</dd></div>
+          <div><dt>宿泊・滞在日程の調整</dt><dd>受診場所と予約日時に合わせ、宿泊先の選定や滞在日程の調整を支援します。</dd></div>
+        </dl>
+        <p class="note">※ 送迎、宿泊、滞在日程の調整は付帯サービスです。費用は正式なお見積りをご確認ください。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section class="closing" id="contact" aria-labelledby="close-title">
+    <div class="wrap">
+      <div class="closing-copy">
+        <h2 class="h2" id="close-title">医療相談を予約する</h2>
+        <p>これまでの検査結果、気になる症状やご希望、渡航予定をお知らせください。担当者がご要望を整理し、サービスと予約の進め方をご案内します。</p>
+        <a class="btn btn-paper" href="#contact">相談を予約</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="column">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <span class="disc"><img src="../assets/logo-mark.png" alt="" width="46" height="46"></span>
+        <div><strong>XIUYI</strong><span>秀一株式会社</span><span>東京都渋谷区（代官山）</span></div>
+      </div>
+      <ul class="foot-links">
+        <li><a href="#services">サービス</a></li>
+        <li><a href="#column">コラム</a></li>
+        <li><a href="#cases">事例</a></li>
+        <li><a href="#doctors">医師</a></li>
+        <li><a href="#about">会社案内</a></li>
+        <li><a href="#privacy">プライバシー</a></li>
+      </ul>
+    </div>
+    <div class="foot-base"><span>© XIUYI CO., LTD.</span><span class="foot-lang"><a href="#">日本語</a><a href="#">中文</a><a href="#">English</a></span></div>
+  </div>
+</footer>
+
+<a class="fab" href="#contact" id="fab" aria-label="お問い合わせ">
+  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4.5h14v9H8.5L5 16.5v-3H3z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+  <span>お問い合わせ</span>
+</a>
+
+<script>
+(() => {
+'use strict';
+/* =====================================================================
+   Shared helpers
+   ===================================================================== */
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+const rgb = c => `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
+const norm = v => { const l = Math.hypot(v[0], v[1], v[2]); return [v[0] / l, v[1] / l, v[2] / l]; };
+
+// Rotation matrix M = Rz(c) · Ry(b) · Rx(a), row-major
+function rotZYX(a, b, c) {
+  const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b), cc = Math.cos(c), sc = Math.sin(c);
+  // Ry·Rx
+  const r = [cb, sb * sa, sb * ca, 0, ca, -sa, -sb, cb * sa, cb * ca];
+  return [
+    cc * r[0] - sc * r[3], cc * r[1] - sc * r[4], cc * r[2] - sc * r[5],
+    sc * r[0] + cc * r[3], sc * r[1] + cc * r[4], sc * r[2] + cc * r[5],
+    r[6], r[7], r[8]
+  ];
+}
+
+// Pause a p5 instance when it is offscreen or the tab is hidden.
+function governor(el, inst) {
+  let visible = true;
+  const sync = () => { if (REDUCE) return; (visible && !document.hidden) ? inst.loop() : inst.noLoop(); };
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; sync(); }, { rootMargin: '60px' }).observe(el);
+  document.addEventListener('visibilitychange', sync);
+}
+
+function fitCanvas(p, el) {
+  const w = Math.max(1, Math.round(el.clientWidth)), h = Math.max(1, Math.round(el.clientHeight));
+  if (w !== p.width || h !== p.height) { p.resizeCanvas(w, h); return true; }
+  return false;
+}
+
+/* =====================================================================
+   HERO — "Gathered Filament": seeded filaments wound into a torus
+   ===================================================================== */
+const heroEl = document.getElementById('heroArt');
+const heroSection = heroEl.parentElement;
+const plateNo = document.getElementById('plateNo');
+const qsSeed = parseInt(new URLSearchParams(location.search).get('seed'), 10);
+const PLATE = { seed: Number.isFinite(qsSeed) && qsSeed > 0 ? qsSeed : 2026 };
+
+const heroSketch = (p) => {
+  const TONES = 10, AL = 3, CH = 6;
+  const SHADOW = hex('#33261c'), MID = hex('#6b5946'), LIGHT = hex('#b9a17b'), GLINT = hex('#efe7d6');
+  const TONE = Array.from({ length: TONES }, (_, i) => {
+    const t = i / (TONES - 1);
+    return rgb(t < .42 ? mix(SHADOW, MID, t / .42) : t < .8 ? mix(MID, LIGHT, (t - .42) / .38) : mix(LIGHT, GLINT, (t - .8) / .2));
+  });
+  const PASS_A = [0.30, 0.66];               // back / front
+  const AL_A = [0.22, 0.55, 1];              // end taper levels
+  const LOOSE_A = [0.04, 0.08, 0.14, 0.21, 0.3, 0.4];
+  const WIDTH = DPR < 1.5 ? [0.78, 1.15] : [0.62, 1.0];
+  const LOOSE_COL = '#6f5e4b', LEAD_COL = '#a88d5f';
+  const L = norm([-0.48, -0.74, -0.56]);     // lamp: upper left, in front
+  const HV = norm([L[0], L[1], L[2] - 1]);   // half vector with the eye at -z
+  const MAXP = 4096;
+  const SX = new Float32Array(MAXP), SY = new Float32Array(MAXP), SZ = new Float32Array(MAXP), TN = new Float32Array(MAXP);
+
+  let W = 1, H = 1, ctx, threads = [], P = {}, born = 0, frozenT = 0;
+  const ptr = { x: -1e5, y: -1e5, nx: .5, ny: .5, inside: false, k: 0 };
+  const tilt = { x: 0, y: 0 };
+
+  function layout() {
+    W = p.width; H = p.height;
+    P.mobile = W < 760;
+    if (P.mobile) { P.cx = W * .5; P.cy = Math.min(H * .25, W * .6); P.R = Math.min(W * .33, H * .18); }
+    else { P.cx = W * .705; P.cy = H * .48; P.R = Math.min(W * .195, H * .36); }
+    P.F = P.R * 6;
+  }
+
+  // One impression of the plate. Everything below is a function of the seed.
+  function build(seed) {
+    p.randomSeed(seed); p.noiseSeed(seed);
+    const r = (a, b) => p.random(a, b);
+    P.tiltX = -r(0.98, 1.14);
+    P.tiltZ = r(-0.42, -0.1);
+    P.tube = r(0.115, 0.15);
+    P.gap = r(0, TAU);
+    P.gapW = r(0.55, 0.95);
+    P.spin = r(0.028, 0.045) * (p.random() < .5 ? -1 : 1);
+    P.roll = r(0.07, 0.13);
+    const count = P.mobile ? 112 : 172;
+    const span = TAU - P.gapW, g0 = P.gap + P.gapW / 2;
+    threads = [];
+    for (let i = 0; i < count; i++) {
+      const lead = i === 0;
+      const bridge = lead || p.random() < .09;
+      let a, b;
+      if (bridge) { a = P.gap - r(.5, 1.6); b = a + (lead ? TAU * .92 : r(Math.PI * .9, Math.PI * 1.7)); }
+      else {
+        const u = Math.pow(p.random(), 1.15);
+        a = g0 + u * span * .6;
+        const rest = g0 + span - a;
+        b = a + Math.max(.55, rest * Math.pow(p.random(), .55));
+      }
+      const tail = lead || p.random() < (P.mobile ? .24 : .27);
+      const exit = !lead && tail && p.random() < .2;
+      // most filaments lie almost parallel (a skein); a few steep crossers make the lattice
+      const k = (lead ? .22 : tail ? r(.05, .34) : .07 + .9 * Math.pow(p.random(), 1.9)) * (p.random() < .7 ? 1 : -1);
+      const psi0 = r(0, TAU);
+      const depth = lead ? 1.08 : Math.sqrt(r(.28, 1));
+      const n = Math.min(900, Math.max(14, Math.ceil((b - a) * (20 + 18 * Math.abs(k)))));
+      const th = new Float32Array(n), ps = new Float32Array(n), rr = new Float32Array(n);
+      for (let j = 0; j < n; j++) {
+        const u = j / (n - 1);
+        th[j] = a + (b - a) * u;
+        ps[j] = psi0 + TAU * k * (b - a) * u;
+        rr[j] = depth * (0.9 + 0.2 * p.noise(i * .31, u * 2.4));
+      }
+      // A loose end lies behind the helix tangent and a little outward, so it spirals in like thread onto a turning spool.
+      const origin = () => ({ a: r(.6, 1), b: r(.18, .75), over: r(20, 160), bend: r(-.35, .35), sway: r(.08, .3), ph: r(0, 100) });
+      threads.push({
+        n, th, ps, rr, lead, w: lead ? 1 : (p.random() < .26 ? 1 : 0),
+        tail: tail ? origin() : null, exit: exit ? origin() : null,
+        nt: tail ? 40 : 0, ne: exit ? 34 : 0,
+        delay: lead ? 0 : r(.1, 1.7) + (tail ? 0 : .35), dur: lead ? 3 : r(1.8, 2.8),
+      });
+      const t = threads[threads.length - 1];
+      t.total = t.nt + t.n + t.ne;
+      t.ox = new Float32Array(t.total); t.oy = new Float32Array(t.total);
+    }
+    // the lead filament is drawn last but revealed first
+    born = p.millis();
+    plateNo.textContent = String(seed).padStart(4, '0');
+  }
+
+  // distance from (x,y) along (dx,dy) to the frame edge
+  function toEdge(x, y, dx, dy) {
+    const tx = dx > 1e-6 ? (W - x) / dx : dx < -1e-6 ? -x / dx : 1e9;
+    const ty = dy > 1e-6 ? (H - y) / dy : dy < -1e-6 ? -y / dy : 1e9;
+    return Math.max(0, Math.min(tx, ty));
+  }
+  // loose end for one filament: direction = -tangent*a + radial*b (entry) or +tangent*a + radial*b (exit), swaying on noise
+  function looseEnd(o, e, e2, sign, T) {
+    let tx = SX[e2] - SX[e], ty = SY[e2] - SY[e]; const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+    let rx = SX[e] - P.cx, ry = SY[e] - P.cy; const rl = Math.hypot(rx, ry) || 1; rx /= rl; ry /= rl;
+    let dx = sign * tx * o.a + rx * o.b, dy = sign * ty * o.a + ry * o.b; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+    const sw = (p.noise(o.ph, T * .06) - .5) * 2 * o.sway, cs = Math.cos(sw), sn = Math.sin(sw);
+    const qx = dx * cs - dy * sn, qy = dx * sn + dy * cs;
+    const D = toEdge(SX[e], SY[e], qx, qy) + o.over;
+    return { ox: SX[e] + qx * D, oy: SY[e] + qy * D, D, qx, qy, tx: sign * tx, ty: sign * ty };
+  }
+
+  // cubic Bézier into SX/SY between index ranges
+  function bez(o, n, x0, y0, x1, y1, x2, y2, x3, y3, includeEnd) {
+    for (let j = 0; j < n; j++) {
+      const t = includeEnd ? (j + 1) / n : j / n, u = 1 - t;
+      const a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
+      SX[o + j] = a * x0 + b * x1 + c * x2 + d * x3;
+      SY[o + j] = a * y0 + b * y1 + c * y2 + d * y3;
+      SZ[o + j] = -1;
+    }
+  }
+
+  let paths = [];
+  const NW = 2 * TONES * AL * 2, NL = LOOSE_A.length * 2;
+  const keyW = (pass, tone, al, w) => ((pass * TONES + tone) * AL + al) * 2 + w;
+
+  p.setup = () => {
+    const c = p.createCanvas(Math.max(1, heroEl.clientWidth), Math.max(1, heroEl.clientHeight));
+    c.parent(heroEl);
+    p.pixelDensity(DPR);
+    ctx = p.drawingContext;
+    layout();
+    build(PLATE.seed);
+    if (REDUCE) { frozenT = 1e4; p.noLoop(); }
+  };
+
+  p.draw = () => {
+    if (fitCanvas(p, heroEl)) layout();
+    const now = p.millis();
+    const t = REDUCE ? frozenT : (now - born) / 1000;
+    const T = REDUCE ? 3 : now / 1000;
+    p.clear();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+    // pointer tilt, eased
+    const tx = ptr.inside ? (ptr.ny - .5) * .26 : 0, ty = ptr.inside ? (ptr.nx - .5) * .36 : 0;
+    tilt.x += (tx - tilt.x) * .035; tilt.y += (ty - tilt.y) * .035;
+    ptr.k += ((ptr.inside ? 1 : 0) - ptr.k) * .08;
+    const m = rotZYX(P.tiltX + tilt.x + Math.sin(T * .21) * .025, tilt.y + Math.sin(T * .17) * .04, P.tiltZ);
+    const R = P.R, rT = R * P.tube * (1 + Math.sin(T * .6) * .035), F = P.F, cx = P.cx, cy = P.cy;
+    const spin = P.spin * T, roll = P.roll * T;
+
+    // soft contact shadow
+    ctx.save();
+    ctx.translate(cx, cy + R * (P.mobile ? .72 : .8));
+    ctx.scale(1, .16);
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 1.05);
+    g.addColorStop(0, 'rgba(68,53,42,.10)'); g.addColorStop(1, 'rgba(68,53,42,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 1.05, 0, TAU); ctx.fill();
+    ctx.restore();
+
+    for (let i = 0; i < NW + NL; i++) paths[i] = null;
+    const leadP = [new Path2D(), new Path2D()], leadTail = new Path2D();
+    let leadO = null;
+    const PR = P.mobile ? 80 : 120, PR2 = PR * PR, PUSH = (P.mobile ? 22 : 30) * ptr.k;
+    const diag = Math.hypot(W, H);
+
+    for (const f of threads) {
+      const rev = REDUCE ? 1 : easeInOut(clamp((t - f.delay) / f.dur, 0, 1));
+      if (rev <= 0) continue;
+      const nt = f.nt, n = f.n;
+      // wound section on the torus
+      for (let j = 0, k = nt; j < n; j++, k++) {
+        const A = f.th[j] + spin, B = f.ps[j] + roll;
+        const ca = Math.cos(A), sa = Math.sin(A), cb = Math.cos(B), sb = Math.sin(B);
+        const rt = rT * f.rr[j], q = R + rt * cb;
+        const x = q * ca, y = q * sa, z = rt * sb;
+        const X = m[0] * x + m[1] * y + m[2] * z, Y = m[3] * x + m[4] * y + m[5] * z, Z = m[6] * x + m[7] * y + m[8] * z;
+        const s = F / (F + Z);
+        SX[k] = cx + X * s; SY[k] = cy + Y * s; SZ[k] = Z;
+        const nx = cb * ca, ny = cb * sa, nz = sb;
+        const NX = m[0] * nx + m[1] * ny + m[2] * nz, NY = m[3] * nx + m[4] * ny + m[5] * nz, NZ = m[6] * nx + m[7] * ny + m[8] * nz;
+        const lam = Math.max(0, NX * L[0] + NY * L[1] + NZ * L[2]);
+        let sp = Math.max(0, NX * HV[0] + NY * HV[1] + NZ * HV[2]); sp *= sp; sp *= sp; sp = sp * sp * sp;
+        TN[k] = .04 + .74 * lam + .5 * sp;
+      }
+      // loose entry: origin beyond the frame -> tangent of the helix at entry
+      if (f.tail) {
+        const o = f.tail, e = nt, L1 = looseEnd(o, e, e + 1, -1, T), len = L1.D;
+        bez(0, nt, L1.ox, L1.oy, L1.ox - L1.qx * len * .34 - L1.qy * len * o.bend * .3, L1.oy - L1.qy * len * .34 + L1.qx * len * o.bend * .3,
+          SX[e] + L1.tx * len * .46, SY[e] + L1.ty * len * .46, SX[e], SY[e], false);
+      }
+      if (f.exit) {
+        const o = f.exit, e = nt + n - 1, L1 = looseEnd(o, e, e - 1, -1, T), len = L1.D;
+        bez(nt + n, f.ne, SX[e], SY[e], SX[e] + L1.tx * len * .46, SY[e] + L1.ty * len * .46,
+          L1.ox - L1.qx * len * .34 - L1.qy * len * o.bend * .3, L1.oy - L1.qy * len * .34 + L1.qx * len * o.bend * .3, L1.ox, L1.oy, true);
+      }
+      // a hand parting silk: spring-damped displacement with a slight swirl
+      const tot = f.total, OX = f.ox, OY = f.oy;
+      for (let k = 0; k < tot; k++) {
+        let gx = 0, gy = 0;
+        if (PUSH > .5) {
+          const dx = SX[k] - ptr.x, dy = SY[k] - ptr.y, d2 = dx * dx + dy * dy;
+          if (d2 < PR2 && d2 > .01) { const d = Math.sqrt(d2), q = 1 - d / PR, s = q * q * PUSH / d; gx = (dx - dy * .35) * s; gy = (dy + dx * .35) * s; }
+        }
+        OX[k] += (gx - OX[k]) * .12; OY[k] += (gy - OY[k]) * .12;
+        SX[k] += OX[k]; SY[k] += OY[k];
+      }
+
+      if (f.lead && nt) leadO = [SX[0], SY[0], SX[nt], SY[nt]];
+      const vis = Math.max(2, Math.floor(rev * tot));
+      const w = f.w;
+      // entry tail
+      if (nt) {
+        const end = Math.min(vis, nt + 1);
+        for (let c = 0; c < end - 1; c += CH - 1) {
+          const e = Math.min(c + CH - 1, end - 1);
+          const mx = (SX[c] + SX[e]) * .5, my = (SY[c] + SY[e]) * .5;
+          const zone = P.mobile ? 1 - smooth(H * .44, H * .56, my) * .9 : .1 + .9 * smooth(W * .3, W * .5, mx);
+          const lv = Math.round((smooth(0, .7, c / nt) * zone) * (LOOSE_A.length - 1));
+          if (f.lead) { addSeg(leadTail, c, e); continue; }
+          if (lv <= 0) continue;
+          addSeg(getP(NW + lv * 2 + w), c, e);
+        }
+      }
+      // wound
+      const wEnd = Math.min(vis, nt + n);
+      for (let c = nt; c < wEnd - 1; c += CH - 1) {
+        const e = Math.min(c + CH - 1, wEnd - 1);
+        const zMid = SZ[(c + e) >> 1];
+        const pass = zMid > 0 ? 0 : 1;
+        if (f.lead) { addSeg(leadP[pass], c, e); continue; }
+        let tone = 0; for (let k = c; k <= e; k++) tone += TN[k]; tone /= (e - c + 1);
+        const ti = clamp(Math.floor(tone * TONES), 0, TONES - 1);
+        const u = (c - nt) / n, ue = (e - nt) / n;
+        const edge = Math.min(nt ? 1 : u, f.ne ? 1 : 1 - ue);
+        const al = edge < .05 ? 0 : edge < .13 ? 1 : 2;
+        addSeg(getP(keyW(pass, ti, al, w)), c, e);
+      }
+      // exit tail
+      if (f.ne && vis > nt + n) {
+        const s0 = nt + n - 1, end = vis;
+        for (let c = s0; c < end - 1; c += CH - 1) {
+          const e = Math.min(c + CH - 1, end - 1);
+          const mx = (SX[c] + SX[e]) * .5, my = (SY[c] + SY[e]) * .5;
+          const zone = P.mobile ? 1 - smooth(H * .44, H * .56, my) * .9 : .1 + .9 * smooth(W * .3, W * .5, mx);
+          const lv = Math.round(((1 - smooth(.35, 1, (c - s0) / f.ne)) * zone) * (LOOSE_A.length - 1));
+          if (lv <= 0) continue;
+          addSeg(getP(NW + lv * 2 + w), c, e);
+        }
+      }
+    }
+
+    // compose: far strands, loose filaments, near strands, lead
+    strokeRange(0, TONES * AL * 2, 0);
+    ctx.globalAlpha = .55; ctx.strokeStyle = LEAD_COL; ctx.lineWidth = 1.25; ctx.stroke(leadP[0]);
+    for (let lv = 1; lv < LOOSE_A.length; lv++) for (let w = 0; w < 2; w++) {
+      const P2 = paths[NW + lv * 2 + w]; if (!P2) continue;
+      ctx.globalAlpha = LOOSE_A[lv]; ctx.strokeStyle = LOOSE_COL; ctx.lineWidth = WIDTH[w]; ctx.stroke(P2);
+    }
+    strokeRange(TONES * AL * 2, NW, 1);
+    if (leadO) {
+      const lg = ctx.createLinearGradient(leadO[0], leadO[1], leadO[2], leadO[3]);
+      lg.addColorStop(0, 'rgba(168,141,95,0)'); lg.addColorStop(.5, 'rgba(168,141,95,.35)'); lg.addColorStop(1, 'rgba(168,141,95,.95)');
+      ctx.globalAlpha = 1; ctx.strokeStyle = lg; ctx.lineWidth = 1.3; ctx.stroke(leadTail);
+    }
+    ctx.globalAlpha = .95; ctx.strokeStyle = LEAD_COL; ctx.lineWidth = 1.35; ctx.stroke(leadP[1]);
+    ctx.globalAlpha = 1;
+  };
+
+  function getP(k) { return paths[k] || (paths[k] = new Path2D()); }
+  function addSeg(path, a, b) { path.moveTo(SX[a], SY[a]); for (let k = a + 1; k <= b; k++) path.lineTo(SX[k], SY[k]); }
+  function strokeRange(from, to, pass) {
+    for (let k = from; k < to; k++) {
+      const P2 = paths[k]; if (!P2) continue;
+      const w = k & 1, al = (k >> 1) % AL, tone = Math.floor((k >> 1) / AL) % TONES;
+      ctx.globalAlpha = PASS_A[pass] * AL_A[al];
+      ctx.strokeStyle = TONE[tone]; ctx.lineWidth = WIDTH[w];
+      ctx.stroke(P2);
+    }
+  }
+
+  p.windowResized = () => { if (fitCanvas(p, heroEl)) { layout(); if (REDUCE) p.redraw(); } };
+
+  // public controls
+  p.setPointer = (x, y, inside) => { ptr.x = x; ptr.y = y; ptr.nx = x / W; ptr.ny = y / H; ptr.inside = inside; };
+  p.reseed = (seed) => {
+    PLATE.seed = seed;
+    if (REDUCE) { build(seed); frozenT = 1e4; p.redraw(); return; }
+    heroEl.classList.add('is-fading');
+    setTimeout(() => { build(seed); heroEl.classList.remove('is-fading'); }, 380);
+  };
+};
+
+/* =====================================================================
+   SHŌ — the same filaments, wound as a temari on lacquer
+   ===================================================================== */
+const shoEl = document.getElementById('shoArt');
+const shoStatus = document.getElementById('shoStatus');
+const SHO_TEXT = {
+  rest: 'ご質問を選んでください',
+  q1: '準備事項を整理します',
+  q2: '4 日間の日程を整理します',
+  q3: '付き添いの範囲を整理します',
+};
+
+const shoSketch = (p) => {
+  const N = 48, M = 132, LV = 6;
+  const cur = new Float32Array(N * M * 3), from = new Float32Array(N * M * 3), to = new Float32Array(N * M * 3);
+  const lag = new Float32Array(N * M);
+  const PX = new Float32Array(N * M), PY = new Float32Array(N * M), PZ = new Float32Array(N * M);
+  const ALPHA = [0.06, 0.1, 0.16, 0.24, 0.35, 0.5];
+  let state = 'rest', changed = -1e9, yaw = .4, pitch = .42, last = 0;
+  const POSE = { rest: [null, .42], q1: [-.16, .2], q2: [.14, .3], q3: [-.3, .26] };
+  const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
+  const baseAxes = [];
+  const wt = new Float32Array(N).fill(1), WCLS = [.32, .62, 1];
+  const wTarget = i => (state === 'rest' && i >= 28) ? .3 : 1;
+  let ctx;
+
+  const set = (a, i, j, x, y, z) => { const o = (i * M + j) * 3; a[o] = x; a[o + 1] = y; a[o + 2] = z; };
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  function ring(a, i, A, h, rho, ph) {
+    const U = norm(cross(A, Math.abs(A[0]) < .9 ? [1, 0, 0] : [0, 1, 0])), V = cross(A, U);
+    for (let j = 0; j < M; j++) {
+      const t = ph + TAU * j / (M - 1), c = Math.cos(t) * rho, s = Math.sin(t) * rho;
+      set(a, i, j, A[0] * h + U[0] * c + V[0] * s, A[1] * h + U[1] * c + V[1] * s, A[2] * h + U[2] * c + V[2] * s);
+    }
+  }
+
+  // rest: a temari — a faint, randomly wound core (jiwari) under four great-circle bands (kagome division)
+  function temari(a) {
+    const axes = [[1, 1, 1], [1, 1, -1], [1, -1, 1], [-1, 1, 1]].map(norm);
+    let i = 0;
+    for (const A of axes) for (let k = 0; k < 7; k++) { const h = (k - 3) * .03; ring(a, i, A, h, Math.sqrt(1 - h * h), i * 1.3); i++; }
+    for (const b of baseAxes) { if (i >= N) break; ring(a, i, b.A, 0, .955 + b.r, b.ph); i++; }
+  }
+  // q1: a ruled page — five items, each opening with a small loop; every line laid three times
+  function notes(a) {
+    const items = [3, 3, 4, 3, 3], lines = [];
+    let y = .74;
+    items.forEach((cnt, it) => {
+      for (let l = 0; l < cnt; l++) {
+        const last = l === cnt - 1;
+        lines.push({ y, first: l === 0, len: last ? .3 + ((it * 37 + l * 11) % 10) / 22 : .92 + ((it * 13 + l * 7) % 10) / 120 });
+        y -= .08;
+      }
+      y -= .06;
+    });
+    for (let i = 0; i < N; i++) {
+      const ln = lines[(i / 3) | 0], k = i % 3, dbl = (k - 1) * .0075, x0 = -.62, x1 = x0 + 1.46 * ln.len;
+      const loopN = ln.first ? 30 : 0;
+      for (let j = 0; j < M; j++) {
+        if (j < loopN) {
+          const t = TAU * j / (loopN - 1) + k * .4, r = .036 + k * .004;
+          set(a, i, j, -.78 + Math.cos(t) * r, ln.y + .004 + Math.sin(t) * r, 0);
+        } else {
+          const u = (j - loopN) / (M - 1 - loopN), x = lerp(ln.first ? -.735 : x0, x1, u);
+          set(a, i, j, x, ln.y + dbl + Math.sin(u * 9 + i) * .003, Math.sin(u * 3 + i) * .02);
+        }
+      }
+    }
+  }
+  // q2: four days on one itinerary — a single bundle that turns four times as it travels
+  function days(a) {
+    const turns = 4, A = .095, B = .34;
+    const t0 = Math.PI * .15, t1 = TAU * turns - Math.PI * .15;
+    const xs = t => A * t - B * Math.sin(t), span = xs(t1) - xs(t0);
+    for (let i = 0; i < N; i++) {
+      const br = .012 + (i % 6) * .0055, bph = i * 2.1;
+      for (let j = 0; j < M; j++) {
+        const t = lerp(t0, t1, j / (M - 1));
+        const x = (xs(t) - xs(t0)) / span * 1.76 - .88, y = -B * Math.cos(t) * .92, z = B * Math.sin(t) * .55;
+        set(a, i, j, x + Math.cos(t * 1.7 + bph) * br * .4, y + Math.cos(t * 2.3 + bph) * br, z + Math.sin(t * 2.3 + bph) * br);
+      }
+    }
+  }
+  // q3: a two-ply cord — two bundles twisted around one path, walking together
+  function cord(a) {
+    for (let i = 0; i < N; i++) {
+      const strand = i < 24 ? 0 : 1, k = i % 24;
+      const br = .02 + (k % 6) * .009, bph = k * 2.4;
+      for (let j = 0; j < M; j++) {
+        const s = j / (M - 1);
+        const x = -1 + 2 * s, y = .16 - .32 * s + .12 * Math.sin(TAU * s * .85), z = .2 * Math.sin(Math.PI * s);
+        const tx = 2, ty = -.32 + .12 * TAU * .85 * Math.cos(TAU * s * .85), tl = Math.hypot(tx, ty);
+        const nx = -ty / tl, ny = tx / tl;
+        const phi = TAU * 1.9 * s + strand * Math.PI;
+        const rs = .1, ox = Math.cos(phi) * rs, oz = Math.sin(phi) * rs;
+        const bx = Math.cos(phi * 1.4 + bph) * br, bz = Math.sin(phi * 1.4 + bph) * br;
+        set(a, i, j, x + nx * (ox + bx), y + ny * (ox + bx), z + oz + bz);
+      }
+    }
+  }
+  const SHAPES = { rest: temari, q1: notes, q2: days, q3: cord };
+
+  p.setup = () => {
+    const c = p.createCanvas(Math.max(1, shoEl.clientWidth), Math.max(1, shoEl.clientHeight));
+    c.parent(shoEl);
+    p.pixelDensity(DPR);
+    ctx = p.drawingContext;
+    p.randomSeed(1717);
+    for (let i = 0; i < 20; i++) baseAxes.push({ A: norm([p.random(-1, 1), p.random(-1, 1), p.random(-1, 1)]), r: p.random(-.02, .01), ph: p.random(0, TAU) });
+    for (let i = 0; i < N; i++) for (let j = 0; j < M; j++) lag[i * M + j] = .52 * (j / M) + .34 * ((i * 7) % N) / N;
+    temari(to); cur.set(to);
+    for (let i = 0; i < N; i++) wt[i] = wTarget(i);
+    last = p.millis();
+    if (REDUCE) p.noLoop();
+  };
+
+  p.setState = (s) => {
+    if (s === state) return;
+    state = s; from.set(cur); SHAPES[s](to); changed = p.millis();
+    shoStatus.textContent = SHO_TEXT[s];
+    if (REDUCE) { cur.set(to); const pose = POSE[s]; if (pose[0] !== null) yaw = pose[0]; pitch = pose[1]; p.redraw(); }
+  };
+  p.setPointer = (x, y) => { ptr.tx = x; ptr.ty = y; };
+
+  p.draw = () => {
+    fitCanvas(p, shoEl);
+    const now = p.millis(), dt = Math.min(.05, (now - last) / 1000); last = now;
+    const W = p.width, H = p.height, S = Math.min(W, H) * .34, cx = W / 2, cy = H * .47;
+    // morph, staggered along each filament
+    if (!REDUCE) {
+      const el = (now - changed) / 1000;
+      if (el < 2.2) {
+        for (let q = 0; q < N * M; q++) {
+          const u = easeInOut(clamp((el - lag[q] * .9) / 1, 0, 1)), o = q * 3;
+          cur[o] = from[o] + (to[o] - from[o]) * u; cur[o + 1] = from[o + 1] + (to[o + 1] - from[o + 1]) * u; cur[o + 2] = from[o + 2] + (to[o + 2] - from[o + 2]) * u;
+        }
+      } else if (el < 2.4) cur.set(to);
+      const pose = POSE[state];
+      if (pose[0] === null) yaw += dt * .16;
+      else { const tgt = pose[0] + Math.round((yaw - pose[0]) / TAU) * TAU; yaw += (tgt - yaw) * .045; }
+      pitch += (pose[1] - pitch) * .045;
+      ptr.x += (ptr.tx - ptr.x) * .05; ptr.y += (ptr.ty - ptr.y) * .05;
+    }
+    const breathe = state === 'rest' && !REDUCE ? 1 + Math.sin(now * .0011) * .012 : 1;
+    const Y = yaw + ptr.x * .35, X = pitch + ptr.y * .2;
+    const cyw = Math.cos(Y), syw = Math.sin(Y), cp = Math.cos(X), sp = Math.sin(X), F = 4.6;
+    for (let q = 0; q < N * M; q++) {
+      const o = q * 3, x = cur[o] * breathe, y = cur[o + 1] * breathe, z = cur[o + 2] * breathe;
+      const x1 = x * cyw + z * syw, z1 = -x * syw + z * cyw;
+      const y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+      const s = F / (F + z2);
+      PX[q] = cx + x1 * s * S; PY[q] = cy - y2 * s * S; PZ[q] = z2;
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#2b211a'; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, S * 1.9);
+    g.addColorStop(0, 'rgba(185,161,123,.16)'); g.addColorStop(.55, 'rgba(185,161,123,.05)'); g.addColorStop(1, 'rgba(185,161,123,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    const paths = Array.from({ length: LV * 3 }, () => new Path2D());
+    for (let i = 0; i < N; i++) {
+      const b = i * M;
+      wt[i] = REDUCE ? wTarget(i) : wt[i] + (wTarget(i) - wt[i]) * .04;
+      const cls = wt[i] < .45 ? 0 : wt[i] < .8 ? 1 : 2;
+      for (let c = 0; c < M - 1; c += 5) {
+        const e = Math.min(c + 5, M - 1);
+        const z = PZ[b + ((c + e) >> 1)];
+        const lv = clamp(Math.floor((1 - (z + 1.05) / 2.1) * LV), 0, LV - 1);
+        const P2 = paths[cls * LV + lv];
+        P2.moveTo(PX[b + c], PY[b + c]);
+        for (let k = c + 1; k <= e; k++) P2.lineTo(PX[b + k], PY[b + k]);
+      }
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#cdb48b';
+    for (let c = 0; c < 3; c++) for (let lv = 0; lv < LV; lv++) { ctx.globalAlpha = ALPHA[lv] * WCLS[c]; ctx.lineWidth = lv > 3 ? 1.05 : .8; ctx.stroke(paths[c * LV + lv]); }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+  };
+  p.windowResized = () => { if (fitCanvas(p, shoEl) && REDUCE) p.redraw(); };
+};
+
+/* =====================================================================
+   Boot both sketches (p5 instance mode) and wire the page
+   ===================================================================== */
+// If the CDN is unreachable the page still works; only the two artworks are absent.
+const HAS_P5 = typeof window.p5 === 'function';
+const hero = HAS_P5 ? new p5(heroSketch) : null;
+const sho = HAS_P5 ? new p5(shoSketch) : null;
+if (HAS_P5) {
+  governor(heroEl, hero);
+  governor(shoEl, sho);
+  new ResizeObserver(() => { if (REDUCE) { hero.windowResized(); sho.windowResized(); } }).observe(document.body);
+} else document.documentElement.classList.add('no-art');
+
+// hero pointer + plate controls
+if (hero && !REDUCE) {
+  heroSection.addEventListener('pointermove', e => { const r = heroEl.getBoundingClientRect(); hero.setPointer(e.clientX - r.left, e.clientY - r.top, true); });
+  heroSection.addEventListener('pointerleave', () => hero.setPointer(-1e5, -1e5, false));
+  heroSection.addEventListener('pointerup', e => { if (e.pointerType === 'touch') hero.setPointer(-1e5, -1e5, false); });
+}
+if (hero) {
+  heroEl.addEventListener('click', () => hero.reseed(PLATE.seed + 1));
+  document.getElementById('plateNext').addEventListener('click', () => hero.reseed(PLATE.seed + 1));
+  document.getElementById('platePrev').addEventListener('click', () => hero.reseed(Math.max(1, PLATE.seed - 1)));
+}
+
+// SHŌ questions
+const qLinks = [...document.querySelectorAll('#qs a')];
+let restTimer = 0, cycleTimer = 0, cycleIdx = 0;
+const activate = (s) => {
+  clearTimeout(restTimer);
+  qLinks.forEach(a => a.classList.toggle('is-active', 'q' + a.dataset.q === s));
+  shoStatus.textContent = SHO_TEXT[s];
+  if (sho) sho.setState(s);
+};
+qLinks.forEach(a => {
+  const s = 'q' + a.dataset.q;
+  a.addEventListener('mouseenter', () => { stopCycle(); activate(s); });
+  a.addEventListener('focus', () => { stopCycle(); activate(s); });
+  a.addEventListener('mouseleave', () => { restTimer = setTimeout(() => activate('rest'), 450); });
+  a.addEventListener('blur', () => { restTimer = setTimeout(() => activate('rest'), 450); });
+  a.addEventListener('click', e => { e.preventDefault(); stopCycle(); activate(s); });
+});
+document.querySelector('.sho-panel').addEventListener('pointermove', e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  if (sho) sho.setPointer((e.clientX - r.left) / r.width - .5, (e.clientY - r.top) / r.height - .5);
+});
+document.querySelector('.sho-panel').addEventListener('pointerleave', () => { if (sho) sho.setPointer(0, 0); });
+// Touch screens cannot hover: let the panel walk through the three questions on its own while in view.
+function stopCycle() { clearInterval(cycleTimer); cycleTimer = 0; }
+if (matchMedia('(hover: none)').matches && !REDUCE) {
+  const order = ['q1', 'q2', 'q3', 'rest'];
+  new IntersectionObserver(es => {
+    if (es[0].isIntersecting && !cycleTimer) cycleTimer = setInterval(() => activate(order[cycleIdx++ % order.length]), 3800);
+    else if (!es[0].isIntersecting) stopCycle();
+  }, { threshold: .4 }).observe(shoEl);
+}
+
+// services preview
+const svcLinks = [...document.querySelectorAll('#svcList a')], svcImgs = [...document.querySelectorAll('.svc-photo img')];
+svcLinks.forEach((a, i) => {
+  const on = () => { svcLinks.forEach((b, k) => b.classList.toggle('is-on', k === i)); svcImgs.forEach((im, k) => im.classList.toggle('is-on', k === i)); };
+  a.addEventListener('mouseenter', on); a.addEventListener('focus', on);
+  a.addEventListener('click', e => { e.preventDefault(); on(); });
+});
+
+// header shadow + floating contact
+const header = document.getElementById('header'), fab = document.getElementById('fab');
+const onScroll = () => {
+  header.classList.toggle('is-scrolled', scrollY > 8);
+  fab.classList.toggle('is-hidden', scrollY < 200 || document.getElementById('contact').getBoundingClientRect().top < innerHeight * .6);
+};
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+// mobile drawer
+const drawer = document.getElementById('drawer'), openBtn = document.getElementById('menuOpen'), closeBtn = document.getElementById('menuClose');
+const setDrawer = (open) => {
+  drawer.classList.toggle('is-open', open);
+  openBtn.setAttribute('aria-expanded', String(open));
+  document.documentElement.style.overflow = open ? 'hidden' : '';
+  (open ? closeBtn : openBtn).focus({ preventScroll: true });
+};
+openBtn.addEventListener('click', () => setDrawer(true));
+closeBtn.addEventListener('click', () => setDrawer(false));
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setDrawer(false)));
+addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('is-open')) setDrawer(false); });
+// close the language list when clicking elsewhere
+document.addEventListener('click', e => { const d = document.querySelector('.lang'); if (d.open && !d.contains(e.target)) d.open = false; });
+})();
+</script>
+</body>
+</html>
